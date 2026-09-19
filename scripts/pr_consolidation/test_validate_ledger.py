@@ -1,167 +1,188 @@
-from __future__ import annotations
+"""Exercise the offline ledger gate using missing, malformed and incomplete evidence."""
 
+import copy
 import importlib.util
 import json
+from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
-from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-LEDGER_PATH = ROOT / "artifacts" / "pr-consolidation" / "ledger.v1.json"
-VALIDATOR_PATH = ROOT / "scripts" / "pr_consolidation" / "validate_ledger.py"
-EXPECTED_PULL_REQUESTS = {
-    39,
-    40,
-    41,
-    47,
-    55,
-    58,
-    59,
-    60,
-    62,
-    65,
-    67,
-    69,
-    70,
-    71,
-    72,
-    100,
-    101,
-    102,
-    105,
-    109,
-    110,
-    115,
-    117,
-    123,
-}
+LEDGER = ROOT / "artifacts/pr-consolidation/ledger.v1.json"
+VALIDATOR = Path(__file__).with_name("validate_ledger.py")
+ORIGINAL_PRS = {39, 40, 41, 47, 55, 58, 59, 60, 62, 65, 67, 69,
+                70, 71, 72, 100, 101, 102, 105, 109, 110, 115, 117, 123}
 
 
-def load_validator():
-    spec = importlib.util.spec_from_file_location("validate_ledger", VALIDATOR_PATH)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"cannot load validator at {VALIDATOR_PATH}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+class LedgerTests(unittest.TestCase):
+    def setUp(self):
+        self.assertTrue(LEDGER.is_file(), "The required 24-PR ledger is absent")
+        self.ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
 
+    def validate(self, value):
+        self.assertTrue(VALIDATOR.is_file(), "The ledger validator is absent")
+        spec = importlib.util.spec_from_file_location("validate_ledger", VALIDATOR)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module.validate(value)
 
-class ConsolidationLedgerTests(unittest.TestCase):
-    def setUp(self) -> None:
-        self.validator = load_validator()
-        self.document = json.loads(LEDGER_PATH.read_text(encoding="utf-8"))
+    def test_seed_covers_all_original_prs_and_passes(self):
+        self.assertEqual({row["number"] for row in self.ledger["prs"]}, ORIGINAL_PRS)
+        self.assertEqual(len(self.ledger["prs"]), 24)
+        self.assertEqual(self.validate(self.ledger), [])
 
-    def test_canonical_ledger_is_valid(self) -> None:
-        self.assertEqual([], self.validator.validate(self.document))
+    def test_missing_or_duplicate_pr_is_rejected(self):
+        for kind in ("missing", "duplicate", "unexpected"):
+            with self.subTest(kind=kind):
+                data = copy.deepcopy(self.ledger)
+                if kind == "missing":
+                    data["prs"].pop()
+                elif kind == "duplicate":
+                    data["prs"].append(copy.deepcopy(data["prs"][0]))
+                else:
+                    data["prs"][0]["number"] = 999
+                self.assertTrue(self.validate(data))
 
-    def test_ledger_covers_each_remaining_pull_request_once(self) -> None:
-        numbers = [entry["pull_request"] for entry in self.document["entries"]]
-        self.assertEqual(EXPECTED_PULL_REQUESTS, set(numbers))
-        self.assertEqual(len(numbers), len(set(numbers)))
+    def test_api_refactors_preserve_public_submissions_prerequisite(self):
+        by_number = {row["number"]: row for row in self.ledger["prs"]}
+        for number in (58, 59, 62):
+            with self.subTest(number=number):
+                self.assertIn(55, by_number[number]["dependencies"])
 
-    def test_missing_required_evidence_is_rejected(self) -> None:
-        invalid = json.loads(json.dumps(self.document))
-        del invalid["entries"][0]["evidence_status"]
-        self.assertIn(
-            "entries[0].evidence_status must be present",
-            self.validator.validate(invalid),
+    def test_valid_accepted_record_passes_structural_validation(self):
+        data = copy.deepcopy(self.ledger)
+        data["prs"][0].update(replacement_pr=200, accepted_sha="a" * 40)
+        data["prs"][0]["evidence"].update(
+            status="accepted", acceptance_evidence_urls=[
+                "https://github.com/ingtrader21-spec/Breero.com/pull/200"
+            ]
         )
+        self.assertEqual(self.validate(data), [])
 
-    def test_invalid_top_level_provenance_is_rejected(self) -> None:
-        invalid = json.loads(json.dumps(self.document))
-        invalid["repository"] = "example/wrong-repository"
-        invalid["generated_at"] = "yesterday"
-        invalid["production_deployed"] = "false"
-        errors = self.validator.validate(invalid)
-        self.assertIn("repository must equal ingtrader21-spec/Breero.com", errors)
-        self.assertIn("generated_at must be an RFC 3339 UTC timestamp", errors)
-        self.assertIn("production_deployed must be false", errors)
+    def test_required_fields_cannot_be_omitted(self):
+        for field in ("original", "owning_domain", "dependencies", "affected_contracts",
+                      "disposition", "disposition_reason", "replacement_pr", "accepted_sha",
+                      "evidence"):
+            with self.subTest(field=field):
+                data = copy.deepcopy(self.ledger)
+                del data["prs"][0][field]
+                self.assertTrue(self.validate(data))
 
-    def test_calendar_invalid_utc_timestamps_are_rejected(self) -> None:
-        invalid = json.loads(json.dumps(self.document))
-        invalid["generated_at"] = "2026-99-99T99:99:99Z"
-        self.assertIn(
-            "generated_at must be an RFC 3339 UTC timestamp",
-            self.validator.validate(invalid),
-        )
+    def test_original_identity_requires_full_head_base_and_merge_base(self):
+        for field in ("head_sha", "base_sha", "merge_base_sha"):
+            for bad in (None, "93d72d0", "z" * 40, "0" * 40):
+                with self.subTest(field=field, value=bad):
+                    data = copy.deepcopy(self.ledger)
+                    data["prs"][0]["original"][field] = bad
+                    self.assertTrue(self.validate(data))
 
-    def test_dependency_must_reference_another_known_pull_request(self) -> None:
-        invalid = json.loads(json.dumps(self.document))
-        invalid["entries"][0]["dependencies"] = ["41", 999, 39]
-        errors = self.validator.validate(invalid)
-        self.assertTrue(any("dependencies must contain only integer" in error for error in errors))
-        self.assertTrue(any("dependencies contains unknown pull request 999" in error for error in errors))
-        self.assertTrue(any("dependencies cannot reference itself" in error for error in errors))
+    def test_disposition_must_be_one_known_value(self):
+        for bad in (None, "merged", ["candidate", "unsafe"], ""):
+            with self.subTest(value=bad):
+                data = copy.deepcopy(self.ledger)
+                data["prs"][0]["disposition"] = bad
+                self.assertTrue(self.validate(data))
 
-    def test_dependency_graph_must_be_acyclic(self) -> None:
-        invalid = json.loads(json.dumps(self.document))
-        invalid["entries"][0]["dependencies"] = [40]
-        invalid["entries"][1]["dependencies"] = [39]
-        self.assertTrue(
-            any(
-                "dependency cycle detected" in error
-                for error in self.validator.validate(invalid)
-            )
-        )
+    def test_empty_ownership_contracts_or_reason_is_rejected(self):
+        for field, value in (("owning_domain", " "), ("affected_contracts", []),
+                             ("affected_contracts", [""]), ("disposition_reason", "")):
+            with self.subTest(field=field):
+                data = copy.deepcopy(self.ledger)
+                data["prs"][0][field] = value
+                self.assertTrue(self.validate(data))
 
-    def test_affected_contracts_require_non_empty_strings(self) -> None:
-        invalid = json.loads(json.dumps(self.document))
-        invalid["entries"][0]["affected_contracts"] = [123, ""]
-        self.assertTrue(
-            any(
-                "affected_contracts must contain only non-empty strings" in error
-                for error in self.validator.validate(invalid)
-            )
-        )
+    def test_invalid_or_cyclic_dependencies_are_rejected(self):
+        for bad in (None, [999], [39], [40, 40], [True]):
+            with self.subTest(value=bad):
+                data = copy.deepcopy(self.ledger)
+                data["prs"][0]["dependencies"] = bad
+                self.assertTrue(self.validate(data))
+        data = copy.deepcopy(self.ledger)
+        by_number = {row["number"]: row for row in data["prs"]}
+        by_number[39]["dependencies"] = [40]
+        by_number[40]["dependencies"] = [39]
+        self.assertTrue(self.validate(data))
 
-    def test_final_evidence_requires_exact_head_tests_review_and_merge(self) -> None:
-        invalid = json.loads(json.dumps(self.document))
-        invalid["entries"][0]["evidence_status"] = "complete"
-        invalid["entries"][0]["final_evidence"] = {
-            "checked_head_sha": "bad-sha",
-            "tests": [],
-            "review_state": "pending",
-            "accepted_merge_sha": None,
-            "checked_at": "yesterday",
-        }
-        errors = self.validator.validate(invalid)
-        self.assertTrue(any("final_evidence.checked_head_sha" in error for error in errors))
-        self.assertTrue(any("final_evidence.tests" in error for error in errors))
-        self.assertTrue(any("final_evidence.review_state must equal approved" in error for error in errors))
-        self.assertTrue(any("final_evidence.accepted_merge_sha" in error for error in errors))
-        self.assertTrue(any("final_evidence.checked_at" in error for error in errors))
+    def test_unassessed_rows_cannot_claim_replacement_acceptance(self):
+        for field, bad in (("replacement_pr", True), ("replacement_pr", 0),
+                           ("accepted_sha", "short"), ("accepted_sha", "a" * 40)):
+            with self.subTest(field=field, value=bad):
+                data = copy.deepcopy(self.ledger)
+                data["prs"][0].update(replacement_pr=None, accepted_sha=None)
+                data["prs"][0]["evidence"].update(
+                    status="captured_not_accepted", acceptance_evidence_urls=[]
+                )
+                data["prs"][0][field] = bad
+                self.assertTrue(self.validate(data))
 
-    def test_unknown_evidence_status_is_rejected(self) -> None:
-        invalid = json.loads(json.dumps(self.document))
-        invalid["entries"][0]["evidence_status"] = "closed"
-        self.assertTrue(
-            any(
-                "evidence_status must be one of" in error
-                for error in self.validator.validate(invalid)
-            )
-        )
+    def test_evidence_status_is_required_and_known(self):
+        for value in (None, "green", "accepted"):
+            with self.subTest(value=value):
+                data = copy.deepcopy(self.ledger)
+                data["prs"][0].update(replacement_pr=None, accepted_sha=None)
+                data["prs"][0]["evidence"]["acceptance_evidence_urls"] = []
+                data["prs"][0]["evidence"]["status"] = value
+                self.assertTrue(self.validate(data))
 
-    def test_unknown_disposition_is_rejected(self) -> None:
-        invalid = json.loads(json.dumps(self.document))
-        invalid["entries"][0]["disposition"] = "merge_everything"
-        self.assertIn(
-            "entries[0].disposition must be one of candidate, replacement_required, "
-            "stacked, superseded, unsafe",
-            self.validator.validate(invalid),
-        )
+    def test_missing_or_wrong_head_check_evidence_is_rejected(self):
+        for change in ("missing_checks", "wrong_head", "missing_reviews", "unknown_threads"):
+            with self.subTest(change=change):
+                data = copy.deepcopy(self.ledger)
+                evidence = data["prs"][0]["evidence"]
+                if change == "missing_checks":
+                    del evidence["checks"]
+                elif change == "wrong_head":
+                    evidence["checks"][0]["head_sha"] = "a" * 40
+                elif change == "missing_reviews":
+                    del evidence["reviews"]
+                else:
+                    evidence["unresolved_threads"] = None
+                self.assertTrue(self.validate(data))
 
-    def test_duplicate_pull_request_is_rejected(self) -> None:
-        invalid = json.loads(json.dumps(self.document))
-        invalid["entries"][1]["pull_request"] = invalid["entries"][0]["pull_request"]
-        errors = self.validator.validate(invalid)
-        self.assertTrue(any("duplicate pull_request" in error for error in errors))
+    def test_truncated_files_or_threads_are_rejected(self):
+        for change in ("files", "threads"):
+            with self.subTest(change=change):
+                data = copy.deepcopy(self.ledger)
+                evidence = data["prs"][0]["evidence"]
+                if change == "files":
+                    evidence["changed_files"].pop()
+                else:
+                    evidence["unresolved_threads"]["count"] += 1
+                self.assertTrue(self.validate(data))
 
-    def test_validator_accepts_an_explicit_path(self) -> None:
+    def test_malformed_shapes_report_errors_without_crashing(self):
+        for value in (None, [], {}, {"prs": None}, {"prs": [None]},
+                      {"prs": [{"number": []}]}):
+            with self.subTest(value=value):
+                self.assertTrue(self.validate(value))
+        for field in ("original", "evidence"):
+            data = copy.deepcopy(self.ledger)
+            data["prs"][0][field] = []
+            self.assertTrue(self.validate(data))
+
+    def test_cli_is_read_only_and_independent_of_working_directory(self):
+        before = LEDGER.read_bytes()
+        with tempfile.TemporaryDirectory() as directory:
+            result = subprocess.run([sys.executable, str(VALIDATOR)], cwd=directory,
+                                    capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("24", result.stdout)
+        self.assertEqual(LEDGER.read_bytes(), before)
+
+    def test_cli_rejects_missing_invalid_and_duplicate_key_json(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "ledger.json"
-            path.write_text(json.dumps(self.document), encoding="utf-8")
-            self.assertEqual(0, self.validator.main([str(path)]))
+            for content in (None, "{broken", '{"prs": [], "prs": []}'):
+                with self.subTest(content=content):
+                    if content is not None:
+                        path.write_text(content, encoding="utf-8")
+                    result = subprocess.run([sys.executable, str(VALIDATOR), str(path)],
+                                            capture_output=True, text=True)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertNotIn("Traceback", result.stderr)
 
 
 if __name__ == "__main__":

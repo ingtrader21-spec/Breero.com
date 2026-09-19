@@ -1,266 +1,221 @@
-#!/usr/bin/env python3
-from __future__ import annotations
+"""Validate the historical PR ledger offline; never merge, close or certify a PR."""
 
+import argparse
+from datetime import datetime
 import json
+from pathlib import Path
 import re
 import sys
-from datetime import datetime
-from pathlib import Path
-from typing import Any
 
 
-EXPECTED_PULL_REQUESTS = {
-    39, 40, 41, 47, 55, 58, 59, 60, 62, 65, 67, 69,
-    70, 71, 72, 100, 101, 102, 105, 109, 110, 115, 117, 123,
-}
-DISPOSITIONS = {
-    "candidate",
-    "replacement_required",
-    "stacked",
-    "superseded",
-    "unsafe",
-}
-FINAL_EVIDENCE_STATUSES = {"complete", "merged", "superseded_verified"}
-EVIDENCE_STATUSES = FINAL_EVIDENCE_STATUSES | {
-    "blocked_on_parent",
-    "pending_alert_comparison",
-    "preflight_only",
-    "requires_behavioral_revalidation",
-    "requires_compose_revalidation",
-    "requires_current_auth_negative_tests",
-    "requires_domain_decomposition",
-    "requires_exact_head_revalidation",
-    "requires_file_level_decomposition",
-    "requires_parent_contracts",
-    "requires_read_only_revalidation",
-    "requires_route_inventory_refresh",
-    "requires_runtime_alignment",
-    "requires_security_revalidation",
-    "requires_ui_authority_selection",
-    "stale_base_requires_replay",
-}
-UTC_TIMESTAMP = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")
-REQUIRED_ENTRY_FIELDS = {
-    "pull_request",
-    "title",
-    "branch",
-    "original_head",
-    "original_base",
-    "owning_domain",
-    "dependencies",
-    "affected_contracts",
-    "disposition",
-    "evidence_status",
-    "final_evidence",
-    "replacement_pr",
-    "replacement_sha",
-    "rationale",
-}
+ORIGINAL_PRS = frozenset({39, 40, 41, 47, 55, 58, 59, 60, 62, 65, 67, 69,
+                          70, 71, 72, 100, 101, 102, 105, 109, 110, 115, 117, 123})
+DISPOSITIONS = {"candidate", "replacement_required", "stacked", "superseded", "unsafe"}
+REPOSITORY = "ingtrader21-spec/Breero.com"
+DEFAULT_LEDGER = Path(__file__).resolve().parents[2] / "artifacts/pr-consolidation/ledger.v1.json"
 
 
-def _is_sha(value: Any) -> bool:
-    return (
-        isinstance(value, str)
-        and len(value) == 40
-        and all(character in "0123456789abcdef" for character in value)
+def nonempty(value):
+    return isinstance(value, str) and bool(value.strip())
+
+
+def sha(value):
+    return isinstance(value, str) and bool(re.fullmatch(r"[0-9a-f]{40}", value)) and value != "0" * 40
+
+
+def timestamp(value):
+    if not isinstance(value, str):
+        return False
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00")).utcoffset() is not None
+    except ValueError:
+        return False
+
+
+def github_url(value):
+    return isinstance(value, str) and value.startswith("https://github.com/") and not any(
+        char.isspace() for char in value
     )
 
 
-def _is_utc_timestamp(value: Any) -> bool:
-    if not isinstance(value, str) or UTC_TIMESTAMP.fullmatch(value) is None:
-        return False
-    try:
-        datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
-    except ValueError:
-        return False
-    return True
+def validate(data):
+    """Return human-readable structural errors; historical failures remain evidence.
 
+    A successful validation proves record completeness, not semantic acceptance,
+    live GitHub state, test success, branch protection compliance or deployability.
+    """
+    errors = []
 
-def _dependency_cycle(entries: list[Any]) -> list[int] | None:
-    graph = {
-        entry["pull_request"]: entry.get("dependencies", [])
-        for entry in entries
-        if isinstance(entry, dict)
-        and isinstance(entry.get("pull_request"), int)
-        and isinstance(entry.get("dependencies"), list)
-    }
-    visiting: list[int] = []
-    visited: set[int] = set()
+    def require(condition, message):
+        if not condition:
+            errors.append(message)
 
-    def visit(number: int) -> list[int] | None:
-        if number in visiting:
-            start = visiting.index(number)
-            return visiting[start:] + [number]
-        if number in visited:
-            return None
-        visiting.append(number)
-        for dependency in graph.get(number, []):
-            if isinstance(dependency, int) and not isinstance(dependency, bool):
-                cycle = visit(dependency)
-                if cycle is not None:
-                    return cycle
-        visiting.pop()
-        visited.add(number)
-        return None
-
-    for number in graph:
-        cycle = visit(number)
-        if cycle is not None:
-            return cycle
-    return None
-
-
-def validate(document: Any) -> list[str]:
-    errors: list[str] = []
-    if not isinstance(document, dict):
-        return ["ledger root must be an object"]
-    if document.get("schema_version") != 1:
-        errors.append("schema_version must equal 1")
-    if document.get("repository") != "ingtrader21-spec/Breero.com":
-        errors.append("repository must equal ingtrader21-spec/Breero.com")
-    if not _is_sha(document.get("baseline_main_sha")):
-        errors.append("baseline_main_sha must be a lowercase 40-character SHA")
-    if not _is_utc_timestamp(document.get("generated_at")):
-        errors.append("generated_at must be an RFC 3339 UTC timestamp")
-    if document.get("production_deployed") is not False:
-        errors.append("production_deployed must be false")
-
-    entries = document.get("entries")
-    if not isinstance(entries, list):
-        return errors + ["entries must be an array"]
-
-    seen: set[int] = set()
-    for index, entry in enumerate(entries):
-        prefix = f"entries[{index}]"
-        if not isinstance(entry, dict):
-            errors.append(f"{prefix} must be an object")
+    if not isinstance(data, dict):
+        return ["ledger must be an object"]
+    require(data.get("schema_version") == 1, "schema_version must be 1")
+    require(data.get("repository") == REPOSITORY, "repository must identify canonical BREERO")
+    require(sha(data.get("baseline_sha")), "baseline_sha must be a full commit SHA")
+    require(timestamp(data.get("captured_at")), "captured_at must be a timezone-aware timestamp")
+    require(data.get("capability_changed") is False, "consolidation must keep capabilities unchanged")
+    rows = data.get("prs")
+    if not isinstance(rows, list):
+        return errors + ["prs must be a list containing all 24 original PRs"]
+    numbers = [row.get("number") for row in rows if isinstance(row, dict)]
+    valid_numbers = [number for number in numbers if type(number) is int]
+    require(len(rows) == 24 and len(valid_numbers) == 24 and set(valid_numbers) == ORIGINAL_PRS,
+            "prs must contain each original PR exactly once, with no additional PRs")
+    graph = {}
+    for index, row in enumerate(rows):
+        label = f"prs[{index}]"
+        if not isinstance(row, dict):
+            errors.append(f"{label} must be an object")
             continue
-        for field in sorted(REQUIRED_ENTRY_FIELDS):
-            if field not in entry:
-                errors.append(f"{prefix}.{field} must be present")
-
-        number = entry.get("pull_request")
-        if not isinstance(number, int):
-            errors.append(f"{prefix}.pull_request must be an integer")
-        elif number in seen:
-            errors.append(f"{prefix}.pull_request duplicate pull_request {number}")
-        else:
-            seen.add(number)
-
-        disposition = entry.get("disposition")
-        if disposition not in DISPOSITIONS:
-            errors.append(
-                f"{prefix}.disposition must be one of "
-                "candidate, replacement_required, stacked, superseded, unsafe"
-            )
-        for field in ("original_head", "original_base"):
-            if field in entry and not _is_sha(entry[field]):
-                errors.append(f"{prefix}.{field} must be a lowercase 40-character SHA")
-        dependencies = entry.get("dependencies")
-        if not isinstance(dependencies, list):
-            errors.append(f"{prefix}.dependencies must contain only integer pull requests")
-        else:
-            for dependency in dependencies:
-                if not isinstance(dependency, int) or isinstance(dependency, bool):
-                    errors.append(
-                        f"{prefix}.dependencies must contain only integer pull requests"
-                    )
-                    continue
-                if dependency not in EXPECTED_PULL_REQUESTS:
-                    errors.append(
-                        f"{prefix}.dependencies contains unknown pull request {dependency}"
-                    )
-                if dependency == number:
-                    errors.append(f"{prefix}.dependencies cannot reference itself")
-
-        affected_contracts = entry.get("affected_contracts")
-        if not isinstance(affected_contracts, list) or not all(
-            isinstance(item, str) and bool(item.strip())
-            for item in affected_contracts
-        ):
-            errors.append(
-                f"{prefix}.affected_contracts must contain only non-empty strings"
-            )
-        for field in ("title", "branch", "owning_domain", "evidence_status", "rationale"):
-            if field in entry and (not isinstance(entry[field], str) or not entry[field].strip()):
-                errors.append(f"{prefix}.{field} must be a non-empty string")
-        evidence_status = entry.get("evidence_status")
-        if isinstance(evidence_status, str) and evidence_status not in EVIDENCE_STATUSES:
-            errors.append(f"{prefix}.evidence_status must be one of the approved states")
-        if entry.get("replacement_pr") is not None and not isinstance(
-            entry.get("replacement_pr"), int
-        ):
-            errors.append(f"{prefix}.replacement_pr must be null or an integer")
-        if entry.get("replacement_sha") is not None and not _is_sha(
-            entry.get("replacement_sha")
-        ):
-            errors.append(
-                f"{prefix}.replacement_sha must be null or a lowercase 40-character SHA"
-            )
-
-        final_evidence = entry.get("final_evidence")
-        if entry.get("evidence_status") in FINAL_EVIDENCE_STATUSES:
-            if not isinstance(final_evidence, dict):
-                errors.append(f"{prefix}.final_evidence must be present for final status")
-            else:
-                if not _is_sha(final_evidence.get("checked_head_sha")):
-                    errors.append(
-                        f"{prefix}.final_evidence.checked_head_sha must be a lowercase 40-character SHA"
-                    )
-                tests = final_evidence.get("tests")
-                if not isinstance(tests, list) or not tests or not all(
-                    isinstance(test, str) and bool(test.strip()) for test in tests
-                ):
-                    errors.append(
-                        f"{prefix}.final_evidence.tests must contain non-empty test results"
-                    )
-                if final_evidence.get("review_state") != "approved":
-                    errors.append(
-                        f"{prefix}.final_evidence.review_state must equal approved"
-                    )
-                if not _is_sha(final_evidence.get("accepted_merge_sha")):
-                    errors.append(
-                        f"{prefix}.final_evidence.accepted_merge_sha must be a lowercase 40-character SHA"
-                    )
-                if not _is_utc_timestamp(final_evidence.get("checked_at")):
-                    errors.append(
-                        f"{prefix}.final_evidence.checked_at must be an RFC 3339 UTC timestamp"
-                    )
-        elif final_evidence is not None:
-            errors.append(f"{prefix}.final_evidence must be null until final status")
-
-    missing = sorted(EXPECTED_PULL_REQUESTS - seen)
-    unexpected = sorted(seen - EXPECTED_PULL_REQUESTS)
-    if missing:
-        errors.append(f"entries missing pull requests: {missing}")
-    if unexpected:
-        errors.append(f"entries contain unexpected pull requests: {unexpected}")
-    if len(entries) != len(EXPECTED_PULL_REQUESTS):
-        errors.append(f"entries must contain exactly {len(EXPECTED_PULL_REQUESTS)} records")
-    cycle = _dependency_cycle(entries)
-    if cycle is not None:
-        errors.append(
-            "dependency cycle detected: " + " -> ".join(str(number) for number in cycle)
+        number = row.get("number")
+        if type(number) is int:
+            label = f"PR #{number}"
+        required = {"number", "title", "url", "original", "owning_domain", "dependencies",
+                    "dependency_basis", "affected_contracts", "disposition", "disposition_reason",
+                    "replacement_pr", "accepted_sha", "evidence"}
+        require(required <= row.keys(), f"{label}: missing fields {sorted(required - row.keys())}")
+        for field in ("title", "owning_domain", "disposition_reason", "dependency_basis"):
+            require(nonempty(row.get(field)), f"{label}: {field} must be nonempty")
+        require(row.get("url") == f"https://github.com/{REPOSITORY}/pull/{number}",
+                f"{label}: url must point to its canonical PR")
+        disposition = row.get("disposition")
+        require(isinstance(disposition, str) and disposition in DISPOSITIONS,
+                f"{label}: disposition must be exactly one known value")
+        contracts = row.get("affected_contracts")
+        require(isinstance(contracts, list) and bool(contracts) and all(map(nonempty, contracts)),
+                f"{label}: affected_contracts must be a nonempty list of names or paths")
+        dependencies = row.get("dependencies")
+        valid_dependencies = isinstance(dependencies, list) and all(
+            type(dep) is int and dep in ORIGINAL_PRS and dep != number for dep in dependencies
         )
+        require(valid_dependencies, f"{label}: invalid dependencies")
+        if valid_dependencies:
+            require(len(dependencies) == len(set(dependencies)), f"{label}: duplicate dependencies")
+            if type(number) is int:
+                graph[number] = dependencies
+        original = row.get("original")
+        if not isinstance(original, dict):
+            errors.append(f"{label}: original must be an object")
+            original = {}
+        for field in ("head_sha", "base_sha", "merge_base_sha"):
+            require(sha(original.get(field)), f"{label}: original.{field} must be a full commit SHA")
+        require(nonempty(original.get("base_ref")), f"{label}: original.base_ref is required")
+        replacement = row.get("replacement_pr")
+        require(replacement is None or (type(replacement) is int and replacement > 0),
+                f"{label}: replacement_pr must be null or a positive PR number")
+        accepted = row.get("accepted_sha")
+        require(accepted is None or sha(accepted), f"{label}: accepted_sha must be null or a full SHA")
+        evidence = row.get("evidence")
+        if not isinstance(evidence, dict):
+            errors.append(f"{label}: evidence must be an object")
+            continue
+        status = evidence.get("status")
+        require(isinstance(status, str) and status in {"captured_not_accepted", "blocked", "accepted"},
+                f"{label}: unknown evidence status")
+        if status == "accepted":
+            require(type(replacement) is int and replacement > 0 and sha(accepted),
+                    f"{label}: accepted evidence requires replacement/merge PR and accepted SHA")
+            require(bool(evidence.get("acceptance_evidence_urls")) and
+                    isinstance(evidence.get("acceptance_evidence_urls"), list) and
+                    all(map(github_url, evidence["acceptance_evidence_urls"])),
+                    f"{label}: accepted evidence requires linked acceptance records")
+        else:
+            require(accepted is None, f"{label}: unaccepted evidence cannot claim an accepted SHA")
+        require(evidence.get("main_sha") == data.get("baseline_sha"),
+                f"{label}: evidence must name the ledger baseline")
+        require(timestamp(evidence.get("captured_at")), f"{label}: evidence capture time is required")
+        require(evidence.get("retrieval_complete") is True,
+                f"{label}: evidence retrieval must be explicitly complete")
+        require(evidence.get("retrieval_errors") == [], f"{label}: evidence retrieval errors must be resolved")
+        files = evidence.get("changed_files")
+        count = evidence.get("changed_file_count")
+        require(type(count) is int and count > 0, f"{label}: changed_file_count must be positive")
+        require(isinstance(files, list) and len(files) == count,
+                f"{label}: changed files must match the API count")
+        paths = []
+        if isinstance(files, list):
+            for item in files:
+                if not isinstance(item, dict):
+                    errors.append(f"{label}: changed file must be an object")
+                    continue
+                path = item.get("path")
+                require(nonempty(path) and not path.startswith("/") and ".." not in path.split("/"),
+                        f"{label}: changed file needs a repository-relative path")
+                if nonempty(path):
+                    paths.append(path)
+                require(nonempty(item.get("status")) and github_url(item.get("url")),
+                        f"{label}: changed file needs status and source URL")
+            require(len(paths) == len(set(paths)), f"{label}: duplicate changed files")
+        checks = evidence.get("checks")
+        require(isinstance(checks, list), f"{label}: checks must be a captured list (possibly empty)")
+        if isinstance(checks, list):
+            for check in checks:
+                if not isinstance(check, dict):
+                    errors.append(f"{label}: check must be an object")
+                    continue
+                require(check.get("head_sha") == original.get("head_sha"),
+                        f"{label}: check belongs to a different head")
+                require(nonempty(check.get("name")) and nonempty(check.get("status")) and
+                        "conclusion" in check and github_url(check.get("url")),
+                        f"{label}: check needs name, status, conclusion and URL")
+        reviews = evidence.get("reviews")
+        require(isinstance(reviews, list), f"{label}: reviews must be a captured list (possibly empty)")
+        if isinstance(reviews, list):
+            for review in reviews:
+                require(isinstance(review, dict) and nonempty(review.get("state")) and
+                        sha(review.get("commit_sha")) and nonempty(review.get("reviewer")) and
+                        github_url(review.get("url")), f"{label}: incomplete review record")
+        threads = evidence.get("unresolved_threads")
+        if not isinstance(threads, dict):
+            errors.append(f"{label}: unresolved_threads must be a captured count and URLs")
+        else:
+            urls = threads.get("urls")
+            require(type(threads.get("count")) is int and threads["count"] >= 0 and
+                    isinstance(urls, list) and threads["count"] == len(urls) and
+                    all(map(github_url, urls)), f"{label}: unresolved thread evidence is incomplete")
+
+    def cycle(number, visiting, visited):
+        if number in visiting:
+            return True
+        if number in visited:
+            return False
+        visiting.add(number)
+        found = any(cycle(dep, visiting, visited) for dep in graph.get(number, []))
+        visiting.remove(number)
+        visited.add(number)
+        return found
+
+    visited = set()
+    require(not any(cycle(number, set(), visited) for number in graph), "dependency graph contains a cycle")
     return errors
 
 
-def main(argv: list[str] | None = None) -> int:
-    arguments = list(sys.argv[1:] if argv is None else argv)
-    path = Path(arguments[0]) if arguments else Path(
-        "artifacts/pr-consolidation/ledger.v1.json"
-    )
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("ledger", nargs="?", type=Path, default=DEFAULT_LEDGER)
+    args = parser.parse_args()
     try:
-        document = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        print(f"ledger read failed: {exc}", file=sys.stderr)
-        return 2
-    errors = validate(document)
-    if errors:
-        for error in errors:
-            print(error, file=sys.stderr)
+        data = json.loads(args.ledger.read_text(encoding="utf-8"), object_pairs_hook=unique_object)
+    except (OSError, ValueError) as error:
+        print(f"Invalid ledger: {error}", file=sys.stderr)
         return 1
-    print(f"validated {len(document['entries'])} pull-request records from {path}")
+    errors = validate(data)
+    if errors:
+        print("Invalid ledger:\n- " + "\n- ".join(errors), file=sys.stderr)
+        return 1
+    print("Valid ledger: 24 historical PR records; structure only, not acceptance or deployment approval.")
     return 0
 
 

@@ -50,8 +50,8 @@ MONEYBEE_RELEASE_VALIDATOR_SECURITY_SHA256 = (
     "8d8f21260babfae5eaedbdd46472b1ec"
 )
 BREERO_RELEASE_VALIDATOR_SECURITY_SHA256 = (
-    "7f47099ffdd9cd56f8eeac1ece1f8782"
-    "f1f69f551a89dd311ec9db57eb96a8b1"
+    "5c59405cd687c7febcf823b61d2f29a5"
+    "f6b8af6bd9080e0fa6d72eb275a06d1c"
 )
 EXPECTED_RELEASE_VALIDATOR_SECURITY_SHA256 = {
     "appolon1908-hue/Infustruction-repo": STANDARD_RELEASE_VALIDATOR_SECURITY_SHA256,
@@ -721,7 +721,7 @@ APPROVED_CONTROL_PLANE_WORKFLOW_SHA256: dict[str, dict[str, str]] = {
         ),
     },
     "ingtrader21-spec/Breero.com": {
-        ".github/workflows/quality.yml": "721477dd87c2f9321103eae31a43b7c4a720463a91e9b302a831a54dde99f047",
+        ".github/workflows/quality.yml": "2be72e0820aea5373c0f273b260dd9be5599698802864ae50fb28077abe53c6a",
     },
     "appolon1908-hue/Moneybee-Backend": {
         ".github/workflows/ci.yml": (
