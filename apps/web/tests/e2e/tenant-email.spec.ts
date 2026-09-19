@@ -10,7 +10,7 @@ test("login to tenant email provisioning, compose and durable outbox", async ({ 
 
   await expect(page).toHaveURL(/\/admin$/);
   await expect(page.getByRole("heading", { name: "Administration dashboard" })).toBeVisible();
-  await page.getByTestId("email-workspace-link").click();
+  await page.getByRole("link", { name: "Open module", exact: true }).and(page.locator('a[href="/admin/email"]')).click();
 
   await expect(page).toHaveURL(/\/admin\/email$/);
   await expect(page.getByTestId("tenant-email-workspace")).toBeVisible();
