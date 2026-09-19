@@ -29,6 +29,7 @@ RELEASE_VALIDATOR_NON_SELF_REFERENTIAL_BINDINGS = frozenset(
         "KEYCLOAK_PRODUCTION_VALIDATOR_SHA256",
         "MIDDLEWARE_PRODUCTION_VALIDATOR_SHA256",
         "BACKEND_PRODUCTION_VALIDATOR_SHA256",
+        "BREERO_PRODUCTION_VALIDATOR_SHA256",
         "EXPECTED_REQUIRED_CHECK_SOURCE_CLOSURE_SHA256",
     }
 )
@@ -48,6 +49,10 @@ MONEYBEE_RELEASE_VALIDATOR_SECURITY_SHA256 = (
     "15dbaa6d571a1d1e72c09ca417cc9419"
     "8d8f21260babfae5eaedbdd46472b1ec"
 )
+BREERO_RELEASE_VALIDATOR_SECURITY_SHA256 = (
+    "f114e9e0118e9bd2535c5b4741e4bf6e"
+    "97a978d21b6975995ccb85d9bf30e549"
+)
 EXPECTED_RELEASE_VALIDATOR_SECURITY_SHA256 = {
     "appolon1908-hue/Infustruction-repo": STANDARD_RELEASE_VALIDATOR_SECURITY_SHA256,
     "appolon1908-hue/Keycloak": STANDARD_RELEASE_VALIDATOR_SECURITY_SHA256,
@@ -57,7 +62,7 @@ EXPECTED_RELEASE_VALIDATOR_SECURITY_SHA256 = {
     "appolon1908-hue/backend2": STANDARD_RELEASE_VALIDATOR_SECURITY_SHA256,
     "appolon1908-hue/beyvra-frontend": STANDARD_RELEASE_VALIDATOR_SECURITY_SHA256,
     "appolon1908-hue/scrapper": STANDARD_RELEASE_VALIDATOR_SECURITY_SHA256,
-    "appolon1908-hue/Breero.com": STANDARD_RELEASE_VALIDATOR_SECURITY_SHA256,
+    "ingtrader21-spec/Breero.com": BREERO_RELEASE_VALIDATOR_SECURITY_SHA256,
     "appolon1908-hue/Moneybee-Backend": MONEYBEE_RELEASE_VALIDATOR_SECURITY_SHA256,
     "appolon1908-hue/Telnexa-web": STANDARD_RELEASE_VALIDATOR_SECURITY_SHA256,
 }
@@ -365,7 +370,7 @@ EXPECTED_IDENTITIES: dict[str, tuple[int, str, bool, bool]] = {
     "appolon1908-hue/backend2": (1319903950, "application", True, False),
     "appolon1908-hue/beyvra-frontend": (1320246591, "application", True, False),
     "appolon1908-hue/scrapper": (1329513537, "migration-evidence", False, False),
-    "appolon1908-hue/Breero.com": (1331354808, "application", True, False),
+    "ingtrader21-spec/Breero.com": (1331354808, "application", True, False),
     "appolon1908-hue/Moneybee-Backend": (1343760409, "application", True, False),
     "appolon1908-hue/Telnexa-web": (1346958528, "application", True, False),
     "appolon1908-hue/codestra-production-platform": (1314230781, "controller", False, False),
@@ -419,7 +424,7 @@ EXPECTED_ARTIFACT_POLICIES: dict[
         "oci",
     ),
     "appolon1908-hue/scrapper": ((), False, False, False, None, None),
-    "appolon1908-hue/Breero.com": (
+    "ingtrader21-spec/Breero.com": (
         (
             "ghcr.io/appolon1908-hue/breero-api",
             "ghcr.io/appolon1908-hue/breero-frontend",
@@ -605,7 +610,7 @@ APPROVED_COMPLEX_SCRIPT_SHA256: dict[str, dict[str, str]] = {
             "b93ba8b7b883c5ed1462578f76a44849"
         ),
     },
-    "appolon1908-hue/Breero.com": {
+    "ingtrader21-spec/Breero.com": {
         "apps/api/scripts/check_schema_drift.py": "746760dea22319cd64c486a08b82ebbccee1dc256566fa6b24cee7f02ff68b47",
         "apps/api/scripts/generate_openapi.py": "7e1ad9606a113b556752222b2782da01b66651b2f8107d3108014b9d45f29a66",
         "scripts/ci/test-classify-quality-scope.sh": "0365cd71d85e00facf1a64c2f11734e413430af75e4cf39e0e52971d13d5c473",
@@ -715,7 +720,7 @@ APPROVED_CONTROL_PLANE_WORKFLOW_SHA256: dict[str, dict[str, str]] = {
             "f53fbc99b2e8a467ba11e7a2b58b167b"
         ),
     },
-    "appolon1908-hue/Breero.com": {
+    "ingtrader21-spec/Breero.com": {
         ".github/workflows/quality.yml": "9e8367e853316594a325fbcb0f22f1e701c35c205b15e66a5228ae8b4ce10ce4",
     },
     "appolon1908-hue/Moneybee-Backend": {
@@ -754,7 +759,7 @@ APPROVED_JOB_EXECUTABLE_CONFIGURATION_SHA256: dict[str, dict[str, str]] = {
         ".github/workflows/ci.yml": "31d81c5be094a1510bc821ef4359bba591630d2273662f5de0683205d908c60d",
         ".github/workflows/release-readiness.yml": "22fb9e9447770c5b463b028d9ef6195df53fbc99b2e8a467ba11e7a2b58b167b",
     },
-    "appolon1908-hue/Breero.com": {
+    "ingtrader21-spec/Breero.com": {
         ".github/workflows/backend-production.yml": (
             "45b2918627995cb3491f55b3a3b537e"
             "4a34598d7b32877879b9e2c912c266591"
@@ -6801,6 +6806,41 @@ def validate(contract: dict[str, Any]) -> None:
 
 
 def validate_negative_regressions(contract: dict[str, Any]) -> None:
+    if contract.get("repository_id") == 1331354808:
+        canonical = "ingtrader21-spec/Breero.com"
+        canonical_contract = deepcopy(contract)
+        canonical_contract["repository"] = canonical
+        previous = {key: os.environ.get(key) for key in ("GITHUB_REPOSITORY", "GITHUB_REPOSITORY_ID")}
+        try:
+            os.environ["GITHUB_REPOSITORY"] = canonical
+            os.environ["GITHUB_REPOSITORY_ID"] = "1331354808"
+            validate(canonical_contract)
+            identity_cases = (
+                ("former owner", "appolon1908-hue/Breero.com", "appolon1908-hue/Breero.com", 1331354808, "1331354808", "outside the protected catalog"),
+                ("unregistered owner", "untrusted/Breero.com", "untrusted/Breero.com", 1331354808, "1331354808", "outside the protected catalog"),
+                ("mismatched contract", canonical, "untrusted/Breero.com", 1331354808, "1331354808", "repository identity mismatch"),
+                ("wrong contract ID", canonical, canonical, 1, "1331354808", "stable repository ID mismatch"),
+                ("wrong event ID", canonical, canonical, 1331354808, "1", "stable repository ID mismatch"),
+            )
+            for name, event_repository, contract_repository, contract_id, event_id, expected_error in identity_cases:
+                candidate = deepcopy(canonical_contract)
+                candidate["repository"] = contract_repository
+                candidate["repository_id"] = contract_id
+                os.environ["GITHUB_REPOSITORY"] = event_repository
+                os.environ["GITHUB_REPOSITORY_ID"] = event_id
+                try:
+                    validate(candidate)
+                except ContractError as error:
+                    require(expected_error in str(error), f"identity regression failed for the wrong reason: {name}")
+                else:
+                    raise ContractError(f"identity regression unexpectedly passed: {name}")
+        finally:
+            for key, value in previous.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+
     require_immutable_action_references(
         "jobs:\n  test:\n    uses: owner/repository/.github/workflows/check.yml@"
         "0123456789012345678901234567890123456789\n",
@@ -7427,6 +7467,23 @@ jobs:
 def validate_intent_negative_regressions(contract: dict[str, Any]) -> None:
     intent = INTENT_PATH.read_text(encoding="utf-8")
     release_validator = RELEASE_VALIDATOR_PATH.read_text(encoding="utf-8")
+    if contract.get("repository_id") == 1331354808:
+        binding_pattern = r'BREERO_PRODUCTION_VALIDATOR_SHA256 = \(\n(?:    "[0-9a-f]{32}"\n){2}\)'
+        match = re.search(binding_pattern, release_validator)
+        require(match is not None, "Breero trust-binding regression fixture is missing")
+        assert match is not None
+        malformed_bindings = {
+            "missing": release_validator[:match.start()] + release_validator[match.end():],
+            "duplicate": release_validator + "\n" + match.group(0) + "\n",
+            "nonliteral": re.sub(binding_pattern, "BREERO_PRODUCTION_VALIDATOR_SHA256 = compute_untrusted_hash()", release_validator, count=1),
+        }
+        for name, malformed_source in malformed_bindings.items():
+            try:
+                validate_release_validator_trust_root(malformed_source, contract.get("repository"))
+            except ContractError:
+                pass
+            else:
+                raise ContractError(f"Breero trust-binding regression unexpectedly passed: {name}")
     executable_binding = re.sub(
         r'SHARED_PRODUCTION_VALIDATOR_SHA256 = \(\n(?:    "[0-9a-f]{32}"\n){2}\)',
         "SHARED_PRODUCTION_VALIDATOR_SHA256 = compute_untrusted_hash()",
