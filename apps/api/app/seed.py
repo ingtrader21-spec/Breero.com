@@ -27,6 +27,14 @@ LAUNCH_SERVICES = (
     ("carpentry", "Carpentry", "Carpentry and woodwork requests."),
     ("moving-help", "Moving help", "Loading, unloading, and moving-help requests."),
     ("home-maintenance", "Home maintenance", "Recurring and seasonal maintenance requests."),
+    ("flooring", "Flooring", "Floor installation, repair, and replacement requests."),
+    ("roofing", "Roofing", "Roof inspection, repair, and maintenance requests."),
+    ("gutters", "Gutter cleaning & repair", "Gutter cleaning, repair, and maintenance requests."),
+    ("windows-doors", "Windows & doors", "Window and door installation and repair requests."),
+    ("garage-door", "Garage door service", "Garage door installation and repair requests."),
+    ("pest-control", "Pest control", "Residential pest inspection and treatment requests."),
+    ("lawn-landscaping", "Lawn & landscaping", "Lawn care and landscaping requests."),
+    ("pressure-washing", "Pressure washing", "Exterior surface cleaning requests."),
 )
 
 KNOWN_CERTIFICATION_PREFIXES = ("e2e-service-", "test-", "fixture-", "certification-")
