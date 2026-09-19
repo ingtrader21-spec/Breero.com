@@ -17,6 +17,7 @@ x-app: &app
     - breero_redis_url
     - breero_jwt_access_secret
     - breero_jwt_refresh_secret
+    - breero_geoapify_api_key
   networks:
     - breero_private
   pids_limit: 256
@@ -73,7 +74,7 @@ services:
 
   scheduler:
     <<: *app
-    command: ["celery", "-A", "app.workers.celery_app:celery_app", "beat", "--loglevel=info", "--schedule=/tmp/celerybeat-schedule"]
+    command: ["sh", "-ec", "python -m app.workers.preflight && exec celery -A app.workers.celery_app:celery_app beat --loglevel=info --schedule=/tmp/celerybeat-schedule"]
     mem_limit: 512m
     cpus: 0.5
     depends_on:
