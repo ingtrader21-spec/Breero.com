@@ -14,6 +14,7 @@ from app.domains.common.outbox_service import OutboxService
 router = APIRouter()
 
 FAILURE_STATUSES = (
+    EventStatus.PENDING_CONFIGURATION,
     EventStatus.FAILED_TERMINAL,
     EventStatus.FAILED,
     EventStatus.DEAD_LETTER,

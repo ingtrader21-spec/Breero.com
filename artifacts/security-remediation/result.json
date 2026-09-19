@@ -1,0 +1,2332 @@
+{
+  "schema_version": "breero.security-remediation.v1",
+  "recorded_at": "2026-09-19T15:56:05.638375+00:00",
+  "repository": "ingtrader21-spec/Breero.com",
+  "repository_id": 1331354808,
+  "security_base_sha": "2292fd7533faa5752a3df7a8243e217447694367",
+  "implementation_source_sha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+  "evidence_scope": "Historical immutable implementation snapshot. A later evidence-only commit must receive fresh CI/review; these records are not post-merge certification.",
+  "security_pr": "https://github.com/ingtrader21-spec/Breero.com/pull/134",
+  "security_merge_sha": null,
+  "security_gate": "FAIL",
+  "merge_gate": "BLOCKED",
+  "verdict": "BLOCKED",
+  "tasks": {
+    "1": "IMPLEMENTED_NOT_MERGED",
+    "2": "IMPLEMENTED_NOT_MERGED",
+    "3": "BLOCKED_VALIDATION",
+    "4": "BLOCKED",
+    "5": "NOT_STARTED",
+    "6": "NOT_STARTED",
+    "7": "NOT_STARTED",
+    "8": "NOT_STARTED"
+  },
+  "dependabot": {
+    "critical_before": 8,
+    "observed_open_counts": {
+      "critical": 8,
+      "high": 0,
+      "medium": 11,
+      "low": 0
+    },
+    "target_alerts": [
+      {
+        "number": 8,
+        "state": "open",
+        "manifest": "packages/ui/package.json",
+        "advisory": "GHSA-5xrq-8626-4rwp"
+      },
+      {
+        "number": 7,
+        "state": "open",
+        "manifest": "packages/types/package.json",
+        "advisory": "GHSA-5xrq-8626-4rwp"
+      },
+      {
+        "number": 6,
+        "state": "open",
+        "manifest": "packages/portal/package.json",
+        "advisory": "GHSA-5xrq-8626-4rwp"
+      },
+      {
+        "number": 5,
+        "state": "open",
+        "manifest": "packages/api-client/package.json",
+        "advisory": "GHSA-5xrq-8626-4rwp"
+      },
+      {
+        "number": 4,
+        "state": "open",
+        "manifest": "apps/web/package.json",
+        "advisory": "GHSA-5xrq-8626-4rwp"
+      },
+      {
+        "number": 3,
+        "state": "open",
+        "manifest": "apps/partner/package.json",
+        "advisory": "GHSA-5xrq-8626-4rwp"
+      },
+      {
+        "number": 2,
+        "state": "open",
+        "manifest": "apps/ops/package.json",
+        "advisory": "GHSA-5xrq-8626-4rwp"
+      },
+      {
+        "number": 1,
+        "state": "open",
+        "manifest": "apps/admin/package.json",
+        "advisory": "GHSA-5xrq-8626-4rwp"
+      }
+    ],
+    "after_merge_counts": null,
+    "dismissed_by_this_work": 0
+  },
+  "dependency_remediation": {
+    "vitest_direct_before": "^2.1.8",
+    "vitest_direct_after": "3.2.6",
+    "resolved_before": "3.2.6",
+    "resolved_after": "3.2.6",
+    "vite_before_and_after": "6.4.3",
+    "authoritative_lockfile": "pnpm-lock.yaml",
+    "existing_lock_packages_changed": 0,
+    "coverage_packages_added": 42,
+    "coverage_provider": "@vitest/coverage-v8@3.2.6",
+    "workspace_trees": {
+      "workspace_paths": [
+        {
+          "manifest": "apps/admin/package.json",
+          "declared": "3.2.6",
+          "dependency_tree": [
+            {
+              "name": "@breero/admin",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\apps\\admin",
+              "private": true,
+              "devDependencies": {
+                "vitest": {
+                  "from": "vitest",
+                  "version": "3.2.6",
+                  "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+                  "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+                }
+              }
+            }
+          ],
+          "command": "pnpm why vitest --depth Infinity --json",
+          "exit_code": 0
+        },
+        {
+          "manifest": "apps/ops/package.json",
+          "declared": "3.2.6",
+          "dependency_tree": [
+            {
+              "name": "@breero/ops",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\apps\\ops",
+              "private": true,
+              "devDependencies": {
+                "vitest": {
+                  "from": "vitest",
+                  "version": "3.2.6",
+                  "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+                  "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+                }
+              }
+            }
+          ],
+          "command": "pnpm why vitest --depth Infinity --json",
+          "exit_code": 0
+        },
+        {
+          "manifest": "apps/partner/package.json",
+          "declared": "3.2.6",
+          "dependency_tree": [
+            {
+              "name": "@breero/partner",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\apps\\partner",
+              "private": true,
+              "devDependencies": {
+                "vitest": {
+                  "from": "vitest",
+                  "version": "3.2.6",
+                  "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+                  "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+                }
+              }
+            }
+          ],
+          "command": "pnpm why vitest --depth Infinity --json",
+          "exit_code": 0
+        },
+        {
+          "manifest": "apps/web/package.json",
+          "declared": "3.2.6",
+          "dependency_tree": [
+            {
+              "name": "@breero/web",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\apps\\web",
+              "private": true,
+              "devDependencies": {
+                "vitest": {
+                  "from": "vitest",
+                  "version": "3.2.6",
+                  "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+                  "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+                }
+              }
+            }
+          ],
+          "command": "pnpm why vitest --depth Infinity --json",
+          "exit_code": 0
+        },
+        {
+          "manifest": "packages/api-client/package.json",
+          "declared": "3.2.6",
+          "dependency_tree": [
+            {
+              "name": "@breero/api-client",
+              "version": "0.1.0",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\packages\\api-client",
+              "private": true,
+              "devDependencies": {
+                "vitest": {
+                  "from": "vitest",
+                  "version": "3.2.6",
+                  "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+                  "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+                }
+              }
+            }
+          ],
+          "command": "pnpm why vitest --depth Infinity --json",
+          "exit_code": 0
+        },
+        {
+          "manifest": "packages/portal/package.json",
+          "declared": "3.2.6",
+          "dependency_tree": [
+            {
+              "name": "@breero/portal",
+              "version": "0.1.0",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\packages\\portal",
+              "private": true,
+              "devDependencies": {
+                "vitest": {
+                  "from": "vitest",
+                  "version": "3.2.6",
+                  "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+                  "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+                }
+              }
+            }
+          ],
+          "command": "pnpm why vitest --depth Infinity --json",
+          "exit_code": 0
+        },
+        {
+          "manifest": "packages/types/package.json",
+          "declared": "3.2.6",
+          "dependency_tree": [
+            {
+              "name": "@breero/types",
+              "version": "0.1.0",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\packages\\types",
+              "private": true,
+              "devDependencies": {
+                "vitest": {
+                  "from": "vitest",
+                  "version": "3.2.6",
+                  "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+                  "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+                }
+              }
+            }
+          ],
+          "command": "pnpm why vitest --depth Infinity --json",
+          "exit_code": 0
+        },
+        {
+          "manifest": "packages/ui/package.json",
+          "declared": "3.2.6",
+          "dependency_tree": [
+            {
+              "name": "@breero/ui",
+              "version": "0.1.0",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\packages\\ui",
+              "private": true,
+              "devDependencies": {
+                "vitest": {
+                  "from": "vitest",
+                  "version": "3.2.6",
+                  "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+                  "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+                }
+              }
+            }
+          ],
+          "command": "pnpm why vitest --depth Infinity --json",
+          "exit_code": 0
+        }
+      ],
+      "root_override": "3.2.6",
+      "authoritative_lockfile": "pnpm-lock.yaml",
+      "vulnerable_direct_declarations": 0
+    },
+    "audit_counts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 3,
+      "high": 0,
+      "critical": 0
+    }
+  },
+  "tests": {
+    "baseline": 61,
+    "characterization_and_candidate": 64,
+    "workspaces": {
+      "web": 35,
+      "ui": 9,
+      "api-client": 18,
+      "types": 2,
+      "admin": 0,
+      "ops": 0,
+      "partner": 0,
+      "portal": 0
+    },
+    "empty_workspace_note": "Existing passWithNoTests exits do not establish workflow coverage.",
+    "browser_tests_passed": 255,
+    "browser_projects": [
+      "chromium",
+      "firefox",
+      "webkit"
+    ],
+    "frontend_ci_log_sha256": "4ff565429c95bdd3ce9ecdf89fa6529b91990a0cbbd56e4a49d30a8036f091b7"
+  },
+  "local_checks": {
+    "clean-install": {
+      "command": "pnpm install --frozen-lockfile --store-dir <new-empty-store>",
+      "exit_code": 0,
+      "duration_seconds": 91.85,
+      "lockfile_unchanged": true,
+      "store_was_empty": true,
+      "node": "v22.23.2",
+      "log_sha256": "b90ce48c9a9284a67686dcf02d360f3f5ac583c64759a8b3ba2c3f0bcc6ede7a"
+    },
+    "lint": {
+      "command": "pnpm lint",
+      "label": "lint",
+      "cwd": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919",
+      "node": "v22.23.2",
+      "exit_code": 0,
+      "duration_seconds": 107.06,
+      "recorded_at": "2026-09-19T15:32:26.376775+00:00",
+      "log_sha256": "89d1659f21fbe66f01b7aae994a32610c413b9b007814679045addf1182df8dd"
+    },
+    "typecheck": {
+      "command": "pnpm typecheck",
+      "label": "typecheck",
+      "cwd": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919",
+      "node": "v22.23.2",
+      "exit_code": 0,
+      "duration_seconds": 23.95,
+      "recorded_at": "2026-09-19T15:32:53.582756+00:00",
+      "log_sha256": "73e34d33edda6b67b86047a981f3a7be1d7f36cbf0d2b91679101a7b72062469"
+    },
+    "contract": {
+      "command": "pnpm contract:check",
+      "label": "contract",
+      "cwd": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919",
+      "node": "v22.23.2",
+      "exit_code": 0,
+      "duration_seconds": 0.8,
+      "recorded_at": "2026-09-19T15:32:30.429200+00:00",
+      "log_sha256": "bc0bdca0634c62e4ae7522f483a867bf47334ef65f85f30a6caaed737cc17060"
+    },
+    "coverage": {
+      "command": "pnpm --filter @breero/web --filter @breero/ui --filter @breero/api-client --filter @breero/types exec vitest run --coverage --coverage.reporter=json-summary --coverage.reporter=text",
+      "label": "coverage",
+      "cwd": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919",
+      "node": "v22.23.2",
+      "exit_code": 0,
+      "duration_seconds": 62.05,
+      "recorded_at": "2026-09-19T15:31:41.366843+00:00",
+      "log_sha256": "6a1c1653367e7f16a31eb3898d7f599d722353ad0daf3eb4b4186e687ef30ac5"
+    },
+    "audit": {
+      "command": "pnpm audit --audit-level high --json",
+      "label": "audit",
+      "cwd": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919",
+      "node": "v22.23.2",
+      "exit_code": 1,
+      "duration_seconds": 2.12,
+      "recorded_at": "2026-09-19T15:30:41.436432+00:00",
+      "log_sha256": "f2198b9a1dd16763e5657ce7784e56d0ed538876e89fe67e9069549f48346c40"
+    },
+    "audit-threshold": {
+      "command": "pnpm audit --audit-level high",
+      "label": "audit-threshold",
+      "cwd": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919",
+      "node": "v22.23.2",
+      "exit_code": 0,
+      "duration_seconds": 9.69,
+      "recorded_at": "2026-09-19T15:31:33.042240+00:00",
+      "log_sha256": "758f39396379e7c4a9a137d72b4ec015a790462bb789d1acdc7a310e863b9417"
+    },
+    "licenses": {
+      "command": "pnpm licenses list --json",
+      "label": "licenses",
+      "cwd": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919",
+      "node": "v22.23.2",
+      "exit_code": 0,
+      "duration_seconds": 4.59,
+      "recorded_at": "2026-09-19T15:34:53.631831+00:00",
+      "log_sha256": "c376ea7bce8193339d3ef7889c49174dec0078df69a10bf5a0293f2959e509dc"
+    },
+    "secret-scan": {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--memory=2g",
+        "--cpus=2",
+        "-v",
+        "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\source-only:/src:ro",
+        "aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969",
+        "fs",
+        "--scanners",
+        "secret",
+        "--format",
+        "json",
+        "--exit-code",
+        "1",
+        "/src"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 5.33,
+      "findings": [],
+      "finding_count": 0,
+      "parse_success": true,
+      "errors": []
+    },
+    "sast": {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--memory=2g",
+        "--cpus=2",
+        "-v",
+        "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\source-only:/src:ro",
+        "-w",
+        "/src",
+        "semgrep/semgrep@sha256:34ab619bf1391a24bfda3f05debd0d8a6ce3093c2d5f9d39cfc00f83c1397823",
+        "semgrep",
+        "scan",
+        "--config",
+        "p/security-audit",
+        "--metrics=off",
+        "--json",
+        "--error",
+        "--disable-version-check"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 82.62,
+      "findings": [],
+      "finding_count": 0,
+      "parse_success": true,
+      "errors": [
+        {
+          "type": [
+            "PartialParsing",
+            [
+              {
+                "path": "apps/api/Dockerfile",
+                "start": {
+                  "line": 7,
+                  "col": 5,
+                  "offset": 0
+                },
+                "end": {
+                  "line": 36,
+                  "col": 132,
+                  "offset": 1121
+                }
+              }
+            ]
+          ],
+          "code": 3,
+          "level": "warn"
+        },
+        {
+          "type": [
+            "PartialParsing",
+            [
+              {
+                "path": "apps/web/app/refund-policy/page.tsx",
+                "start": {
+                  "line": 8,
+                  "col": 1056,
+                  "offset": 0
+                },
+                "end": {
+                  "line": 8,
+                  "col": 1071,
+                  "offset": 15
+                }
+              }
+            ]
+          ],
+          "code": 3,
+          "level": "warn"
+        },
+        {
+          "type": [
+            "PartialParsing",
+            [
+              {
+                "path": "apps/web/app/sitemap.ts",
+                "start": {
+                  "line": 2,
+                  "col": 322,
+                  "offset": 0
+                },
+                "end": {
+                  "line": 2,
+                  "col": 328,
+                  "offset": 6
+                }
+              }
+            ]
+          ],
+          "code": 3,
+          "level": "warn"
+        },
+        {
+          "type": [
+            "PartialParsing",
+            [
+              {
+                "path": "deploy/frontend/Dockerfile",
+                "start": {
+                  "line": 20,
+                  "col": 34,
+                  "offset": 0
+                },
+                "end": {
+                  "line": 30,
+                  "col": 34,
+                  "offset": 542
+                }
+              },
+              {
+                "path": "deploy/frontend/Dockerfile",
+                "start": {
+                  "line": 33,
+                  "col": 7,
+                  "offset": 0
+                },
+                "end": {
+                  "line": 59,
+                  "col": 35,
+                  "offset": 1478
+                }
+              }
+            ]
+          ],
+          "code": 3,
+          "level": "warn"
+        },
+        {
+          "type": [
+            "PartialParsing",
+            [
+              {
+                "path": "packages/api-client/src/index.ts",
+                "start": {
+                  "line": 6,
+                  "col": 8,
+                  "offset": 0
+                },
+                "end": {
+                  "line": 6,
+                  "col": 12,
+                  "offset": 4
+                }
+              }
+            ]
+          ],
+          "code": 3,
+          "level": "warn"
+        }
+      ]
+    },
+    "build": {
+      "command": "pnpm build",
+      "label": "build",
+      "cwd": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919",
+      "node": "v22.23.2",
+      "exit_code": 1,
+      "duration_seconds": 140.23,
+      "recorded_at": "2026-09-19T15:35:51.657898+00:00",
+      "log_sha256": "b367205c2d7b57e87537799df967f112a6adb6a897b81443057e35ac455fd94b"
+    }
+  },
+  "source_pr_status": {
+    "baseRefOid": "2292fd7533faa5752a3df7a8243e217447694367",
+    "headRefOid": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+    "isDraft": false,
+    "mergeStateStatus": "BLOCKED",
+    "reviewDecision": "APPROVED",
+    "reviews": [
+      {
+        "id": "PRR_kwDOT1rcuM8AAAABOUvGbg",
+        "author": {
+          "login": "ingtrader21-spec"
+        },
+        "authorAssociation": "OWNER",
+        "body": "",
+        "submittedAt": "2026-09-19T15:39:09Z",
+        "includesCreatedEdit": false,
+        "reactionGroups": [],
+        "state": "APPROVED",
+        "commit": {
+          "oid": "5b833933c18ebcaa380fc3988cf9efe219c43642"
+        }
+      }
+    ],
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-09-19T15:38:15Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452422959/job/105921777227",
+        "name": "orchestrator-contract",
+        "startedAt": "2026-09-19T15:38:08Z",
+        "status": "COMPLETED",
+        "workflowName": "Production orchestrator contract"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-09-19T15:38:13Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086/job/105921777334",
+        "name": "classify",
+        "startedAt": "2026-09-19T15:38:08Z",
+        "status": "COMPLETED",
+        "workflowName": "Required quality gate"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-09-19T15:38:13Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086/job/105921794210",
+        "name": "backend-quality",
+        "startedAt": "2026-09-19T15:38:13Z",
+        "status": "COMPLETED",
+        "workflowName": "Required quality gate"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-09-19T15:46:21Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086/job/105921793496",
+        "name": "frontend-quality / frontend-quality",
+        "startedAt": "2026-09-19T15:38:15Z",
+        "status": "COMPLETED",
+        "workflowName": "Required quality gate"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-09-19T15:38:13Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086/job/105921794173",
+        "name": "bootstrap-tool-quality",
+        "startedAt": "2026-09-19T15:38:13Z",
+        "status": "COMPLETED",
+        "workflowName": "Required quality gate"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-09-19T15:38:23Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086/job/105921793369",
+        "name": "scope-docs-quality",
+        "startedAt": "2026-09-19T15:38:15Z",
+        "status": "COMPLETED",
+        "workflowName": "Required quality gate"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-09-19T15:46:27Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086/job/105922908018",
+        "name": "quality",
+        "startedAt": "2026-09-19T15:46:24Z",
+        "status": "COMPLETED",
+        "workflowName": "Required quality gate"
+      }
+    ]
+  },
+  "source_quality_run": {
+    "conclusion": "success",
+    "headSha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+    "jobs": [
+      {
+        "completedAt": "2026-09-19T15:38:13Z",
+        "conclusion": "success",
+        "databaseId": 105921777334,
+        "name": "classify",
+        "startedAt": "2026-09-19T15:38:08Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-09-19T15:38:09Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-09-19T15:38:09Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:11Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "startedAt": "2026-09-19T15:38:09Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:11Z",
+            "conclusion": "success",
+            "name": "Classify changed paths",
+            "number": 3,
+            "startedAt": "2026-09-19T15:38:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:11Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 6,
+            "startedAt": "2026-09-19T15:38:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:11Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 7,
+            "startedAt": "2026-09-19T15:38:11Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086/job/105921777334"
+      },
+      {
+        "completedAt": "2026-09-19T15:38:23Z",
+        "conclusion": "success",
+        "databaseId": 105921793369,
+        "name": "scope-docs-quality",
+        "startedAt": "2026-09-19T15:38:15Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-09-19T15:38:16Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-09-19T15:38:15Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:17Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "startedAt": "2026-09-19T15:38:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:17Z",
+            "conclusion": "success",
+            "name": "Validate BREERO scope",
+            "number": 3,
+            "startedAt": "2026-09-19T15:38:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:17Z",
+            "conclusion": "success",
+            "name": "Validate Git whitespace",
+            "number": 4,
+            "startedAt": "2026-09-19T15:38:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:18Z",
+            "conclusion": "success",
+            "name": "Validate shell and Python sources",
+            "number": 5,
+            "startedAt": "2026-09-19T15:38:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:21Z",
+            "conclusion": "success",
+            "name": "Validate workflow syntax",
+            "number": 6,
+            "startedAt": "2026-09-19T15:38:18Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:21Z",
+            "conclusion": "success",
+            "name": "Validate portal candidate API bindings",
+            "number": 7,
+            "startedAt": "2026-09-19T15:38:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:21Z",
+            "conclusion": "success",
+            "name": "Prove path-classification scenarios",
+            "number": 8,
+            "startedAt": "2026-09-19T15:38:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:21Z",
+            "conclusion": "success",
+            "name": "Prove BREERO scope scenarios",
+            "number": 9,
+            "startedAt": "2026-09-19T15:38:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:22Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 18,
+            "startedAt": "2026-09-19T15:38:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:22Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 19,
+            "startedAt": "2026-09-19T15:38:22Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086/job/105921793369"
+      },
+      {
+        "completedAt": "2026-09-19T15:46:21Z",
+        "conclusion": "success",
+        "databaseId": 105921793496,
+        "name": "frontend-quality / frontend-quality",
+        "startedAt": "2026-09-19T15:38:15Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-09-19T15:38:17Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-09-19T15:38:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:19Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "startedAt": "2026-09-19T15:38:17Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:20Z",
+            "conclusion": "success",
+            "name": "Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+            "number": 3,
+            "startedAt": "2026-09-19T15:38:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:21Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+            "number": 4,
+            "startedAt": "2026-09-19T15:38:20Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:26Z",
+            "conclusion": "success",
+            "name": "Run pnpm install --frozen-lockfile",
+            "number": 5,
+            "startedAt": "2026-09-19T15:38:21Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:27Z",
+            "conclusion": "success",
+            "name": "Frontend dependency audit",
+            "number": 6,
+            "startedAt": "2026-09-19T15:38:26Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:37Z",
+            "conclusion": "success",
+            "name": "Run pnpm lint",
+            "number": 7,
+            "startedAt": "2026-09-19T15:38:27Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:38:50Z",
+            "conclusion": "success",
+            "name": "Run pnpm typecheck",
+            "number": 8,
+            "startedAt": "2026-09-19T15:38:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:39:04Z",
+            "conclusion": "success",
+            "name": "Run pnpm test",
+            "number": 9,
+            "startedAt": "2026-09-19T15:38:50Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:39:05Z",
+            "conclusion": "success",
+            "name": "Run pnpm contract:check",
+            "number": 10,
+            "startedAt": "2026-09-19T15:39:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:40:40Z",
+            "conclusion": "success",
+            "name": "Run pnpm build",
+            "number": 11,
+            "startedAt": "2026-09-19T15:39:05Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:41:52Z",
+            "conclusion": "success",
+            "name": "Run pnpm --filter @breero/web exec playwright install --with-deps chromium firefox webkit",
+            "number": 12,
+            "startedAt": "2026-09-19T15:40:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:46:14Z",
+            "conclusion": "success",
+            "name": "Run pnpm --filter @breero/web test:e2e",
+            "number": 13,
+            "startedAt": "2026-09-19T15:41:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:46:18Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+            "number": 24,
+            "startedAt": "2026-09-19T15:46:14Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:46:19Z",
+            "conclusion": "success",
+            "name": "Post Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+            "number": 25,
+            "startedAt": "2026-09-19T15:46:18Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:46:19Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 26,
+            "startedAt": "2026-09-19T15:46:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:46:19Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 27,
+            "startedAt": "2026-09-19T15:46:19Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086/job/105921793496"
+      },
+      {
+        "completedAt": "2026-09-19T15:38:13Z",
+        "conclusion": "skipped",
+        "databaseId": 105921794173,
+        "name": "bootstrap-tool-quality",
+        "startedAt": "2026-09-19T15:38:13Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086/job/105921794173"
+      },
+      {
+        "completedAt": "2026-09-19T15:38:13Z",
+        "conclusion": "skipped",
+        "databaseId": 105921794210,
+        "name": "backend-quality",
+        "startedAt": "2026-09-19T15:38:13Z",
+        "status": "completed",
+        "steps": [],
+        "url": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086/job/105921794210"
+      },
+      {
+        "completedAt": "2026-09-19T15:46:27Z",
+        "conclusion": "success",
+        "databaseId": 105922908018,
+        "name": "quality",
+        "startedAt": "2026-09-19T15:46:24Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-09-19T15:46:25Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-09-19T15:46:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:46:25Z",
+            "conclusion": "success",
+            "name": "Enforce every applicable quality gate",
+            "number": 2,
+            "startedAt": "2026-09-19T15:46:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-09-19T15:46:25Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 3,
+            "startedAt": "2026-09-19T15:46:25Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086/job/105922908018"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/ingtrader21-spec/Breero.com/actions/runs/35452423086"
+  },
+  "containers": {
+    "web": {
+      "build": {
+        "command": [
+          "docker",
+          "buildx",
+          "build",
+          "--sbom=true",
+          "--provenance=mode=max",
+          "--metadata-file",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\web-image-metadata.json",
+          "--load",
+          "--add-host",
+          "api.breero.com:127.0.0.1",
+          "--add-host",
+          "api-staging.breero.com:127.0.0.1",
+          "--add-host",
+          "auth.codestra.agency:127.0.0.1",
+          "--add-host",
+          "telemetry.nextjs.org:127.0.0.1",
+          "-f",
+          "deploy/frontend/Dockerfile",
+          "-t",
+          "breero-security-web:20260919",
+          "."
+        ],
+        "source_sha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+        "exit_code": 0,
+        "duration_seconds": 173.9,
+        "log_sha256": "28d2a9bc5109d78f221b2a28fe2952d88fa00994040e53556b1e7ea2fa3092ec",
+        "network_controls": "API, staging API, Keycloak and telemetry hostnames mapped to loopback; static inspection found only Google Fonts build-time requests; no application container started",
+        "dockerfile_modification": null
+      },
+      "scan": {
+        "tag": "breero-security-web:20260919",
+        "source_sha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+        "command": [
+          "docker",
+          "run",
+          "--rm",
+          "--memory=2g",
+          "--cpus=2",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery:/evidence:ro",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\trivy-cache:/root/.cache/",
+          "aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969",
+          "image",
+          "--input",
+          "/evidence/web-image.tar",
+          "--scanners",
+          "vuln",
+          "--severity",
+          "HIGH,CRITICAL",
+          "--format",
+          "json",
+          "--exit-code",
+          "1"
+        ],
+        "exit_code": 0,
+        "parse_success": true,
+        "duration_seconds": 37.94,
+        "image_archive_sha256": "1ae02f78ff2e8676e0ced63024a499291cb6a74a5e186669a9f8c4d17f2a9b71",
+        "findings": [],
+        "finding_count": 0,
+        "attestations": [
+          {
+            "predicate_type": "https://slsa.dev/provenance/v1",
+            "sha256": "f9f348fe65651570c7497f7776b0a59934cad1d7e6870bb53dcf11d791a6a253",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-security-web@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "31de3028b5d2b69dcf6e55edd72ded8ce2091d392cb8e66e4af8b72bec7e9779"
+                }
+              }
+            ]
+          },
+          {
+            "predicate_type": "https://spdx.dev/Document",
+            "sha256": "ed66e90a0d917b8ec1f4cf2fee4974915c7c97193b1dcf62254f50ee451d1512",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-security-web@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "31de3028b5d2b69dcf6e55edd72ded8ce2091d392cb8e66e4af8b72bec7e9779"
+                }
+              }
+            ]
+          }
+        ],
+        "layer_vitest_declarations_including_deleted_files": [
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/cidr-regex/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/fdir/package.json",
+            "field": "devDependencies",
+            "vitest": "^0.34.6"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/is-cidr/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/2fda0691748ece4d32a8ff9a13c73dce25f1e12a0f6befe324c21a91fedbde87",
+            "path": "app/apps/web/package.json",
+            "field": "devDependencies",
+            "vitest": "3.2.6"
+          },
+          {
+            "layer": "blobs/sha256/2fda0691748ece4d32a8ff9a13c73dce25f1e12a0f6befe324c21a91fedbde87",
+            "path": "app/packages/ui/package.json",
+            "field": "devDependencies",
+            "vitest": "3.2.6"
+          }
+        ],
+        "effective_vitest_declarations": [
+          {
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "path": "app/apps/web/package.json",
+            "field": "devDependencies",
+            "vitest": "3.2.6"
+          },
+          {
+            "path": "app/packages/ui/package.json",
+            "field": "devDependencies",
+            "vitest": "3.2.6"
+          }
+        ],
+        "installed_vitest_packages": [],
+        "high_critical_package_locations": [],
+        "suppression_file": null,
+        "ignore_unfixed": false,
+        "official_signed_provenance": false
+      },
+      "metadata": {
+        "buildx.build.ref": "desktop-linux/desktop-linux/ut2nrl7fc4sdb2qj3b1if38jz",
+        "containerimage.descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:5b23b0ac5bbebefa2236749709cca565d3937d990cc6010b9705c164a0e3224f",
+          "size": 857
+        },
+        "containerimage.digest": "sha256:5b23b0ac5bbebefa2236749709cca565d3937d990cc6010b9705c164a0e3224f"
+      },
+      "high_critical_counts": {
+        "CRITICAL": 0,
+        "HIGH": 0
+      }
+    },
+    "admin": {
+      "build": {
+        "command": [
+          "docker",
+          "buildx",
+          "build",
+          "--sbom=true",
+          "--provenance=mode=max",
+          "--metadata-file",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\admin-image-metadata.json",
+          "--load",
+          "--build-arg",
+          "APP_NAME=admin",
+          "--build-arg",
+          "NEXT_PUBLIC_API_BASE_URL=https://api.breero.com/api/v1",
+          "-f",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\Dockerfile.portals-offline-build",
+          "-t",
+          "breero-security-admin:20260919",
+          "."
+        ],
+        "source_sha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+        "exit_code": 0,
+        "duration_seconds": 102.79,
+        "log_sha256": "d8b2a98de240a1679da0c36589d2e4d1944c3a620d220137c86140720f8dfc44",
+        "application_build_network": "none",
+        "dockerfile_modification": "validation-only copy adds RUN --network=none to application build; tracked Dockerfile unchanged"
+      },
+      "scan": {
+        "tag": "breero-security-admin:20260919",
+        "source_sha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+        "command": [
+          "docker",
+          "run",
+          "--rm",
+          "--memory=2g",
+          "--cpus=2",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery:/evidence:ro",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\trivy-cache:/root/.cache/",
+          "aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969",
+          "image",
+          "--input",
+          "/evidence/admin-image.tar",
+          "--scanners",
+          "vuln",
+          "--severity",
+          "HIGH,CRITICAL",
+          "--format",
+          "json",
+          "--exit-code",
+          "1"
+        ],
+        "exit_code": 1,
+        "parse_success": true,
+        "duration_seconds": 10.27,
+        "image_archive_sha256": "86f89c7a266bf0f64c9da61ea0f69be80145f6044193058f20c8509d993407ff",
+        "findings": [
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-13149",
+            "package": "brace-expansion",
+            "installed": "2.0.2",
+            "fixed": "5.0.7, 1.1.16, 2.1.2",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/brace-expansion/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/brace-expansion@2.0.2",
+              "UID": "81ea87e5789052ae"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-14257",
+            "package": "brace-expansion",
+            "installed": "2.0.2",
+            "fixed": "5.0.8, 3.0.3, 2.1.3, 1.1.17",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/brace-expansion/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/brace-expansion@2.0.2",
+              "UID": "81ea87e5789052ae"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-69152",
+            "package": "brace-expansion",
+            "installed": "2.0.2",
+            "fixed": "1.1.18, 2.1.4, 3.0.6, 5.0.9",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/brace-expansion/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/brace-expansion@2.0.2",
+              "UID": "81ea87e5789052ae"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-69192",
+            "package": "ip-address",
+            "installed": "10.1.0",
+            "fixed": "10.3.1",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/ip-address/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/ip-address@10.1.0",
+              "UID": "88a805ee478f0c75"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-9496",
+            "package": "pacote",
+            "installed": "19.0.2",
+            "fixed": "21.5.1",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/pacote/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/pacote@19.0.2",
+              "UID": "61822dc9dcec19a2"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-9496",
+            "package": "pacote",
+            "installed": "20.0.1",
+            "fixed": "21.5.1",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/@npmcli/metavuln-calculator/node_modules/pacote/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/pacote@20.0.1",
+              "UID": "1fa2aa156482f152"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-33671",
+            "package": "picomatch",
+            "installed": "4.0.3",
+            "fixed": "4.0.4, 3.0.2, 2.3.2",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/picomatch/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/picomatch@4.0.3",
+              "UID": "f12a2f1c39a2487"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-48815",
+            "package": "sigstore",
+            "installed": "3.1.0",
+            "fixed": "4.1.1",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/sigstore/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/sigstore@3.1.0",
+              "UID": "835a7633ebe8b530"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-59873",
+            "package": "tar",
+            "installed": "7.5.11",
+            "fixed": "7.5.19",
+            "severity": "CRITICAL",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/tar/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/tar@7.5.11",
+              "UID": "3aca9bae4d3f1419"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-59874",
+            "package": "tar",
+            "installed": "7.5.11",
+            "fixed": "7.5.18",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/tar/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/tar@7.5.11",
+              "UID": "3aca9bae4d3f1419"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-73566",
+            "package": "tar",
+            "installed": "7.5.11",
+            "fixed": "7.5.21",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/tar/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/tar@7.5.11",
+              "UID": "3aca9bae4d3f1419"
+            }
+          }
+        ],
+        "finding_count": 11,
+        "attestations": [
+          {
+            "predicate_type": "https://spdx.dev/Document",
+            "sha256": "0dd8276d1c1bb230d479de0f0ff9a1921c332f7bc5855e7717d4ce1056e4e490",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-security-admin@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "82fdd3dcb10802b1a9a9c3e37eebb3e22c8644811a6f72f29641e89af986b636"
+                }
+              }
+            ]
+          },
+          {
+            "predicate_type": "https://slsa.dev/provenance/v1",
+            "sha256": "d16255d4c472ddc3c0ea08da357cca0a204380c23682fe364eccd41dbe56e348",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-security-admin@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "82fdd3dcb10802b1a9a9c3e37eebb3e22c8644811a6f72f29641e89af986b636"
+                }
+              }
+            ]
+          }
+        ],
+        "layer_vitest_declarations_including_deleted_files": [
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/cidr-regex/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/fdir/package.json",
+            "field": "devDependencies",
+            "vitest": "^0.34.6"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/is-cidr/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/acdf68c1df8178dd3856d1f811d2ffbf8f415d307a210dc5d6a64e9929e48b29",
+            "path": "app/apps/admin/package.json",
+            "field": "devDependencies",
+            "vitest": "3.2.6"
+          }
+        ],
+        "effective_vitest_declarations": [
+          {
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/cidr-regex/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/fdir/package.json",
+            "field": "devDependencies",
+            "vitest": "^0.34.6"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/is-cidr/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "path": "app/apps/admin/package.json",
+            "field": "devDependencies",
+            "vitest": "3.2.6"
+          }
+        ],
+        "installed_vitest_packages": [],
+        "high_critical_package_locations": [
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/@npmcli/metavuln-calculator/node_modules/pacote/package.json",
+            "name": "pacote",
+            "version": "20.0.1"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/brace-expansion/package.json",
+            "name": "brace-expansion",
+            "version": "2.0.2"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/ip-address/package.json",
+            "name": "ip-address",
+            "version": "10.1.0"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/pacote/package.json",
+            "name": "pacote",
+            "version": "19.0.2"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/picomatch/package.json",
+            "name": "picomatch",
+            "version": "4.0.3"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/sigstore/package.json",
+            "name": "sigstore",
+            "version": "3.1.0"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/tar/package.json",
+            "name": "tar",
+            "version": "7.5.11"
+          }
+        ],
+        "suppression_file": null,
+        "ignore_unfixed": false,
+        "official_signed_provenance": false
+      },
+      "metadata": {
+        "buildx.build.ref": "desktop-linux/desktop-linux/ujf2539xp3jxqi82qlaan2lr4",
+        "containerimage.descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:b413ff8146437a4050462d826b6912549883dc3b8e8a0c88ded5e74c659cfcc0",
+          "size": 857
+        },
+        "containerimage.digest": "sha256:b413ff8146437a4050462d826b6912549883dc3b8e8a0c88ded5e74c659cfcc0"
+      },
+      "high_critical_counts": {
+        "CRITICAL": 1,
+        "HIGH": 10
+      }
+    },
+    "ops": {
+      "build": {
+        "command": [
+          "docker",
+          "buildx",
+          "build",
+          "--sbom=true",
+          "--provenance=mode=max",
+          "--metadata-file",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\ops-image-metadata.json",
+          "--load",
+          "--build-arg",
+          "APP_NAME=ops",
+          "--build-arg",
+          "NEXT_PUBLIC_API_BASE_URL=https://api.breero.com/api/v1",
+          "-f",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\Dockerfile.portals-offline-build",
+          "-t",
+          "breero-security-ops:20260919",
+          "."
+        ],
+        "source_sha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+        "exit_code": 0,
+        "duration_seconds": 139.61,
+        "log_sha256": "bba96fadf41410a0e92d6417afe798f92d4650b6753172c1d7ec34cf1a97a416",
+        "application_build_network": "none",
+        "dockerfile_modification": "validation-only copy adds RUN --network=none to application build; tracked Dockerfile unchanged"
+      },
+      "scan": {
+        "tag": "breero-security-ops:20260919",
+        "source_sha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+        "command": [
+          "docker",
+          "run",
+          "--rm",
+          "--memory=2g",
+          "--cpus=2",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery:/evidence:ro",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\trivy-cache:/root/.cache/",
+          "aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969",
+          "image",
+          "--input",
+          "/evidence/ops-image.tar",
+          "--scanners",
+          "vuln",
+          "--severity",
+          "HIGH,CRITICAL",
+          "--format",
+          "json",
+          "--exit-code",
+          "1"
+        ],
+        "exit_code": 1,
+        "parse_success": true,
+        "duration_seconds": 31.3,
+        "image_archive_sha256": "6fcd0a8a585a6d0eb0ed310e5d64a0f7d45f8c3cca2a95f215870ee6baf64600",
+        "findings": [
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-13149",
+            "package": "brace-expansion",
+            "installed": "2.0.2",
+            "fixed": "5.0.7, 1.1.16, 2.1.2",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/brace-expansion/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/brace-expansion@2.0.2",
+              "UID": "81ea87e5789052ae"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-14257",
+            "package": "brace-expansion",
+            "installed": "2.0.2",
+            "fixed": "5.0.8, 3.0.3, 2.1.3, 1.1.17",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/brace-expansion/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/brace-expansion@2.0.2",
+              "UID": "81ea87e5789052ae"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-69152",
+            "package": "brace-expansion",
+            "installed": "2.0.2",
+            "fixed": "1.1.18, 2.1.4, 3.0.6, 5.0.9",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/brace-expansion/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/brace-expansion@2.0.2",
+              "UID": "81ea87e5789052ae"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-69192",
+            "package": "ip-address",
+            "installed": "10.1.0",
+            "fixed": "10.3.1",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/ip-address/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/ip-address@10.1.0",
+              "UID": "88a805ee478f0c75"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-9496",
+            "package": "pacote",
+            "installed": "19.0.2",
+            "fixed": "21.5.1",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/pacote/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/pacote@19.0.2",
+              "UID": "61822dc9dcec19a2"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-9496",
+            "package": "pacote",
+            "installed": "20.0.1",
+            "fixed": "21.5.1",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/@npmcli/metavuln-calculator/node_modules/pacote/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/pacote@20.0.1",
+              "UID": "1fa2aa156482f152"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-33671",
+            "package": "picomatch",
+            "installed": "4.0.3",
+            "fixed": "4.0.4, 3.0.2, 2.3.2",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/picomatch/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/picomatch@4.0.3",
+              "UID": "f12a2f1c39a2487"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-48815",
+            "package": "sigstore",
+            "installed": "3.1.0",
+            "fixed": "4.1.1",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/sigstore/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/sigstore@3.1.0",
+              "UID": "835a7633ebe8b530"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-59873",
+            "package": "tar",
+            "installed": "7.5.11",
+            "fixed": "7.5.19",
+            "severity": "CRITICAL",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/tar/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/tar@7.5.11",
+              "UID": "3aca9bae4d3f1419"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-59874",
+            "package": "tar",
+            "installed": "7.5.11",
+            "fixed": "7.5.18",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/tar/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/tar@7.5.11",
+              "UID": "3aca9bae4d3f1419"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-73566",
+            "package": "tar",
+            "installed": "7.5.11",
+            "fixed": "7.5.21",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/tar/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/tar@7.5.11",
+              "UID": "3aca9bae4d3f1419"
+            }
+          }
+        ],
+        "finding_count": 11,
+        "attestations": [
+          {
+            "predicate_type": "https://slsa.dev/provenance/v1",
+            "sha256": "eb37a98b9ca399dcfd1e2ed565aba23e3565c2b6471bae095eaabbe270057615",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-security-ops@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "6d19bc16999a76a68ac4ded522074c2c46a8f548514eedecfd68559096acf0d2"
+                }
+              }
+            ]
+          },
+          {
+            "predicate_type": "https://spdx.dev/Document",
+            "sha256": "59ff749c274e3296c04ca9b4f516c1e0c3773100c166afd07d156778a28d2b72",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-security-ops@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "6d19bc16999a76a68ac4ded522074c2c46a8f548514eedecfd68559096acf0d2"
+                }
+              }
+            ]
+          }
+        ],
+        "layer_vitest_declarations_including_deleted_files": [
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/cidr-regex/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/fdir/package.json",
+            "field": "devDependencies",
+            "vitest": "^0.34.6"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/is-cidr/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/a81670229422c8962ea091c806844da466979ee97d4bebfd4a7866386912734b",
+            "path": "app/apps/ops/package.json",
+            "field": "devDependencies",
+            "vitest": "3.2.6"
+          }
+        ],
+        "effective_vitest_declarations": [
+          {
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/cidr-regex/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/fdir/package.json",
+            "field": "devDependencies",
+            "vitest": "^0.34.6"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/is-cidr/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "path": "app/apps/ops/package.json",
+            "field": "devDependencies",
+            "vitest": "3.2.6"
+          }
+        ],
+        "installed_vitest_packages": [],
+        "high_critical_package_locations": [
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/@npmcli/metavuln-calculator/node_modules/pacote/package.json",
+            "name": "pacote",
+            "version": "20.0.1"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/brace-expansion/package.json",
+            "name": "brace-expansion",
+            "version": "2.0.2"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/ip-address/package.json",
+            "name": "ip-address",
+            "version": "10.1.0"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/pacote/package.json",
+            "name": "pacote",
+            "version": "19.0.2"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/picomatch/package.json",
+            "name": "picomatch",
+            "version": "4.0.3"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/sigstore/package.json",
+            "name": "sigstore",
+            "version": "3.1.0"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/tar/package.json",
+            "name": "tar",
+            "version": "7.5.11"
+          }
+        ],
+        "suppression_file": null,
+        "ignore_unfixed": false,
+        "official_signed_provenance": false
+      },
+      "metadata": {
+        "buildx.build.ref": "desktop-linux/desktop-linux/l7nc10jb3wko0qiec4zjvx04c",
+        "containerimage.descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:a25e84de3fbab8ab1453d2f64301952f8e247feaf01d239637d92d98728fef48",
+          "size": 857
+        },
+        "containerimage.digest": "sha256:a25e84de3fbab8ab1453d2f64301952f8e247feaf01d239637d92d98728fef48"
+      },
+      "high_critical_counts": {
+        "CRITICAL": 1,
+        "HIGH": 10
+      }
+    },
+    "partner": {
+      "build": {
+        "command": [
+          "docker",
+          "buildx",
+          "build",
+          "--sbom=true",
+          "--provenance=mode=max",
+          "--metadata-file",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\partner-image-metadata.json",
+          "--load",
+          "--build-arg",
+          "APP_NAME=partner",
+          "--build-arg",
+          "NEXT_PUBLIC_API_BASE_URL=https://api.breero.com/api/v1",
+          "-f",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\Dockerfile.portals-offline-build",
+          "-t",
+          "breero-security-partner:20260919",
+          "."
+        ],
+        "source_sha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+        "exit_code": 0,
+        "duration_seconds": 93.47,
+        "log_sha256": "642e6ec87e5bd228c4739484b1849c16478659e1fae223debc1eb4b36382f66b",
+        "application_build_network": "none",
+        "dockerfile_modification": "validation-only copy adds RUN --network=none to application build; tracked Dockerfile unchanged"
+      },
+      "scan": {
+        "tag": "breero-security-partner:20260919",
+        "source_sha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+        "command": [
+          "docker",
+          "run",
+          "--rm",
+          "--memory=2g",
+          "--cpus=2",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery:/evidence:ro",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\trivy-cache:/root/.cache/",
+          "aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969",
+          "image",
+          "--input",
+          "/evidence/partner-image.tar",
+          "--scanners",
+          "vuln",
+          "--severity",
+          "HIGH,CRITICAL",
+          "--format",
+          "json",
+          "--exit-code",
+          "1"
+        ],
+        "exit_code": 1,
+        "parse_success": true,
+        "duration_seconds": 27.81,
+        "image_archive_sha256": "febd38160d80b8735c53c184d5623bc7076c35eebca9f9e876381b9ff15bfa06",
+        "findings": [
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-13149",
+            "package": "brace-expansion",
+            "installed": "2.0.2",
+            "fixed": "5.0.7, 1.1.16, 2.1.2",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/brace-expansion/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/brace-expansion@2.0.2",
+              "UID": "81ea87e5789052ae"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-14257",
+            "package": "brace-expansion",
+            "installed": "2.0.2",
+            "fixed": "5.0.8, 3.0.3, 2.1.3, 1.1.17",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/brace-expansion/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/brace-expansion@2.0.2",
+              "UID": "81ea87e5789052ae"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-69152",
+            "package": "brace-expansion",
+            "installed": "2.0.2",
+            "fixed": "1.1.18, 2.1.4, 3.0.6, 5.0.9",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/brace-expansion/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/brace-expansion@2.0.2",
+              "UID": "81ea87e5789052ae"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-69192",
+            "package": "ip-address",
+            "installed": "10.1.0",
+            "fixed": "10.3.1",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/ip-address/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/ip-address@10.1.0",
+              "UID": "88a805ee478f0c75"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-9496",
+            "package": "pacote",
+            "installed": "19.0.2",
+            "fixed": "21.5.1",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/pacote/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/pacote@19.0.2",
+              "UID": "61822dc9dcec19a2"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-9496",
+            "package": "pacote",
+            "installed": "20.0.1",
+            "fixed": "21.5.1",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/@npmcli/metavuln-calculator/node_modules/pacote/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/pacote@20.0.1",
+              "UID": "1fa2aa156482f152"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-33671",
+            "package": "picomatch",
+            "installed": "4.0.3",
+            "fixed": "4.0.4, 3.0.2, 2.3.2",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/picomatch/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/picomatch@4.0.3",
+              "UID": "f12a2f1c39a2487"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-48815",
+            "package": "sigstore",
+            "installed": "3.1.0",
+            "fixed": "4.1.1",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/sigstore/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/sigstore@3.1.0",
+              "UID": "835a7633ebe8b530"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-59873",
+            "package": "tar",
+            "installed": "7.5.11",
+            "fixed": "7.5.19",
+            "severity": "CRITICAL",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/tar/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/tar@7.5.11",
+              "UID": "3aca9bae4d3f1419"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-59874",
+            "package": "tar",
+            "installed": "7.5.11",
+            "fixed": "7.5.18",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/tar/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/tar@7.5.11",
+              "UID": "3aca9bae4d3f1419"
+            }
+          },
+          {
+            "target": "Node.js",
+            "id": "CVE-2026-73566",
+            "package": "tar",
+            "installed": "7.5.11",
+            "fixed": "7.5.21",
+            "severity": "HIGH",
+            "status": "fixed",
+            "package_path": "usr/local/lib/node_modules/npm/node_modules/tar/package.json",
+            "package_identifier": {
+              "PURL": "pkg:npm/tar@7.5.11",
+              "UID": "3aca9bae4d3f1419"
+            }
+          }
+        ],
+        "finding_count": 11,
+        "attestations": [
+          {
+            "predicate_type": "https://slsa.dev/provenance/v1",
+            "sha256": "50b6bbc2488f8ed44cf661476f4225d0921ff7888461036e1c0376cf361ad338",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-security-partner@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "79c3633266b60f68486fe2f9716ead1828bd24154997cdf296714b1d2a8c47ee"
+                }
+              }
+            ]
+          },
+          {
+            "predicate_type": "https://spdx.dev/Document",
+            "sha256": "e1dcb263dc3389b89606ef342cab7c50e79af7600691b860ca318a06360d1fb4",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-security-partner@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "79c3633266b60f68486fe2f9716ead1828bd24154997cdf296714b1d2a8c47ee"
+                }
+              }
+            ]
+          }
+        ],
+        "layer_vitest_declarations_including_deleted_files": [
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/cidr-regex/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/fdir/package.json",
+            "field": "devDependencies",
+            "vitest": "^0.34.6"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/is-cidr/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/82f1950c421e8310e93bd230ed12afe75bd93f64ad588e61feceda72ad6481c8",
+            "path": "app/apps/partner/package.json",
+            "field": "devDependencies",
+            "vitest": "3.2.6"
+          }
+        ],
+        "effective_vitest_declarations": [
+          {
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/cidr-regex/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/fdir/package.json",
+            "field": "devDependencies",
+            "vitest": "^0.34.6"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/is-cidr/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "path": "app/apps/partner/package.json",
+            "field": "devDependencies",
+            "vitest": "3.2.6"
+          }
+        ],
+        "installed_vitest_packages": [],
+        "high_critical_package_locations": [
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/@npmcli/metavuln-calculator/node_modules/pacote/package.json",
+            "name": "pacote",
+            "version": "20.0.1"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/brace-expansion/package.json",
+            "name": "brace-expansion",
+            "version": "2.0.2"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/ip-address/package.json",
+            "name": "ip-address",
+            "version": "10.1.0"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/pacote/package.json",
+            "name": "pacote",
+            "version": "19.0.2"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/picomatch/package.json",
+            "name": "picomatch",
+            "version": "4.0.3"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/sigstore/package.json",
+            "name": "sigstore",
+            "version": "3.1.0"
+          },
+          {
+            "path": "usr/local/lib/node_modules/npm/node_modules/tar/package.json",
+            "name": "tar",
+            "version": "7.5.11"
+          }
+        ],
+        "suppression_file": null,
+        "ignore_unfixed": false,
+        "official_signed_provenance": false
+      },
+      "metadata": {
+        "buildx.build.ref": "desktop-linux/desktop-linux/8xvi0bvnqb4me4vwddk99swga",
+        "containerimage.descriptor": {
+          "mediaType": "application/vnd.oci.image.index.v1+json",
+          "digest": "sha256:5407ffe3587777f7fccd6f73329be3806530c0e0ebe6e180c0158cc4219f06e2",
+          "size": 857
+        },
+        "containerimage.digest": "sha256:5407ffe3587777f7fccd6f73329be3806530c0e0ebe6e180c0158cc4219f06e2"
+      },
+      "high_critical_counts": {
+        "CRITICAL": 1,
+        "HIGH": 10
+      }
+    }
+  },
+  "container_notes": [
+    "Images built locally only; no application runtime or release workflow started.",
+    "Portal application build commands used an external Dockerfile copy adding only RUN --network=none.",
+    "Web used the tracked Dockerfile with live API/Keycloak and telemetry hostnames mapped to loopback; Google Fonts asset fetches permitted.",
+    "OCI layers inspected with whiteout handling; no installed Vitest runtime package. Upstream bundled-tool dev manifests still contain obsolete Vitest declarations; these are not resolved workspace paths.",
+    "Unsigned local SPDX/SLSA records are not repository-approved signed provenance."
+  ],
+  "license_policy": {
+    "inventory_exit_code": 0,
+    "license_labels": [
+      "0BSD",
+      "Apache-2.0",
+      "Apache-2.0 AND LGPL-3.0-or-later",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "BlueOak-1.0.0",
+      "CC-BY-4.0",
+      "CC0-1.0",
+      "ISC",
+      "MIT",
+      "MIT-0",
+      "MPL-2.0",
+      "Python-2.0"
+    ],
+    "inventory_sha256": "c376ea7bce8193339d3ef7889c49174dec0078df69a10bf5a0293f2959e509dc",
+    "approved_policy_found": false,
+    "gate": "BLOCKED"
+  },
+  "blockers": [
+    "Required orchestrator-contract rejects the transferred repository name; protected trust maps still name the prior owner.",
+    "Runtime container scans contain critical/high findings outside the narrow Vitest manifest remediation; no unrelated upgrade or suppression was applied.",
+    "SAST returned no findings but five partial-parsing warnings; no repository-approved complete SAST policy found.",
+    "No repository-approved license allow/deny policy found; inventory alone is not policy approval.",
+    "Protected-main signed provenance, merge and post-merge alert resolution have not occurred.",
+    "Any evidence-only push requires fresh exact-head required checks and independent approval."
+  ],
+  "preservation": {
+    "existing_worktrees_clean": true,
+    "existing_heads": [
+      "256a18df9cc1718af77a8c15866e2c4590304059",
+      "6d761d4dda0978baa39d34fd76eb3d0ff59fff84"
+    ],
+    "source_snapshot_sha256": "75a07a373efde098cb08035ad03628608da9117bfaee3885da25b282a4e080ee"
+  },
+  "rulings": [
+    "- Ruling: use an external Git worktree under the existing Codex workspace directory ? preserves both existing clean clones and avoids an unrelated .gitignore commit ? cost if wrong: relocate the worktree without changing its contents.",
+    "- Ruling: tasks 1?3 remain one open PR, merge at task 4 ? follows the user's explicit sequencing ? cost if wrong: no gate is merged early; merge timing can be revised by owner.",
+    "- Ruling: missing named spec documents are not guessed; the supplied plans and saved NO_GO assessment are available authority ? security tasks are fully specified independently ? cost if wrong: foundation work remains blocked until its acceptance source is established.",
+    "Ruling: pin direct Vitest declarations to the existing 3.2.6 override, retaining Vite 6.4.3 and the existing dependency graph ? the critical advisory is patched at 3.2.6, so no runtime major upgrade is needed ? cost if wrong: medium advisories remain open and are explicitly excluded from critical remediation claims.",
+    "Ruling: characterize all declared configuration features, not nonexistent setups or aliases in default Node workspaces ? preserve focused scope and record zero-test packages explicitly ? cost if wrong: those packages remain without independent runtime regression coverage.",
+    "Ruling: do not repair the transferred repository's protected identity catalog inside this dependency-only PR ? the unchanged catalog still names appolon1908-hue/Breero.com and fails for ingtrader21-spec/Breero.com; user forbids mixing configuration/deployment authority changes and a third implementation PR ? cost if wrong: merge remains blocked pending an explicitly scoped owner repair.",
+    "Ruling: add matching @vitest/coverage-v8 3.2.6 as test-only tooling because the requested coverage gate has no provider ? related validation tooling, not an application dependency upgrade ? cost if wrong: root dev manifest and lockfile gain coverage-only dependencies, which must pass audit.",
+    "Ruling: validate container application builds with an external Dockerfile copy that adds only RUN --network=none to the app build command; dependency installation retains registry access ? prevents live-provider traffic without changing tracked Dockerfiles ? cost if wrong: network behavior differs from production build, which remains a separate CI gate.",
+    "Ruling: the web build needs Google Fonts; use its unchanged Dockerfile with API, Keycloak and telemetry hostnames mapped to loopback after independent static inspection found no build-time provider path ? permits asset downloads while preventing those live destinations ? cost if wrong: hostname controls are not a full network trace; no runtime image is started.",
+    "Final: Ruling: retain the protected identity map unchanged; independent reviewer declined identity repair scope ? prevents unauthorized trust-policy changes ? cost if wrong: merge waits for separately scoped owner repair.",
+    "Final: Ruling: retain medium advisory versions and mark them unresolved; independent reviewer declined expanded remediation ? preserves narrow critical remediation scope ? cost if wrong: medium vulnerabilities remain until separately addressed.",
+    "Final: Ruling: four zero-test workspaces receive no workflow certification; independent reviewer declined domain completeness ? test exits alone cannot prove workflows ? cost if wrong: certification remains withheld.",
+    "Final: Ruling: no foundation/authentication/production certification before the security gate; reviewer declined those scopes ? follows user sequencing ? cost if wrong: downstream work waits.",
+    "Final: Ruling: independent agent review does not substitute for GitHub approval; actual owner approval was observed for 5b83393 ? obeys protected-branch policy ? cost if wrong: any later push requires a renewed approval check.",
+    "Ruling: do not remove or upgrade bundled portal npm inside this manifest-only change ? the user excludes unrelated upgrades and portal changes; runtime scans now expose one critical and ten high findings per portal image ? cost if wrong: SECURITY_GATE remains FAIL pending a scope-approved repair.",
+    "Ruling: no license/SAST policy is invented and unsigned local attestations are not presented as approved signed provenance ? absence of required evidence is BLOCKED under the user plan ? cost if wrong: certification waits for an approved policy and protected workflow."
+  ],
+  "foundation_recovery_started": false,
+  "certified_base_sha": null,
+  "capabilities_enabled_by_this_work": [],
+  "live_provider_calls": "NO",
+  "production_activated": "NO",
+  "pr_reconciliation_authorized": "NO"
+}

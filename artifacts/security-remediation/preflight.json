@@ -1,0 +1,427 @@
+{
+  "captured_at": "2026-09-19T15:22:10.819345+00:00",
+  "CANONICAL_REPO": "ingtrader21-spec/Breero.com",
+  "SECURITY_BASE_SHA": "2292fd7533faa5752a3df7a8243e217447694367",
+  "branch": "security/remediate-ghsa-5xrq-8626-4rwp",
+  "canonical_repository_id": 1331354808,
+  "write_permission": true,
+  "worktrees_preserved": [
+    {
+      "path": "C:\\Users\\Usuario\\Desktop\\Breero.com",
+      "clean": true,
+      "head": "256a18df9cc1718af77a8c15866e2c4590304059"
+    },
+    {
+      "path": "C:/Users/Usuario/Desktop/\ud83c\udf74 restaurant/Breero.com",
+      "clean": true,
+      "head": "6d761d4dda0978baa39d34fd76eb3d0ff59fff84"
+    }
+  ],
+  "package_manager": "pnpm@10.0.0",
+  "registry": "https://registry.npmjs.org/",
+  "lockfiles": [
+    "pnpm-lock.yaml"
+  ],
+  "root_overrides": {
+    "vitest": "3.2.6",
+    "vite": "6.4.3",
+    "next": "15.5.24",
+    "sharp": "0.35.4",
+    "js-yaml": "4.3.2",
+    "postcss": "8.5.18"
+  },
+  "lockfile_sha256_before": "3343c12dc220a4339b32e4e5e255d700a81230c22ca3f4dcd8ab2b9e4ba6b1d4",
+  "affected_paths": [
+    {
+      "alert_number": 1,
+      "ghsa": "GHSA-5xrq-8626-4rwp",
+      "ecosystem": "npm",
+      "manifest": "apps/admin/package.json",
+      "scope": "development",
+      "relationship": "direct",
+      "declared": "^2.1.8",
+      "vulnerable_range": "< 3.2.6",
+      "first_patched": "3.2.6",
+      "command": "pnpm why vitest --depth Infinity --json",
+      "cwd": "apps\\admin",
+      "exit_code": 0,
+      "dependency_tree": [
+        {
+          "name": "@breero/admin",
+          "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\apps\\admin",
+          "private": true,
+          "devDependencies": {
+            "vitest": {
+              "from": "vitest",
+              "version": "3.2.6",
+              "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "alert_number": 2,
+      "ghsa": "GHSA-5xrq-8626-4rwp",
+      "ecosystem": "npm",
+      "manifest": "apps/ops/package.json",
+      "scope": "development",
+      "relationship": "direct",
+      "declared": "^2.1.8",
+      "vulnerable_range": "< 3.2.6",
+      "first_patched": "3.2.6",
+      "command": "pnpm why vitest --depth Infinity --json",
+      "cwd": "apps\\ops",
+      "exit_code": 0,
+      "dependency_tree": [
+        {
+          "name": "@breero/ops",
+          "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\apps\\ops",
+          "private": true,
+          "devDependencies": {
+            "vitest": {
+              "from": "vitest",
+              "version": "3.2.6",
+              "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "alert_number": 3,
+      "ghsa": "GHSA-5xrq-8626-4rwp",
+      "ecosystem": "npm",
+      "manifest": "apps/partner/package.json",
+      "scope": "development",
+      "relationship": "direct",
+      "declared": "^2.1.8",
+      "vulnerable_range": "< 3.2.6",
+      "first_patched": "3.2.6",
+      "command": "pnpm why vitest --depth Infinity --json",
+      "cwd": "apps\\partner",
+      "exit_code": 0,
+      "dependency_tree": [
+        {
+          "name": "@breero/partner",
+          "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\apps\\partner",
+          "private": true,
+          "devDependencies": {
+            "vitest": {
+              "from": "vitest",
+              "version": "3.2.6",
+              "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "alert_number": 4,
+      "ghsa": "GHSA-5xrq-8626-4rwp",
+      "ecosystem": "npm",
+      "manifest": "apps/web/package.json",
+      "scope": "development",
+      "relationship": "direct",
+      "declared": "^2.1.8",
+      "vulnerable_range": "< 3.2.6",
+      "first_patched": "3.2.6",
+      "command": "pnpm why vitest --depth Infinity --json",
+      "cwd": "apps\\web",
+      "exit_code": 0,
+      "dependency_tree": [
+        {
+          "name": "@breero/web",
+          "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\apps\\web",
+          "private": true,
+          "devDependencies": {
+            "vitest": {
+              "from": "vitest",
+              "version": "3.2.6",
+              "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "alert_number": 5,
+      "ghsa": "GHSA-5xrq-8626-4rwp",
+      "ecosystem": "npm",
+      "manifest": "packages/api-client/package.json",
+      "scope": "development",
+      "relationship": "direct",
+      "declared": "^2.1.8",
+      "vulnerable_range": "< 3.2.6",
+      "first_patched": "3.2.6",
+      "command": "pnpm why vitest --depth Infinity --json",
+      "cwd": "packages\\api-client",
+      "exit_code": 0,
+      "dependency_tree": [
+        {
+          "name": "@breero/api-client",
+          "version": "0.1.0",
+          "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\packages\\api-client",
+          "private": true,
+          "devDependencies": {
+            "vitest": {
+              "from": "vitest",
+              "version": "3.2.6",
+              "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "alert_number": 6,
+      "ghsa": "GHSA-5xrq-8626-4rwp",
+      "ecosystem": "npm",
+      "manifest": "packages/portal/package.json",
+      "scope": "development",
+      "relationship": "direct",
+      "declared": "^2.1.8",
+      "vulnerable_range": "< 3.2.6",
+      "first_patched": "3.2.6",
+      "command": "pnpm why vitest --depth Infinity --json",
+      "cwd": "packages\\portal",
+      "exit_code": 0,
+      "dependency_tree": [
+        {
+          "name": "@breero/portal",
+          "version": "0.1.0",
+          "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\packages\\portal",
+          "private": true,
+          "devDependencies": {
+            "vitest": {
+              "from": "vitest",
+              "version": "3.2.6",
+              "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "alert_number": 7,
+      "ghsa": "GHSA-5xrq-8626-4rwp",
+      "ecosystem": "npm",
+      "manifest": "packages/types/package.json",
+      "scope": "development",
+      "relationship": "direct",
+      "declared": "^2.1.8",
+      "vulnerable_range": "< 3.2.6",
+      "first_patched": "3.2.6",
+      "command": "pnpm why vitest --depth Infinity --json",
+      "cwd": "packages\\types",
+      "exit_code": 0,
+      "dependency_tree": [
+        {
+          "name": "@breero/types",
+          "version": "0.1.0",
+          "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\packages\\types",
+          "private": true,
+          "devDependencies": {
+            "vitest": {
+              "from": "vitest",
+              "version": "3.2.6",
+              "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "alert_number": 8,
+      "ghsa": "GHSA-5xrq-8626-4rwp",
+      "ecosystem": "npm",
+      "manifest": "packages/ui/package.json",
+      "scope": "development",
+      "relationship": "direct",
+      "declared": "^2.1.8",
+      "vulnerable_range": "< 3.2.6",
+      "first_patched": "3.2.6",
+      "command": "pnpm why vitest --depth Infinity --json",
+      "cwd": "packages\\ui",
+      "exit_code": 0,
+      "dependency_tree": [
+        {
+          "name": "@breero/ui",
+          "version": "0.1.0",
+          "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\packages\\ui",
+          "private": true,
+          "devDependencies": {
+            "vitest": {
+              "from": "vitest",
+              "version": "3.2.6",
+              "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.6.tgz",
+              "path": "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\node_modules\\.pnpm\\vitest@3.2.6_@types+node@22.20.1_jsdom@25.0.1\\node_modules\\vitest"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "critical_before": 8,
+  "high_before": 0,
+  "medium_before": 11,
+  "remaining_medium_advisories": [
+    "GHSA-82fw-gwwq-j7x9",
+    "GHSA-fxqj-rqcc-2cmp"
+  ],
+  "effective_main_rules": {
+    "endpoint": "repos/ingtrader21-spec/Breero.com/rules/branches/main",
+    "http_status": 200,
+    "data": [
+      {
+        "type": "pull_request",
+        "parameters": {
+          "required_approving_review_count": 1,
+          "dismiss_stale_reviews_on_push": true,
+          "required_reviewers": [],
+          "require_code_owner_review": false,
+          "require_last_push_approval": true,
+          "required_review_thread_resolution": true,
+          "require_extra_approval_for_unattributed_changes": true,
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        },
+        "ruleset_source_type": "Repository",
+        "ruleset_source": "ingtrader21-spec/Breero.com",
+        "ruleset_id": 22202166
+      },
+      {
+        "type": "required_linear_history",
+        "ruleset_source_type": "Repository",
+        "ruleset_source": "ingtrader21-spec/Breero.com",
+        "ruleset_id": 22202166
+      },
+      {
+        "type": "non_fast_forward",
+        "ruleset_source_type": "Repository",
+        "ruleset_source": "ingtrader21-spec/Breero.com",
+        "ruleset_id": 22202166
+      },
+      {
+        "type": "deletion",
+        "ruleset_source_type": "Repository",
+        "ruleset_source": "ingtrader21-spec/Breero.com",
+        "ruleset_id": 22202166
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "strict_required_status_checks_policy": true,
+          "do_not_enforce_on_create": false,
+          "required_status_checks": [
+            {
+              "context": "quality",
+              "integration_id": 15368
+            },
+            {
+              "context": "orchestrator-contract",
+              "integration_id": 15368
+            }
+          ]
+        },
+        "ruleset_source_type": "Repository",
+        "ruleset_source": "ingtrader21-spec/Breero.com",
+        "ruleset_id": 22202166
+      }
+    ],
+    "link": null
+  },
+  "main_ruleset": {
+    "endpoint": "repos/ingtrader21-spec/Breero.com/rulesets/22202166",
+    "http_status": 200,
+    "data": {
+      "id": 22202166,
+      "name": "AI automated production gates",
+      "target": "branch",
+      "source_type": "Repository",
+      "source": "ingtrader21-spec/Breero.com",
+      "enforcement": "active",
+      "conditions": {
+        "ref_name": {
+          "exclude": [],
+          "include": [
+            "~DEFAULT_BRANCH"
+          ]
+        }
+      },
+      "rules": [
+        {
+          "type": "pull_request",
+          "parameters": {
+            "required_approving_review_count": 1,
+            "dismiss_stale_reviews_on_push": true,
+            "required_reviewers": [],
+            "require_code_owner_review": false,
+            "require_last_push_approval": true,
+            "required_review_thread_resolution": true,
+            "require_extra_approval_for_unattributed_changes": true,
+            "allowed_merge_methods": [
+              "squash"
+            ]
+          }
+        },
+        {
+          "type": "required_linear_history"
+        },
+        {
+          "type": "non_fast_forward"
+        },
+        {
+          "type": "deletion"
+        },
+        {
+          "type": "required_status_checks",
+          "parameters": {
+            "strict_required_status_checks_policy": true,
+            "do_not_enforce_on_create": false,
+            "required_status_checks": [
+              {
+                "context": "quality",
+                "integration_id": 15368
+              },
+              {
+                "context": "orchestrator-contract",
+                "integration_id": 15368
+              }
+            ]
+          }
+        }
+      ],
+      "node_id": "RRS_lACqUmVwb3NpdG9yec5PWty4zgFSxzY",
+      "created_at": "2026-09-03T10:58:38.077-04:00",
+      "updated_at": "2026-09-08T12:31:52.035-04:00",
+      "current_user_can_bypass": "never",
+      "_links": {
+        "self": {
+          "href": "https://api.github.com/repos/ingtrader21-spec/Breero.com/rulesets/22202166"
+        },
+        "html": {
+          "href": "https://github.com/ingtrader21-spec/Breero.com/rules/22202166"
+        }
+      }
+    },
+    "link": null
+  },
+  "legacy_protection": {
+    "endpoint": "repos/ingtrader21-spec/Breero.com/branches/main/protection",
+    "http_status": 404,
+    "message": "Not Found"
+  },
+  "alerts_dismissed": false,
+  "production_activated": false,
+  "live_provider_calls": false,
+  "interpretation": "The resolved Vitest graph is already 3.2.6 through the root override. Eight direct manifests still declare ^2.1.8; align them with the existing patched resolution. No runtime major upgrade is required. Medium advisories remain separate."
+}
