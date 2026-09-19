@@ -26,3 +26,28 @@ export const marketingServices: MarketingService[] = [
 ];
 
 export const marketingServiceBySlug = (slug: string) => marketingServices.find((service) => service.slug === slug);
+
+// Intake choices are independent from publication of dedicated marketing pages.
+// Every entry is also seeded by the API.
+export const intakeServices = [
+  { slug: "plumbing", name: "Plumbing" },
+  { slug: "electrical", name: "Electrical" },
+  { slug: "heating", name: "Heating" },
+  { slug: "cooling", name: "Cooling & air conditioning" },
+  { slug: "appliance-repair", name: "Appliance repair" },
+  { slug: "handyman", name: "Handyman & small repairs" },
+  { slug: "home-maintenance", name: "Home maintenance" },
+  { slug: "cleaning", name: "Home cleaning" },
+  { slug: "locksmith", name: "Locksmith" },
+  { slug: "painting", name: "Painting" },
+  { slug: "carpentry", name: "Carpentry" },
+  { slug: "flooring", name: "Flooring" },
+  { slug: "roofing", name: "Roofing" },
+  { slug: "gutters", name: "Gutter cleaning & repair" },
+  { slug: "windows-doors", name: "Windows & doors" },
+  { slug: "garage-door", name: "Garage door service" },
+  { slug: "pest-control", name: "Pest control" },
+  { slug: "lawn-landscaping", name: "Lawn & landscaping" },
+  { slug: "pressure-washing", name: "Pressure washing" },
+  { slug: "moving-help", name: "Moving help" },
+] as const;
