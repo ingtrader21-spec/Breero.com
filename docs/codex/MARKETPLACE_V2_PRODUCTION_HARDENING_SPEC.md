@@ -1744,36 +1744,36 @@ Each step should be delivered as an independently reviewable PR with:
 
 Each step should be delivered as an independently reviewable PR with:
 
--  a narrowly defined scope and explicit non-goals; 
--  architecture/domain changes documented before implementation; 
--  additive database migrations where schema changes are required; 
--  migration validation from the current production head to the new head; 
--  domain services, policies, state machines, commands, repositories, and events kept separate from transport code; 
--  thin API routes with documented request/response DTOs; 
--  OpenAPI updated and checked for drift; 
--  authentication and permission requirements documented for every protected endpoint; 
--  record-level authorization tests, including negative cross-customer, cross-provider, cross-worker, and cross-tenant cases; 
--  required capability gates enforced server-side; 
--  idempotency behavior for every retryable mutation; 
--  optimistic-concurrency or `If-Match` behavior for mutable aggregates where needed; 
--  state-transition tests for every affected lifecycle; 
--  audit events containing actor, resource, request/correlation ID, tenant/legal-entity context, and safe metadata; 
--  transactional outbox events for externally relevant business changes; 
--  inbox/webhook tests when inbound integrations are involved; 
--  provider-adapter contract tests for external systems; 
--  retry, timeout, duplicate, replay, stale-lease, and terminal-failure coverage where applicable; 
--  PostgreSQL integration tests using the real database engine, plus PostGIS tests for geographic logic; 
--  no SQLite substitution for Postgres-specific behavior; 
--  frontend typed-contract updates only after the backend contract is stable; 
--  frontend form tests for `401`, `403`, `404`, `409`, `412`, `422`, `429`, `500/503`, timeout, retry, and double-submit behavior; 
--  accessibility, responsive, and browser E2E coverage for user-facing changes; 
--  structured logging and metrics for new critical flows; 
--  no credentials, tokens, certificates, local `.env` files, database dumps, or secrets committed; 
--  dangerous capabilities left disabled by default; 
--  rollback notes, migration compatibility notes, and operational-recovery notes; 
--  an exact final commit SHA and evidence that all checks were run on that exact head; 
--  independent review with no unresolved blocking threads before merge; 
--  no deployment merely because a PR is merged. 
+-  a narrowly defined scope and explicit non-goals;
+-  architecture/domain changes documented before implementation;
+-  additive database migrations where schema changes are required;
+-  migration validation from the current production head to the new head;
+-  domain services, policies, state machines, commands, repositories, and events kept separate from transport code;
+-  thin API routes with documented request/response DTOs;
+-  OpenAPI updated and checked for drift;
+-  authentication and permission requirements documented for every protected endpoint;
+-  record-level authorization tests, including negative cross-customer, cross-provider, cross-worker, and cross-tenant cases;
+-  required capability gates enforced server-side;
+-  idempotency behavior for every retryable mutation;
+-  optimistic-concurrency or `If-Match` behavior for mutable aggregates where needed;
+-  state-transition tests for every affected lifecycle;
+-  audit events containing actor, resource, request/correlation ID, tenant/legal-entity context, and safe metadata;
+-  transactional outbox events for externally relevant business changes;
+-  inbox/webhook tests when inbound integrations are involved;
+-  provider-adapter contract tests for external systems;
+-  retry, timeout, duplicate, replay, stale-lease, and terminal-failure coverage where applicable;
+-  PostgreSQL integration tests using the real database engine, plus PostGIS tests for geographic logic;
+-  no SQLite substitution for Postgres-specific behavior;
+-  frontend typed-contract updates only after the backend contract is stable;
+-  frontend form tests for `401`, `403`, `404`, `409`, `412`, `422`, `429`, `500/503`, timeout, retry, and double-submit behavior;
+-  accessibility, responsive, and browser E2E coverage for user-facing changes;
+-  structured logging and metrics for new critical flows;
+-  no credentials, tokens, certificates, local `.env` files, database dumps, or secrets committed;
+-  dangerous capabilities left disabled by default;
+-  rollback notes, migration compatibility notes, and operational-recovery notes;
+-  an exact final commit SHA and evidence that all checks were run on that exact head;
+-  independent review with no unresolved blocking threads before merge;
+-  no deployment merely because a PR is merged.
 
 Each PR description should end with a compact evidence block like:
 
