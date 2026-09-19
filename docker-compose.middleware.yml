@@ -1,6 +1,6 @@
 services:
   worker:
-    networks: [private, middleware_egress]
+    networks: [breero_private, middleware_egress]
     extra_hosts:
       - "middleware.internal.codestra.agency:10.40.0.1"
     volumes:
