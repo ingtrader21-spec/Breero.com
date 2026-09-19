@@ -130,6 +130,34 @@ function activeYaml(path) {
     .join("\n");
 }
 
+// Inspect the workflow's block-style YAML without adding an install dependency
+// to this standalone CI guard. Unsupported layouts fail the checks below.
+function yamlBlock(source, key, indent) {
+  const lines = source.split("\n");
+  const header = new RegExp(`^ {${indent}}${escapeRegExp(key)}:\\s*(.*)$`);
+  const start = lines.findIndex((line) => header.test(line));
+  if (start < 0) return { value: "", body: "" };
+  let end = start + 1;
+  while (end < lines.length && (!lines[end].trim() || lines[end].search(/\S/) > indent)) end += 1;
+  return { value: lines[start].match(header)[1].trim(), body: lines.slice(start + 1, end).join("\n") };
+}
+
+function hasDesignAssertion(step) {
+  if (!/^ {8}shell:\s*bash\s*$/m.test(step) || /^ {8}(?:if|continue-on-error):/m.test(step)) return false;
+  const run = yamlBlock(step, "run", 8);
+  if (!/^\|[+-]?$/.test(run.value)) return false;
+  const commands = run.body.split("\n").map((line) => line.trim()).filter(Boolean);
+  if (commands.shift() !== "set -euo pipefail") return false;
+
+  // Only unconditional assertions may precede this check. This excludes quoted
+  // text, heredocs, functions, branches and commands that disable errexit.
+  for (const command of commands) {
+    if (!/^\[\[\s*"\$[A-Z_]+"\s*==\s*success\s*\]\]\s*(?:#.*)?$/.test(command)) return false;
+    if (/^\[\[\s*"\$DESIGN_SYSTEM_RESULT"\s*==\s*success\s*\]\]\s*(?:#.*)?$/.test(command)) return true;
+  }
+  return false;
+}
+
 for (const path of REQUIRED_FILES) {
   if (!existsSync(path)) fail(`missing required governance file: ${path}`);
 }
@@ -179,13 +207,23 @@ if (!/^\/\.github\/workflows\/quality\.yml\s+@appolon1908-hue\s*$/m.test(codeown
 }
 
 const quality = activeYaml(".github/workflows/quality.yml");
-for (const [description, required] of [
-  ["define the design-system-quality job", /^\s{2}design-system-quality:\s*$/m],
-  ["require design-system-quality in the aggregate needs list", /^\s+-\s+design-system-quality\s*$/m],
-  ["map the design-system result into the aggregate environment", /DESIGN_SYSTEM_RESULT:\s*\$\{\{\s*needs\.design-system-quality\.result\s*\}\}/],
-  ["fail the aggregate gate unless design-system-quality succeeds", /\[\[\s*"\$DESIGN_SYSTEM_RESULT"\s*==\s*success\s*\]\]/],
+const jobs = yamlBlock(quality, "jobs", 0).body;
+const aggregate = yamlBlock(jobs, "quality", 2).body;
+const needs = yamlBlock(aggregate, "needs", 4).body;
+const steps = yamlBlock(aggregate, "steps", 4).body.split(/(?=^ {6}- )/m)
+  .filter((step) => /^ {6}- /m.test(step))
+  .map((step) => step.replace(/^ {6}- /, "        "));
+const enforcingSteps = steps.filter(hasDesignAssertion);
+const mapsDesignResult = (step) => /^ {10}DESIGN_SYSTEM_RESULT:\s*\$\{\{\s*needs\.design-system-quality\.result\s*\}\}\s*$/m
+  .test(yamlBlock(step, "env", 8).body);
+for (const [description, satisfied] of [
+  ["define the design-system-quality job", Boolean(yamlBlock(jobs, "design-system-quality", 2).body)],
+  ["require design-system-quality in the aggregate needs list", /^ {6}-\s+design-system-quality\s*$/m.test(needs)],
+  ["map the design-system result into the aggregate environment", enforcingSteps.some(mapsDesignResult)],
+  ["fail the aggregate gate unless design-system-quality succeeds", enforcingSteps.some(mapsDesignResult)
+    && /^ {4}if:\s*always\(\)\s*$/m.test(aggregate) && !/^ {4}continue-on-error:/m.test(aggregate)],
 ]) {
-  if (!required.test(quality)) fail(`Required quality workflow must ${description}`);
+  if (!satisfied) fail(`Required quality workflow must ${description}`);
 }
 
 let base = process.argv[2]?.trim();

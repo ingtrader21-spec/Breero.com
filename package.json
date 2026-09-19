@@ -7,7 +7,7 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "test": "turbo test",
+    "test": "node --test scripts/check-design-system.test.mjs && turbo test",
     "contract:check": "node scripts/check-frontend-openapi.mjs",
     "test:design": "node scripts/check-design-system.mjs"
   },

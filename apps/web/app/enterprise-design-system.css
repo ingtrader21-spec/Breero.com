@@ -251,7 +251,8 @@ p {
 }
 
 .footer__links a,
-.footer__legal {
+.footer__legal,
+.footer__trust {
   font-size: 0.875rem;
 }
 

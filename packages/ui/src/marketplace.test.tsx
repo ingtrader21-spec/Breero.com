@@ -55,6 +55,37 @@ describe("marketplace UI", () => {
     expect(screen.getByText("Pending review")).toBeInTheDocument();
   });
 
+  it.each([
+    [4.8, 0],
+    [4.8, -1],
+    [4.8, 1.5],
+    [4.8, NaN],
+    [4.8, Infinity],
+    [4.8, undefined],
+    [0, 12],
+    [0.9, 12],
+    [5.1, 12],
+    [NaN, 12],
+    [Infinity, 12],
+    [undefined, 12],
+  ])("hides unsupported rating evidence (%s stars, %s reviews)", (rating, reviewCount) => {
+    render(<ProviderTrustCard providerName="Example Home Services" trust={[]} rating={rating} reviewCount={reviewCount} />);
+
+    expect(screen.queryByLabelText(/out of 5/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/reviews$/)).not.toBeInTheDocument();
+  });
+
+  it.each([[1, 1, "1.0"], [4.8, 12, "4.8"], [5, 2, "5.0"]] as const)(
+    "shows a supported rating (%s stars, %s reviews)",
+    (rating, reviewCount, displayedRating) => {
+      render(<ProviderTrustCard providerName="Example Home Services" trust={[]} rating={rating} reviewCount={reviewCount} />);
+
+      const evidence = screen.getByLabelText(`${rating} out of 5 from ${reviewCount} verified service reviews`);
+      expect(evidence).toHaveTextContent(displayedRating);
+      expect(evidence).toHaveTextContent(`${reviewCount} reviews`);
+    },
+  );
+
   it("announces current capacity without implying assignment", () => {
     render(<CapacitySignal state="manual_review" detail="A dispatcher must confirm the provider and time." />);
     const status = screen.getByRole("status");
@@ -76,6 +107,31 @@ describe("marketplace UI", () => {
     const timeline = screen.getByRole("list", { name: "Project progress" });
     expect(within(timeline).getByText("Dispatcher review").closest("li")).toHaveAttribute("aria-current", "step");
     expect(within(timeline).getByText("Provider assignment").closest("li")).not.toHaveAttribute("aria-current");
+  });
+
+  it("normalizes duplicate current steps to upcoming after the first current step", () => {
+    const steps = [
+      { id: "request", label: "Request received", status: "complete" as const },
+      { id: "review", label: "Dispatcher review", status: "current" as const },
+      { id: "assignment", label: "Provider assignment", status: "current" as const },
+    ];
+    render(<ProjectStatusTimeline steps={steps} />);
+
+    const timeline = screen.getByRole("list", { name: "Project progress" });
+    const activeSteps = within(timeline).getAllByRole("listitem", { current: "step" });
+    expect(activeSteps).toHaveLength(1);
+    expect(activeSteps[0]).toHaveTextContent("Dispatcher review");
+    const duplicate = within(timeline).getByText("Provider assignment").closest("li");
+    expect(duplicate).not.toHaveAttribute("aria-current");
+    expect(duplicate).toHaveClass("br-project-timeline__step--upcoming");
+    expect(duplicate).not.toHaveClass("br-project-timeline__step--current");
+    expect(steps[2].status).toBe("current");
+  });
+
+  it("does not invent a current step when all steps are upcoming", () => {
+    render(<ProjectStatusTimeline steps={[{ id: "request", label: "Request received", status: "upcoming" }]} />);
+
+    expect(screen.queryByRole("listitem", { current: "step" })).not.toBeInTheDocument();
   });
 
   it("uses alerts for failures and status semantics for non-error states", () => {

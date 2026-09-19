@@ -146,7 +146,8 @@ export function ProviderTrustCard({
   action,
   className,
 }: ProviderTrustCardProps) {
-  const showRating = Number.isFinite(rating) && typeof reviewCount === "number";
+  const showRating = typeof rating === "number" && Number.isFinite(rating) && rating >= 1 && rating <= 5
+    && typeof reviewCount === "number" && Number.isInteger(reviewCount) && reviewCount > 0;
   return (
     <Card className={cx("br-provider-trust-card", className)}>
       <article>
@@ -178,12 +179,16 @@ export type ProjectTimelineStep = {
 };
 
 export function ProjectStatusTimeline({ steps, label = "Project progress", className }: { steps: ProjectTimelineStep[]; label?: string; className?: string }) {
+  const currentIndex = steps.findIndex((step) => step.status === "current");
   return (
     <ol className={cx("br-project-timeline", className)} aria-label={label}>
-      {steps.map((step) => <li key={step.id} className={cx("br-project-timeline__step", `br-project-timeline__step--${step.status}`)} aria-current={step.status === "current" ? "step" : undefined}>
-        <span className="br-project-timeline__marker" aria-hidden="true">{step.status === "complete" ? "✓" : ""}</span>
-        <div><strong>{step.label}</strong>{step.description && <p>{step.description}</p>}{step.timestamp && <time>{step.timestamp}</time>}</div>
-      </li>)}
+      {steps.map((step, index) => {
+        const status = step.status === "current" && index !== currentIndex ? "upcoming" : step.status;
+        return <li key={step.id} className={cx("br-project-timeline__step", `br-project-timeline__step--${status}`)} aria-current={status === "current" ? "step" : undefined}>
+          <span className="br-project-timeline__marker" aria-hidden="true">{status === "complete" ? "✓" : ""}</span>
+          <div><strong>{step.label}</strong>{step.description && <p>{step.description}</p>}{step.timestamp && <time>{step.timestamp}</time>}</div>
+        </li>;
+      })}
     </ol>
   );
 }
