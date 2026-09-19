@@ -1,8 +1,16 @@
 # Backend production deployment
 
-Production uses dedicated `breero-prod-postgres`, `breero-prod-redis`, `breero-prod-api`, and
-`breero-prod-worker` services on `breero_prod_private`; only the API additionally joins the shared
-proxy edge network. PostgreSQL, Redis and port 8000 have no host publication.
+Production is defined by the root `docker-compose.production.yml` (Compose project `breero`):
+`postgres`, `redis`, `api`, `worker`, and `scheduler` services on the internal `breero_private`
+network (Docker network name `breero_breero_private`); only the API additionally joins the shared
+`caddy_shared` proxy edge network. Compose assigns default container names (`breero-api-1`,
+`breero-worker-1`, `breero-postgres-1`, `breero-redis-1`, `breero-scheduler-1`) since the file sets
+no `container_name` overrides. PostgreSQL, Redis and port 8000 have no host publication.
+
+`deploy/production/docker-compose.backend.yml` is a service-free compatibility entry point for the
+protected CI workflow. It includes the root manifest and supplies only inert interpolation fixtures
+from `deploy/production/compose-validation.env`. It is not a second deployment topology and must
+not be used by operators.
 
 Required sequence:
 
@@ -33,4 +41,5 @@ certification and production activation approval, ensure `breero_middleware_egre
 same explicit `10.251.12.0/24` creation command documented for staging. Set the four
 `BREERO_PROD_MIDDLEWARE_*_FILE` variables to distinct production, root-owned files and apply
 `docker-compose.middleware.yml` as a second Compose file. Validate the combined render before
-recreating only `breero-prod-worker`. Do not copy staging HMAC or mTLS credentials into production.
+recreating only the `worker` service (`breero-worker-1`). Do not copy staging HMAC or mTLS
+credentials into production.
