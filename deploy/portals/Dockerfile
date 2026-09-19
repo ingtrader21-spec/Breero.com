@@ -27,7 +27,8 @@ ARG APP_NAME
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV APP_NAME=$APP_NAME
-RUN addgroup -S -g 10001 breero && adduser -S -u 10001 -G breero breero
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx \
+ && addgroup -S -g 10001 breero && adduser -S -u 10001 -G breero breero
 WORKDIR /app
 COPY --from=build --chown=breero:breero /app/apps/${APP_NAME}/.next/standalone ./
 COPY --from=build --chown=breero:breero /app/apps/${APP_NAME}/.next/static ./apps/${APP_NAME}/.next/static
