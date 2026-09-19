@@ -1,10 +1,10 @@
 import type { BreeroApi } from "./client";
-import type { AddressValidation, AuthSession, AvailabilitySlot, Booking, BookingCreateResponse, CustomerProfile, Payment, PublicCapabilities, Quote, ServiceDetail, ServiceSummary, User } from "@breero/types";
+import type { AccessCatalog, AddressValidation, AuthSession, AvailabilitySlot, Booking, BookingCreateResponse, CustomerProfile, LoginMode, Payment, PortalContext, PublicCapabilities, Quote, ServiceDetail, ServiceSummary, User } from "@breero/types";
 
 export interface MockScenario {
   services?: ServiceDetail[]; address?: AddressValidation; slots?: AvailabilitySlot[];
   session?: AuthSession; bookings?: Booking[]; bookingCreateResponse?: BookingCreateResponse; payments?: Payment[]; quotes?: Quote[]; profile?: CustomerProfile;
-  capabilities?: PublicCapabilities;
+  capabilities?: PublicCapabilities; portalContext?: PortalContext; loginMode?: LoginMode; accessCatalog?: AccessCatalog;
   latencyMs?: number; fail?: Partial<Record<keyof BreeroApi, Error>>;
 }
 const wait = (ms: number, signal?: AbortSignal) => new Promise<void>((resolve, reject) => {
@@ -14,12 +14,32 @@ const wait = (ms: number, signal?: AbortSignal) => new Promise<void>((resolve, r
 });
 const missing = (name: string): never => { throw new Error(`Mock scenario is missing ${name}`); };
 
+const defaultCatalog: AccessCatalog = {
+  roles: ["customer", "vendor_admin", "technician", "operations", "ops_manager", "support", "finance", "quality", "trust_safety", "sales", "marketing", "admin", "superadmin"],
+  departments: ["customer", "provider", "field_service", "dispatch", "customer_support", "vendor_success", "finance", "quality", "trust_safety", "sales", "marketing", "administration"],
+  tenant_scopes: ["global", "brand", "vendor"],
+};
+
 export function createMockBreeroApi(scenario: MockScenario = {}): BreeroApi {
   let profile = scenario.profile;
+  let portalContext = scenario.portalContext;
   const run = async <T>(domain: keyof BreeroApi, value: () => T, signal?: AbortSignal): Promise<T> => {
     await wait(scenario.latencyMs ?? 0, signal);
     if (scenario.fail?.[domain]) throw scenario.fail[domain];
     return value();
+  };
+  const defaultPortalContext = (): PortalContext => {
+    const user = scenario.session?.user ?? missing("session.user");
+    return {
+      user,
+      brand_key: "breero",
+      dashboard_path: "/account",
+      roles: ["customer"],
+      departments: ["customer"],
+      permissions: ["customer.profile.read", "customer.booking.read", "customer.quote.read"],
+      assignments: [{ role: "customer", department: "customer", tenant_scope: "brand", vendor_id: null, is_primary: true }],
+      identity_mode: scenario.loginMode?.mode ?? "local",
+    };
   };
   return {
     public: { capabilities: (s) => run("public", () => scenario.capabilities ?? {
@@ -28,6 +48,7 @@ export function createMockBreeroApi(scenario: MockScenario = {}): BreeroApi {
       marketplace_matching: false, messaging: false, reviews: false,
     }, s) },
     auth: {
+      loginMode: (s) => run("auth", () => scenario.loginMode ?? { mode: "local", issuer: "" }, s),
       login: () => run("auth", () => scenario.session ?? missing("session")),
       register: () => run("auth", () => scenario.session ?? missing("session")),
       refresh: () => run("auth", () => scenario.session ?? missing("session")),
@@ -39,6 +60,27 @@ export function createMockBreeroApi(scenario: MockScenario = {}): BreeroApi {
       verifyEmail: () => run("auth", () => ({ message: "Email verified" })),
       resendVerification: (s) => run("auth", () => ({ message: "Verification sent if required" }), s),
       me: (s) => run<User>("auth", () => scenario.session?.user ?? missing("session.user"), s),
+      context: (s) => run("auth", () => portalContext ?? defaultPortalContext(), s),
+      accessCatalog: (s) => run("auth", () => scenario.accessCatalog ?? defaultCatalog, s),
+      userAccess: (_userId, s) => run("auth", () => portalContext ?? defaultPortalContext(), s),
+      replaceUserAccess: (_userId, input, s) => run("auth", () => {
+        const current = portalContext ?? defaultPortalContext();
+        const assignments = input.assignments.map((item) => ({
+          role: item.role,
+          department: item.department,
+          tenant_scope: item.tenant_scope,
+          vendor_id: item.vendor_id ?? null,
+          is_primary: item.is_primary ?? false,
+        }));
+        portalContext = {
+          ...current,
+          brand_key: input.brand_key ?? current.brand_key,
+          roles: [...new Set(assignments.map((item) => item.role))],
+          departments: [...new Set(assignments.map((item) => item.department))],
+          assignments,
+        };
+        return portalContext;
+      }, s),
     },
     services: {
       list: (s) => run<ServiceSummary[]>("services", () => scenario.services ?? [], s),
