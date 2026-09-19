@@ -68,6 +68,51 @@ class ConsolidationLedgerTests(unittest.TestCase):
             self.validator.validate(invalid),
         )
 
+    def test_invalid_top_level_provenance_is_rejected(self) -> None:
+        invalid = json.loads(json.dumps(self.document))
+        invalid["repository"] = "example/wrong-repository"
+        invalid["generated_at"] = "yesterday"
+        invalid["production_deployed"] = "false"
+        errors = self.validator.validate(invalid)
+        self.assertIn("repository must equal ingtrader21-spec/Breero.com", errors)
+        self.assertIn("generated_at must be an RFC 3339 UTC timestamp", errors)
+        self.assertIn("production_deployed must be false", errors)
+
+    def test_dependency_must_reference_another_known_pull_request(self) -> None:
+        invalid = json.loads(json.dumps(self.document))
+        invalid["entries"][0]["dependencies"] = ["41", 999, 39]
+        errors = self.validator.validate(invalid)
+        self.assertTrue(any("dependencies must contain only integer" in error for error in errors))
+        self.assertTrue(any("dependencies contains unknown pull request 999" in error for error in errors))
+        self.assertTrue(any("dependencies cannot reference itself" in error for error in errors))
+
+    def test_affected_contracts_require_non_empty_strings(self) -> None:
+        invalid = json.loads(json.dumps(self.document))
+        invalid["entries"][0]["affected_contracts"] = [123, ""]
+        self.assertTrue(
+            any(
+                "affected_contracts must contain only non-empty strings" in error
+                for error in self.validator.validate(invalid)
+            )
+        )
+
+    def test_final_evidence_requires_exact_head_tests_review_and_merge(self) -> None:
+        invalid = json.loads(json.dumps(self.document))
+        invalid["entries"][0]["evidence_status"] = "complete"
+        invalid["entries"][0]["final_evidence"] = {
+            "checked_head_sha": "bad-sha",
+            "tests": [],
+            "review_state": "pending",
+            "accepted_merge_sha": None,
+            "checked_at": "yesterday",
+        }
+        errors = self.validator.validate(invalid)
+        self.assertTrue(any("final_evidence.checked_head_sha" in error for error in errors))
+        self.assertTrue(any("final_evidence.tests" in error for error in errors))
+        self.assertTrue(any("final_evidence.review_state must equal approved" in error for error in errors))
+        self.assertTrue(any("final_evidence.accepted_merge_sha" in error for error in errors))
+        self.assertTrue(any("final_evidence.checked_at" in error for error in errors))
+
     def test_unknown_disposition_is_rejected(self) -> None:
         invalid = json.loads(json.dumps(self.document))
         invalid["entries"][0]["disposition"] = "merge_everything"
