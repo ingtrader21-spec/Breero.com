@@ -14284,7 +14284,53 @@
           }
         }
       }
+    },
+    "/ready": {
+      "get": {
+        "operationId": "ready_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Ready Ready Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ready",
+        "tags": [
+          "health"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "operations",
+            "authentication": "network-policy",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "platform.health.read",
+            "pii_classification": "none",
+            "policy_rule": "operational-health",
+            "rate_limit_class": "health-probe",
+            "record_policy": "dependency-status-only",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "platform-runtime",
+            "response_schema": "builtins.dict",
+            "tenant_scope": "global"
+          }
+        }
+      }
     }
   },
-  "x-breero-endpoint-registry-digest": "sha256:fb895aded0540a33cb336dbf5c23b282a8545648fc8fcc3625b04b98884d4688"
+  "x-breero-endpoint-registry-digest": "sha256:2ec878dfb429d6a8f845e97b51fb0594977f930f9eb13396df1f05a069b77783"
 }

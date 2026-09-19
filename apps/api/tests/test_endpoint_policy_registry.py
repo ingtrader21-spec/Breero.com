@@ -1,3 +1,8 @@
+import os
+import subprocess
+import sys
+from pathlib import Path
+
 import pytest
 from fastapi import FastAPI
 
@@ -59,6 +64,7 @@ def test_every_runtime_operation_has_one_complete_policy() -> None:
     assert ("POST", "/api/v1/service-requests") in registered
     assert ("GET", "/api/v2/capabilities") in registered
     assert ("GET", "/health/ready") in registered
+    assert ("GET", "/ready") in registered
 
     for entry in endpoints:
         assert REQUIRED_POLICY_FIELDS == set(entry)
@@ -88,6 +94,7 @@ def test_openapi_operations_embed_the_registry_policy() -> None:
             continue
         operation = schema["paths"][entry["path"]][entry["method"].lower()]
         method_policies = operation["x-breero-policy"]
+        assert set(method_policies) == {entry["method"]}
         embedded = method_policies[entry["method"]]
         assert embedded["policy_rule"] == entry["policy_rule"]
         assert embedded["resource_owner"] == entry["resource_owner"]
@@ -107,12 +114,36 @@ def test_high_risk_route_families_are_never_registered_as_always_enabled() -> No
             assert entry["capability_gate"] != "always"
 
 
-def test_unowned_route_still_fails_closed() -> None:
+@pytest.mark.parametrize("path", ["/api/v1/unregistered-resource", "/ready/details"])
+def test_unowned_route_still_fails_closed(path: str) -> None:
     isolated = FastAPI()
 
-    @isolated.get("/api/v1/unregistered-resource")
+    @isolated.get(path)
     def unregistered():
         return {}
 
-    with pytest.raises(RuntimeError, match="unmatched=GET /api/v1/unregistered-resource"):
+    with pytest.raises(RuntimeError, match=f"unmatched=GET {path}"):
         build_endpoint_policies(isolated)
+
+
+def test_readiness_alias_uses_the_same_policy_as_the_health_endpoint() -> None:
+    endpoints = get_endpoint_registry(app)["endpoints"]
+    ready = next(entry for entry in endpoints if entry["path"] == "/ready")
+    health = next(entry for entry in endpoints if entry["path"] == "/health/ready")
+    identity_fields = {"path", "operation_id"}
+    assert {key: value for key, value in ready.items() if key not in identity_fields} == {
+        key: value for key, value in health.items() if key not in identity_fields
+    }
+
+
+def test_committed_contract_artifacts_match_the_runtime_registry() -> None:
+    api_root = Path(__file__).resolve().parents[1]
+    subprocess.run(
+        [sys.executable, "scripts/generate_openapi.py", "--check"],
+        cwd=api_root,
+        env={**os.environ, "OPENAPI_PATH": str(api_root / "openapi.json"),
+             "ENDPOINT_REGISTRY_PATH": str(api_root / "endpoint-registry.json")},
+        check=True,
+        capture_output=True,
+        text=True,
+    )

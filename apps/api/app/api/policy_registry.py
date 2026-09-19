@@ -310,7 +310,7 @@ POLICY_RULES: Final[tuple[EndpointPolicyRule, ...]] = (
 
     _rule(
         "operational-health",
-        r"/health(?:/live|/ready)?",
+        r"/(?:health(?:/live|/ready)?|ready)",
         methods=_methods("GET"),
         resource_owner="platform-runtime",
         audience="operations",
