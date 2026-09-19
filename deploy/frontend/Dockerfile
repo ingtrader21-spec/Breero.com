@@ -14,7 +14,7 @@ ARG NEXT_PUBLIC_APP_URL=https://breero.com
 ARG NEXT_PUBLIC_API_BASE_URL=https://api.breero.com/api/v1
 ARG NEXT_PUBLIC_DEPLOYMENT_ENV=production
 ARG NEXT_PUBLIC_KEYCLOAK_ENABLED=true
-ARG NEXT_PUBLIC_KEYCLOAK_ISSUER=https://auth.codestra.agency/realms/codestra
+ARG NEXT_PUBLIC_KEYCLOAK_ISSUER=https://auth.codestra.co/realms/codestra
 ARG NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=breero-web-production
 ARG NEXT_PUBLIC_ADSENSE_ENABLED=false
 ARG NEXT_PUBLIC_ADSENSE_CLIENT_ID=
@@ -36,7 +36,7 @@ RUN case "$NEXT_PUBLIC_DEPLOYMENT_ENV" in \
     esac \
  && test "$NEXT_PUBLIC_API_MODE" = "live" \
  && test "$NEXT_PUBLIC_KEYCLOAK_ENABLED" = "true" \
- && test "$NEXT_PUBLIC_KEYCLOAK_ISSUER" = "https://auth.codestra.agency/realms/codestra" \
+ && test "$NEXT_PUBLIC_KEYCLOAK_ISSUER" = "https://auth.codestra.co/realms/codestra" \
  && test "$NEXT_PUBLIC_KEYCLOAK_CLIENT_ID" = "breero-web-production" \
  && pnpm --filter @breero/web build
 

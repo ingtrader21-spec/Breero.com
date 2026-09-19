@@ -16,13 +16,20 @@ export function AuthForm({ mode }: { mode: Mode }) {
     setState("loading"); setMessage("");
     try {
       if (mode === "login") {
-        if (keycloak.enabled) { await keycloak.login(); return; }
+        if (keycloak.enabled) {
+          await keycloak.login();
+          return;
+        }
         const session = await customerApi.auth.login({ email: String(data.get("email")), password: String(data.get("password")) });
-        customerSession.save(session); await routeToPortal(); return;
+        customerSession.save(session);
+        await routeToPortal();
+        return;
       } else if (mode === "register") {
         if (keycloak.enabled) throw new Error("Account creation is not open for this release");
         const session = await customerApi.auth.register({ full_name: `${data.get("first_name")} ${data.get("last_name")}`.trim(), email: String(data.get("email")), password: String(data.get("password")) });
-        customerSession.save(session); await routeToPortal(); return;
+        customerSession.save(session);
+        await routeToPortal();
+        return;
       } else if (mode === "forgot") {
         if (keycloak.enabled) throw new Error("Password recovery is managed by the secure sign-in provider");
         await customerApi.auth.forgotPassword({ email: String(data.get("email")) });
