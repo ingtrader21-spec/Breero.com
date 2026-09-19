@@ -142,10 +142,10 @@ jobs:
           {
             echo '## BREERO portal deployment plan'
             echo
-            printf -- '- Environment: `%s`\n' "$PLAN_ENVIRONMENT"
-            printf -- '- Release: `%s`\n' "$PLAN_RELEASE_SHA"
-            printf -- '- Change: `%s`\n' "$PLAN_CHANGE_ID"
-            printf -- '- Apply requested: `%s`\n' "$PLAN_APPLY"
+            printf -- '- Environment: %s\n' "$PLAN_ENVIRONMENT"
+            printf -- '- Release: %s\n' "$PLAN_RELEASE_SHA"
+            printf -- '- Change: %s\n' "$PLAN_CHANGE_ID"
+            printf -- '- Apply requested: %s\n' "$PLAN_APPLY"
             echo '- Caddy/Kong/Keycloak changes: **not applied by this workflow**'
           } >> "${GITHUB_STEP_SUMMARY}"
 
