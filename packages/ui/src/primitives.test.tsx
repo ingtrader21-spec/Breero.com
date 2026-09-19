@@ -3,6 +3,21 @@ import { describe, expect, it, vi } from "vitest";
 import { Button, Checkbox, DateSelector, Dialog, ErrorState, FormField, Input, Price, Tabs } from "./index";
 
 describe("shared UI", () => {
+  it("prevents disabled actions and permits the action when enabled", () => {
+    let submissions = 0;
+    const submit = () => { submissions += 1; };
+    const view = render(<Button disabled onClick={submit}>Confirm request</Button>);
+    const button = screen.getByRole("button", { name: "Confirm request" });
+    expect(button).toBeDisabled();
+    fireEvent.click(button);
+    expect(submissions).toBe(0);
+
+    view.rerender(<Button onClick={submit}>Confirm request</Button>);
+    expect(button).toBeEnabled();
+    fireEvent.click(button);
+    expect(submissions).toBe(1);
+    view.unmount();
+  });
   it("announces loading and disables the button", () => {
     render(<Button loading>Save</Button>);
     expect(screen.getByRole("button", { name: "Please wait" })).toBeDisabled();

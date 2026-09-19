@@ -12,8 +12,14 @@ from app.domains.auth.models import (
     User,
     UserRole,
 )
-from app.domains.auth.security import hash_password, verify_password
+from app.domains.auth.schemas import LoginRequest
+from app.domains.auth.security import verify_password
 from app.domains.auth.service import AuthService
+
+LEGACY_PASSWORD_HASH = (
+    "pbkdf2_sha256$1000$00112233445566778899aabbccddeeff$"
+    "d67d9d5c5d2a22e2f4ac35496d2e0589cf08978785ec4406f24314d9312230a1"
+)
 
 
 @pytest.fixture
@@ -35,12 +41,28 @@ def user() -> User:
         id=uuid.uuid4(),
         email="customer@example.com",
         full_name="Test Customer",
-        password_hash=hash_password("old-password-123"),
+        password_hash=LEGACY_PASSWORD_HASH,
         role=UserRole.customer,
         is_active=True,
         email_verified=True,
         credential_version=1,
     )
+
+
+@pytest.mark.asyncio
+async def test_login_transparently_rehashes_legacy_password(service: AuthService) -> None:
+    account = user()
+    service.users.by_email.return_value = account
+
+    result = await service.login(
+        LoginRequest(email=account.email, password="old-password-123"),
+        user_agent="pytest",
+        ip="127.0.0.1",
+    )
+
+    assert result.user.id == account.id
+    assert account.password_hash.startswith("$argon2id$")
+    service.session.commit.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -134,7 +156,7 @@ async def test_valid_password_reset_invalidates_credentials(service: AuthService
     await service.reset_password("reset-token-that-is-long-enough", "new-password-123")
     assert token.used_at is not None
     assert account.credential_version == 2
-    assert verify_password("new-password-123", account.password_hash)
+    assert await verify_password("new-password-123", account.password_hash)
 
 
 @pytest.mark.asyncio

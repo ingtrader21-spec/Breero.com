@@ -5,6 +5,31 @@ import { ApiTransport } from "./transport";
 const json = (body: unknown, init: ResponseInit = {}) => new Response(JSON.stringify(body), { status: 200, headers: { "content-type": "application/json", ...init.headers }, ...init });
 
 describe("ApiTransport", () => {
+  it("waits for retry backoff and clears timers after a successful read", async () => {
+    vi.useFakeTimers();
+    const attempts: number[] = [];
+    try {
+      const started = Date.now();
+      const transport = new ApiTransport({
+        baseUrl: "https://api.example.test",
+        fetch: async () => {
+          attempts.push(Date.now() - started);
+          return attempts.length === 1
+            ? json({ detail: "Temporarily unavailable" }, { status: 503 })
+            : json({ services: ["cleaning"] });
+        },
+      });
+      const request = transport.request("services");
+      await vi.advanceTimersByTimeAsync(149);
+      expect(attempts).toEqual([0]);
+      await vi.advanceTimersByTimeAsync(1);
+      await expect(request).resolves.toEqual({ services: ["cleaning"] });
+      expect(attempts).toEqual([0, 150]);
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
   it("binds the native global fetch implementation to its global receiver", async () => {
     const originalFetch = globalThis.fetch;
     let receiver: unknown;

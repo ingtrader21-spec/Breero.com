@@ -78,7 +78,7 @@ class InternalUserProvisioningService:
                 User(
                     email=email,
                     full_name=data.full_name.strip(),
-                    password_hash=hash_password(new_opaque_token()),
+                    password_hash=await hash_password(new_opaque_token()),
                     role=legacy_role,
                     is_active=True,
                     email_verified=settings.keycloak_enabled,

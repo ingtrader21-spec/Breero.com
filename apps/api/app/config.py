@@ -18,8 +18,15 @@ class Settings(BaseSettings):
         default="postgresql+psycopg://breero:breero@postgres:5432/breero", repr=False
     )
     database_url_file: str = ""
+    database_pool_size: int = Field(default=10, ge=1, le=100)
+    database_max_overflow: int = Field(default=5, ge=0, le=100)
+    database_pool_timeout_seconds: float = Field(default=5.0, gt=0, le=120)
+    database_pool_recycle_seconds: int = Field(default=300, ge=30, le=86_400)
     redis_url: str = Field(default="redis://redis:6379/0", repr=False)
     redis_url_file: str = ""
+    redis_max_connections: int = Field(default=64, ge=4, le=1_000)
+    redis_socket_connect_timeout_seconds: float = Field(default=1.0, gt=0, le=30)
+    redis_socket_timeout_seconds: float = Field(default=1.0, gt=0, le=30)
     jwt_secret: str = Field(default="development-only-change-me", repr=False)
     jwt_secret_file: str = ""
     jwt_refresh_secret: str = Field(default="development-only-change-me-too", repr=False)

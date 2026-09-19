@@ -82,7 +82,7 @@ class ProviderRegistrationService:
                 User(
                     email=email,
                     full_name=data.full_name.strip(),
-                    password_hash=hash_password(data.password),
+                    password_hash=await hash_password(data.password),
                     role=UserRole.vendor_admin,
                     is_active=True,
                     email_verified=False,

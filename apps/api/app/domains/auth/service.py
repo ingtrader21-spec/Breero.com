@@ -28,6 +28,7 @@ from app.domains.auth.security import (
     hash_token,
     new_opaque_token,
     verify_password,
+    verify_password_and_update,
 )
 from app.domains.booking.models import Address, Booking, Customer
 from app.domains.common.outbox import AuditLog, EventStatus, IntegrationEvent
@@ -55,7 +56,7 @@ class AuthService:
                 User(
                     email=email,
                     full_name=data.full_name.strip(),
-                    password_hash=hash_password(data.password),
+                    password_hash=await hash_password(data.password),
                     role=UserRole.customer,
                 )
             )
@@ -87,15 +88,20 @@ class AuthService:
         ip: str | None = None,
     ) -> TokenResponse:
         user = await self.users.by_email(data.email.lower())
-        if (
-            not user
-            or not verify_password(data.password, user.password_hash)
-            or not user.is_active
-        ):
+        valid_password = False
+        updated_password_hash: str | None = None
+        if user:
+            valid_password, updated_password_hash = await verify_password_and_update(
+                data.password,
+                user.password_hash,
+            )
+        if not user or not valid_password or not user.is_active:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid credentials",
             )
+        if updated_password_hash is not None:
+            user.password_hash = updated_password_hash
         token = await self._tokens(user, user_agent, ip)
         self._audit(
             actor_id=user.id,
@@ -106,6 +112,7 @@ class AuthService:
             metadata={
                 "user_agent_present": bool(user_agent),
                 "ip_present": bool(ip),
+                "password_rehashed": updated_password_hash is not None,
             },
         )
         await self.session.commit()
@@ -262,7 +269,7 @@ class AuthService:
         current: str,
         new: str,
     ) -> None:
-        if not verify_password(current, user.password_hash):
+        if not await verify_password(current, user.password_hash):
             raise HTTPException(
                 400,
                 "Current password is incorrect",
@@ -314,7 +321,7 @@ class AuthService:
         *,
         action: str,
     ) -> None:
-        user.password_hash = hash_password(password)
+        user.password_hash = await hash_password(password)
         user.credential_version += 1
         await self.session.execute(
             update(Session)
