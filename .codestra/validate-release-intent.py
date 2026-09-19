@@ -195,7 +195,7 @@ EXPECTED_CHECK_WORKFLOW_SHA256 = {
     },
     "ingtrader21-spec/Breero.com": {
         ".github/workflows/production-orchestrator-contract.yml": ORCHESTRATOR_CONTRACT_WORKFLOW_SHA256,
-        ".github/workflows/quality.yml": "9e8367e853316594a325fbcb0f22f1e701c35c205b15e66a5228ae8b4ce10ce4",
+        ".github/workflows/quality.yml": "721477dd87c2f9321103eae31a43b7c4a720463a91e9b302a831a54dde99f047",
     },
     "appolon1908-hue/Moneybee-Backend": {
         ".github/workflows/production-orchestrator-contract.yml": ORCHESTRATOR_CONTRACT_WORKFLOW_SHA256,
@@ -217,8 +217,8 @@ SHARED_PRODUCTION_VALIDATOR_SHA256 = (
     "83d2fce102104543b871530f11115f20"
 )
 BREERO_PRODUCTION_VALIDATOR_SHA256 = (
-    "8cbbf4de38c7634d81f624a774c42831"
-    "ce69a60ca37747726a53f8ba7ecb9b8b"
+    "32f67cbc308a60197a1c3bc360006f4b"
+    "a7e9a21e56184662465f41def9f123f9"
 )
 KEYCLOAK_PRODUCTION_VALIDATOR_SHA256 = (
     "6006bbc7850ce7666de926b6cad2585b"
@@ -410,8 +410,8 @@ EXPECTED_REQUIRED_CHECK_SOURCE_CLOSURE_SHA256 = {
         "19ad25962daeeff809b9a9d391b1e2f0"
     ),
     "ingtrader21-spec/Breero.com": (
-        "aeed86f0900cc0604765f223c99335fa"
-        "aae271fbc4d65682d58161c1c402ec37"
+        "1b73625dce01162037831d57ba06a458"
+        "e0d574cd88062b6c564f73b7c321f248"
     ),
     "appolon1908-hue/Moneybee-Backend": (
         "a283e388028892ced3ac8445893ec2fa"
