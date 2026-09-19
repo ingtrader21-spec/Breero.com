@@ -7,11 +7,12 @@ and [orchestrator](https://github.com/ingtrader21-spec/Breero.com/actions/runs/3
 checks succeeded. This records 24 historical PRs; it does not accept their behavior.
 
 The user-supplied 2026-09-19 implementation plan governs the task order below.
-Its named design specification,
-`docs/superpowers/specs/2026-09-19-breero-pr-consolidation-design.md`, was unavailable
-in fetched history and the known local clones when this ledger was prepared.
-The schema and classifications are provisional pending that document. No claim
-is made that the missing specification was read or approved by this change.
+The supporting [design specification](../superpowers/specs/2026-09-19-breero-pr-consolidation-design.md)
+and [execution plan](../superpowers/plans/2026-09-19-breero-pr-consolidation-plan.md)
+are now included alongside the ledger accepted in PR #136. The original
+capture predates those documents being available in this checkout; preserve
+its evidence and revalidate classifications against current source before
+accepting or closing any historical PR.
 
 ## Reading the evidence
 
@@ -109,9 +110,9 @@ and web Dockerfile) were already stale despite its successful self-test. Their
 bindings are refreshed to unchanged protected-main source bytes. Actual final-tree
 equality and every executable byte binding must be checked separately.
 
-The referenced design specification and approved dependency-license policy were
-unavailable at preparation. License inventory alone cannot satisfy the plan's
-license-policy gate. These limitations must remain visible until resolved.
+The design specification was unavailable when the original capture was prepared
+and is now included. The approved dependency-license policy remains unavailable;
+license inventory alone cannot satisfy the plan's license-policy gate.
 
 Repository consolidation does not equal staging or production deployment
 readiness. Payments, assignments, confirmations, live dispatch, email/SMS,
