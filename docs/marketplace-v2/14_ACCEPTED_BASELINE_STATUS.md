@@ -1,12 +1,17 @@
-# BREERO Marketplace V2 — Accepted Baseline and Activation Status
+# BREERO Marketplace V2 — Historical Baseline and Activation Status
 
 ## Authority and date
 
-Current-state status authority as of **2026-08-26**.
+Historical status snapshot from **2026-08-26**, retained for traceability.
 
 This document corrects status-only language in earlier Marketplace V2 drafts that described the accepted application as request-only. It does not replace domain, security, system-of-record, API, event, retention or release-control requirements elsewhere in the package.
 
-When another document describes current implementation or activation status differently, this file controls until an exact-head reviewed update replaces it.
+This snapshot does not control current implementation status or work sequencing.
+Use [the current system inventory](../architecture/CURRENT_SYSTEM.md), repository
+`AGENTS.md`, and fresh evidence from the exact protected `main` commit. In
+particular, the schema and authentication/authorization milestones below predate
+the accepted September updates. Historical capability flags do not authorize
+activation; current release controls and independent evidence remain required.
 
 ## Accepted application baseline
 
@@ -30,7 +35,7 @@ fail-closed high-risk capabilities
 
 It is not merely the older request-only baseline.
 
-## Current implementation status
+## Implementation status recorded on 2026-08-26
 
 ```text
 QUOTE_ONLY_MANUAL_SCHEDULING_BASELINE=ACCEPTED_IN_MAIN
@@ -44,9 +49,9 @@ PRODUCTION_DEPLOYED=NO
 CAPABILITIES_ACTIVATED=NO
 ```
 
-PR #38 is the current P0 API-foundation implementation review candidate. Its exact-head CI success is evidence for that PR only; it does not mean P0 final, Marketplace V2, production readiness, or capability activation passed.
+At the snapshot date, PR #38 was the P0 API-foundation implementation review candidate. Its exact-head CI success was evidence for that PR only; it did not mean P0 final, Marketplace V2, production readiness, or capability activation passed.
 
-## Current disabled capabilities
+## Disabled capabilities recorded on 2026-08-26
 
 ```text
 payments=false
@@ -68,7 +73,7 @@ external_automation=false
 
 Manual scheduling routes already accepted by PR #34 may remain present. They do not imply any automatic or financial capability.
 
-## Current active review sequence
+## Review sequence recorded on 2026-08-26
 
 ```text
 1. independently review unchanged PR #38 exact head
@@ -80,9 +85,12 @@ Manual scheduling routes already accepted by PR #34 may remain present. They do 
 7. begin marketplace domains only after P0_FINAL=PASS
 ```
 
-The next engineering boundary is production identity/authentication and authorization. Provider, matching, opportunity, messaging, reviews, financial transactions and activation work must not begin early.
+The next engineering boundary at that time was production identity/authentication
+and authorization. Do not restart completed work from this historical sequence;
+derive remaining dependencies from the current system inventory and exact-head
+review evidence. High-risk capabilities still require their release gates.
 
-## Current operational and governance blockers
+## Operational and governance blockers recorded on 2026-08-26
 
 Fresh evidence remains required for:
 

@@ -15,11 +15,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Reject cross-project naming
         shell: bash
-        run: |
-          set -euo pipefail
-          needle="$(printf '%s%s' 'money' 'bee')"
-          if grep -RIni --exclude-dir=.git -- "$needle" .; then
-            echo "::error::BREERO repository contains a cross-project product reference. Remove it before merge."
-            exit 1
-          fi
-          echo "BREERO scope guard passed."
+        run: scripts/ci/validate-breero-scope.sh
+      - name: Verify scope guard regression cases
+        run: scripts/ci/test-validate-breero-scope.sh

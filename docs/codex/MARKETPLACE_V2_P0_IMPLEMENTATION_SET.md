@@ -15,7 +15,13 @@ PRODUCTION_READY=NO
 CAPABILITY_ACTIVATION=NO
 ```
 
-## Accepted baseline
+## Historical baseline recorded on 2026-08-26
+
+The values below are historical context, not the current schema or implementation
+status. Use `docs/architecture/CURRENT_SYSTEM.md`, repository `AGENTS.md`, and
+fresh exact-head evidence to establish the accepted baseline and remaining P0
+work. Do not restart completed authentication or authorization work from the
+original branch sequence in this document.
 
 ```text
 ACCEPTED_MAIN_SHA=8071572c90905d98894ab1a4cafe99a4178f7dd8
