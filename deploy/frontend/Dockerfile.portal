@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 ARG NODE_BUILD_IMAGE
+ARG NODE_RUNTIME_IMAGE
 FROM ${NODE_BUILD_IMAGE} AS build
 
 ARG APP_DIR
@@ -16,7 +17,6 @@ RUN test -n "${APP_DIR}" && test -n "${APP_FILTER}" && \
     mkdir -p "apps/${APP_DIR}/public" && \
     pnpm --filter "${APP_FILTER}" build
 
-ARG NODE_RUNTIME_IMAGE
 FROM ${NODE_RUNTIME_IMAGE} AS runtime
 
 ARG APP_DIR
