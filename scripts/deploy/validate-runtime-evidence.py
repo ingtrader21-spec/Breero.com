@@ -6,10 +6,18 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import stat
 import sys
 from collections.abc import Mapping
 from typing import Any
+
+APP_SECRET_BINDINGS = {
+    "DATABASE_URL_FILE": "/run/secrets/breero_database_url",
+    "REDIS_URL_FILE": "/run/secrets/breero_redis_url",
+    "JWT_SECRET_FILE": "/run/secrets/breero_jwt_access_secret",
+    "JWT_REFRESH_SECRET_FILE": "/run/secrets/breero_jwt_refresh_secret",
+}
 
 
 class EvidenceError(RuntimeError):
@@ -62,6 +70,34 @@ def actual_network_name(document: Mapping[str, Any], logical_name: str) -> str:
     return name
 
 
+def secret_mounts(
+    service_name: str,
+    service: Mapping[str, Any],
+    secret_definitions: Mapping[str, Any],
+) -> dict[str, str]:
+    """Bind each verified Compose source to its unique in-container target."""
+
+    configured = service.get("secrets") or []
+    require(isinstance(configured, list), f"{service_name} requires rendered secret mounts")
+    mounts: dict[str, str] = {}
+    targets: set[str] = set()
+    for mount in configured:
+        require(isinstance(mount, (str, dict)), f"{service_name} secret mount is malformed")
+        source = mount if isinstance(mount, str) else mount.get("source")
+        target = source if isinstance(mount, str) else mount.get("target", source)
+        require(
+            isinstance(source, str) and source in secret_definitions,
+            f"{service_name} uses an unverified secret",
+        )
+        require(isinstance(target, str) and bool(target), f"{service_name} secret target is malformed")
+        target = target if target.startswith("/") else "/run/secrets/" + target
+        require(source not in mounts, f"{service_name} duplicates secret source {source}")
+        require(target not in targets, f"{service_name} duplicates secret target {target}")
+        mounts[source] = target
+        targets.add(target)
+    return mounts
+
+
 def validate_compose_bindings(
     backend: Mapping[str, Any],
     frontend: Mapping[str, Any],
@@ -79,6 +115,12 @@ def validate_compose_bindings(
     web = mapping(frontend_services["web"], "frontend web service")
     for name in ("api", "worker", "scheduler", "migrate"):
         require(backend_services[name].get("image") == args.expected_api_image, f"rendered {name} image does not match the approved digest")
+    for name in ("postgres", "redis"):
+        image = backend_services[name].get("image")
+        require(
+            isinstance(image, str) and re.fullmatch(r"[^\s]+@sha256:[0-9a-f]{64}", image) is not None,
+            f"rendered {name} image must use an immutable digest",
+        )
     require(web.get("image") == args.expected_frontend_image, "rendered frontend image does not match the approved digest")
 
     require(
@@ -121,20 +163,43 @@ def validate_compose_bindings(
         require(mode & 0o007 == 0, f"secret {logical_name} is world-accessible")
         verified_paths.append(resolved)
 
-    for name in ("api", "worker", "scheduler", "migrate"):
+    for name in ("api", "worker", "scheduler", "migrate", "postgres", "redis"):
         service = backend_services[name]
-        mounts = service.get("secrets") or []
-        require(isinstance(mounts, list), f"{name} requires rendered secret mounts")
-        targets = {}
-        for mount in mounts:
-            source = mount if isinstance(mount, str) else mount.get("source")
-            target = source if isinstance(mount, str) else mount.get("target", source)
-            require(source in secret_definitions, f"{name} uses an unverified secret")
-            targets[target if str(target).startswith("/") else "/run/secrets/" + str(target)] = source
+        mounts = secret_mounts(name, service, secret_definitions)
+        if name == "redis":
+            expected_path = "/run/secrets/breero_redis_acl"
+            require(
+                mounts.get("breero_redis_acl") == expected_path,
+                f"redis must mount breero_redis_acl at {expected_path}",
+            )
+            command = service.get("command") or []
+            require(
+                isinstance(command, list)
+                and command.count("--aclfile") == 1
+                and any(
+                    option == "--aclfile" and value == expected_path
+                    for option, value in zip(command, command[1:])
+                ),
+                "redis must consume its verified ACL secret through --aclfile",
+            )
+            continue
+
+        bindings = (
+            {"POSTGRES_PASSWORD_FILE": "/run/secrets/breero_postgres_password"}
+            if name == "postgres" else APP_SECRET_BINDINGS
+        )
         env = service.get("environment") or {}
         require(isinstance(env, dict), f"{name} environment must be rendered")
-        for variable in ("DATABASE_URL_FILE", "REDIS_URL_FILE", "JWT_SECRET_FILE", "JWT_REFRESH_SECRET_FILE"):
-            require(env.get(variable) in targets, f"{name} {variable} does not consume a verified secret")
+        for variable, expected_path in bindings.items():
+            source = expected_path.rsplit("/", 1)[-1]
+            require(
+                mounts.get(source) == expected_path,
+                f"{name} must mount {source} at {expected_path}",
+            )
+            require(
+                env.get(variable) == expected_path,
+                f"{name} must bind {variable} to {expected_path}",
+            )
     return sorted(set(verified_paths))
 
 

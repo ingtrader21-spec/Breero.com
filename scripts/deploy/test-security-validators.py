@@ -356,6 +356,108 @@ class RuntimeEvidenceTests(unittest.TestCase):
         )
         self.assertGreater(len(paths), 0)
 
+    def test_unmounted_postgres_password_consumer_fails(self) -> None:
+        for password_path in (None, "/run/secrets/unmounted_password"):
+            with self.subTest(password_path=password_path):
+                backend = backend_document()
+                self.prepare_secret_files(backend)
+                backend["services"]["postgres"]["environment"] = (
+                    {} if password_path is None else {"POSTGRES_PASSWORD_FILE": password_path}
+                )
+                with self.assertRaises(runtime_validator.EvidenceError):
+                    runtime_validator.validate_compose_bindings(
+                        backend, frontend_document(), self.runtime_args()
+                    )
+
+    def test_mutable_data_service_images_fail(self) -> None:
+        for service_name in ("postgres", "redis"):
+            with self.subTest(service=service_name):
+                backend = backend_document()
+                self.prepare_secret_files(backend)
+                backend["services"][service_name]["image"] = f"example/{service_name}:latest"
+                with self.assertRaises(runtime_validator.EvidenceError):
+                    runtime_validator.validate_compose_bindings(
+                        backend, frontend_document(), self.runtime_args()
+                    )
+
+    def test_runtime_secret_mounts_require_approved_source_and_target(self) -> None:
+        for service_name, source in (
+            ("api", "breero_database_url"),
+            ("worker", "breero_redis_url"),
+            ("scheduler", "breero_jwt_access_secret"),
+            ("migrate", "breero_jwt_refresh_secret"),
+            ("postgres", "breero_postgres_password"),
+            ("redis", "breero_redis_acl"),
+        ):
+            for defect in ("missing", "wrong-source", "wrong-target", "duplicate-target"):
+                with self.subTest(service=service_name, defect=defect):
+                    backend = backend_document()
+                    self.prepare_secret_files(backend)
+                    mounts = backend["services"][service_name]["secrets"]
+                    mounts.remove(source)
+                    wrong_source = (
+                        "breero_redis_acl" if source != "breero_redis_acl" else "breero_postgres_password"
+                    )
+                    if defect == "wrong-source":
+                        mounts.append({"source": wrong_source, "target": source})
+                    elif defect == "wrong-target":
+                        mounts.append({"source": source, "target": "unconsumed_secret"})
+                    elif defect == "duplicate-target":
+                        mounts.extend([
+                            source,
+                            {"source": wrong_source, "target": source},
+                        ])
+                    with self.assertRaises(runtime_validator.EvidenceError):
+                        runtime_validator.validate_compose_bindings(
+                            backend, frontend_document(), self.runtime_args()
+                        )
+
+    def test_application_consumers_cannot_use_another_verified_secret(self) -> None:
+        backend = backend_document()
+        self.prepare_secret_files(backend)
+        backend["services"]["api"]["environment"]["DATABASE_URL_FILE"] = (
+            "/run/secrets/breero_redis_url"
+        )
+        with self.assertRaises(runtime_validator.EvidenceError):
+            runtime_validator.validate_compose_bindings(
+                backend, frontend_document(), self.runtime_args()
+            )
+
+    def test_redis_must_consume_its_verified_acl_mount(self) -> None:
+        for command in (
+            ["redis-server"],
+            ["redis-server", "--aclfile", "/run/secrets/unmounted_acl"],
+            ["redis-server", "--logfile", "/run/secrets/breero_redis_acl"],
+        ):
+            with self.subTest(command=command):
+                backend = backend_document()
+                self.prepare_secret_files(backend)
+                backend["services"]["redis"]["command"] = command
+                with self.assertRaises(runtime_validator.EvidenceError):
+                    runtime_validator.validate_compose_bindings(
+                        backend, frontend_document(), self.runtime_args()
+                    )
+
+    def test_long_form_runtime_secret_bindings_pass(self) -> None:
+        for absolute_target in (False, True):
+            with self.subTest(absolute_target=absolute_target):
+                backend = backend_document()
+                self.prepare_secret_files(backend)
+                for service in backend["services"].values():
+                    service["secrets"] = [
+                        {
+                            "source": source,
+                            "target": "/run/secrets/" + source if absolute_target else source,
+                        }
+                        for source in service["secrets"]
+                    ]
+                self.assertEqual(
+                    len(runtime_validator.validate_compose_bindings(
+                        backend, frontend_document(), self.runtime_args()
+                    )),
+                    6,
+                )
+
     def test_unbound_runtime_network_name_fails(self) -> None:
         backend = backend_document()
         frontend = frontend_document()

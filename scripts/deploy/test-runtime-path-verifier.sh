@@ -137,7 +137,8 @@ cp "$root/scripts/deploy/validate-runtime-evidence.py" "$repo/scripts/deploy/val
 chmod +x "$repo/scripts/deploy/verify-runtime-paths.sh" "$repo/scripts/deploy/validate-runtime-evidence.py"
 printf 'breero.com { reverse_proxy web:3000 }\napi.breero.com { reverse_proxy api:8000 }\n' \
   >"$mock_root/etc/caddy/Caddyfile"
-printf 'APP_ENV=production\n' >"$mock_root/etc/breero/backend.env"
+printf 'APP_ENV=production\nPOSTGRES_PASSWORD_FILE=/run/secrets/breero_postgres_password\n' \
+  >"$mock_root/etc/breero/backend.env"
 printf 'NEXT_PUBLIC_API_BASE_URL=https://api.breero.com\n' >"$mock_root/etc/breero/frontend.env"
 chmod 600 "$mock_root/etc/breero/backend.env" "$mock_root/etc/breero/frontend.env"
 
@@ -173,6 +174,12 @@ for name in ("api", "worker", "scheduler", "migrate"):
     bindings = {"DATABASE_URL_FILE": "breero_database_url", "REDIS_URL_FILE": "breero_redis_url", "JWT_SECRET_FILE": "breero_jwt_access_secret", "JWT_REFRESH_SECRET_FILE": "breero_jwt_refresh_secret"}
     services[name]["environment"] = {key: "/run/secrets/" + value for key, value in bindings.items()}
     services[name]["secrets"] = [{"source": value, "target": value} for value in bindings.values()]
+services["postgres"]["environment"] = {
+    "POSTGRES_PASSWORD_FILE": "/run/secrets/breero_postgres_password",
+}
+services["postgres"]["secrets"] = ["breero_postgres_password"]
+services["redis"]["command"] = ["redis-server", "--aclfile", "/run/secrets/breero_redis_acl"]
+services["redis"]["secrets"] = ["breero_redis_acl"]
 backend = {
     "services": services,
     "networks": {
@@ -322,6 +329,29 @@ grep -Fxq 'COMPOSE_RUNTIME_BINDING=PASS' <<<"$host_output"
 grep -Fxq 'CADDY_HOST_UPSTREAM_BINDING=PASS' <<<"$host_output"
 grep -Fxq 'RUNTIME_PATHS_VERIFIED=YES' <<<"$host_output"
 grep -Fxq 'LIVE_SERVER_CHANGED=NO' <<<"$host_output"
+
+invalid_backend_json="$mock_root/backend-unmounted-password.json"
+python3 - "$backend_json" "$invalid_backend_json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+backend = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+backend["services"]["postgres"]["environment"]["POSTGRES_PASSWORD_FILE"] = (
+    "/run/secrets/unmounted_password"
+)
+Path(sys.argv[2]).write_text(json.dumps(backend), encoding="utf-8")
+PY
+if invalid_output="$(run_host_verifier env MOCK_BACKEND_JSON="$invalid_backend_json" \
+  "$host_verifier" --config "$host_config" --mode host-read-only 2>&1)"; then
+  echo 'unmounted PostgreSQL password consumer unexpectedly passed' >&2
+  exit 1
+fi
+grep -Fq 'POSTGRES_PASSWORD_FILE' <<<"$invalid_output"
+if grep -Fxq 'RUNTIME_PATHS_VERIFIED=YES' <<<"$invalid_output"; then
+  echo 'invalid secret consumer emitted a verified runtime verdict' >&2
+  exit 1
+fi
 
 expect_failure ss-enumeration-failure \
   env \
