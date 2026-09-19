@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,24 @@ DISPOSITIONS = {
     "unsafe",
 }
 FINAL_EVIDENCE_STATUSES = {"complete", "merged", "superseded_verified"}
+EVIDENCE_STATUSES = FINAL_EVIDENCE_STATUSES | {
+    "blocked_on_parent",
+    "pending_alert_comparison",
+    "preflight_only",
+    "requires_behavioral_revalidation",
+    "requires_compose_revalidation",
+    "requires_current_auth_negative_tests",
+    "requires_domain_decomposition",
+    "requires_exact_head_revalidation",
+    "requires_file_level_decomposition",
+    "requires_parent_contracts",
+    "requires_read_only_revalidation",
+    "requires_route_inventory_refresh",
+    "requires_runtime_alignment",
+    "requires_security_revalidation",
+    "requires_ui_authority_selection",
+    "stale_base_requires_replay",
+}
 UTC_TIMESTAMP = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")
 REQUIRED_ENTRY_FIELDS = {
     "pull_request",
@@ -48,7 +67,47 @@ def _is_sha(value: Any) -> bool:
 
 
 def _is_utc_timestamp(value: Any) -> bool:
-    return isinstance(value, str) and UTC_TIMESTAMP.fullmatch(value) is not None
+    if not isinstance(value, str) or UTC_TIMESTAMP.fullmatch(value) is None:
+        return False
+    try:
+        datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError:
+        return False
+    return True
+
+
+def _dependency_cycle(entries: list[Any]) -> list[int] | None:
+    graph = {
+        entry["pull_request"]: entry.get("dependencies", [])
+        for entry in entries
+        if isinstance(entry, dict)
+        and isinstance(entry.get("pull_request"), int)
+        and isinstance(entry.get("dependencies"), list)
+    }
+    visiting: list[int] = []
+    visited: set[int] = set()
+
+    def visit(number: int) -> list[int] | None:
+        if number in visiting:
+            start = visiting.index(number)
+            return visiting[start:] + [number]
+        if number in visited:
+            return None
+        visiting.append(number)
+        for dependency in graph.get(number, []):
+            if isinstance(dependency, int) and not isinstance(dependency, bool):
+                cycle = visit(dependency)
+                if cycle is not None:
+                    return cycle
+        visiting.pop()
+        visited.add(number)
+        return None
+
+    for number in graph:
+        cycle = visit(number)
+        if cycle is not None:
+            return cycle
+    return None
 
 
 def validate(document: Any) -> list[str]:
@@ -125,6 +184,9 @@ def validate(document: Any) -> list[str]:
         for field in ("title", "branch", "owning_domain", "evidence_status", "rationale"):
             if field in entry and (not isinstance(entry[field], str) or not entry[field].strip()):
                 errors.append(f"{prefix}.{field} must be a non-empty string")
+        evidence_status = entry.get("evidence_status")
+        if isinstance(evidence_status, str) and evidence_status not in EVIDENCE_STATUSES:
+            errors.append(f"{prefix}.evidence_status must be one of the approved states")
         if entry.get("replacement_pr") is not None and not isinstance(
             entry.get("replacement_pr"), int
         ):
@@ -175,6 +237,11 @@ def validate(document: Any) -> list[str]:
         errors.append(f"entries contain unexpected pull requests: {unexpected}")
     if len(entries) != len(EXPECTED_PULL_REQUESTS):
         errors.append(f"entries must contain exactly {len(EXPECTED_PULL_REQUESTS)} records")
+    cycle = _dependency_cycle(entries)
+    if cycle is not None:
+        errors.append(
+            "dependency cycle detected: " + " -> ".join(str(number) for number in cycle)
+        )
     return errors
 
 

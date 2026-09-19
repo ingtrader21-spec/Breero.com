@@ -78,6 +78,14 @@ class ConsolidationLedgerTests(unittest.TestCase):
         self.assertIn("generated_at must be an RFC 3339 UTC timestamp", errors)
         self.assertIn("production_deployed must be false", errors)
 
+    def test_calendar_invalid_utc_timestamps_are_rejected(self) -> None:
+        invalid = json.loads(json.dumps(self.document))
+        invalid["generated_at"] = "2026-99-99T99:99:99Z"
+        self.assertIn(
+            "generated_at must be an RFC 3339 UTC timestamp",
+            self.validator.validate(invalid),
+        )
+
     def test_dependency_must_reference_another_known_pull_request(self) -> None:
         invalid = json.loads(json.dumps(self.document))
         invalid["entries"][0]["dependencies"] = ["41", 999, 39]
@@ -85,6 +93,17 @@ class ConsolidationLedgerTests(unittest.TestCase):
         self.assertTrue(any("dependencies must contain only integer" in error for error in errors))
         self.assertTrue(any("dependencies contains unknown pull request 999" in error for error in errors))
         self.assertTrue(any("dependencies cannot reference itself" in error for error in errors))
+
+    def test_dependency_graph_must_be_acyclic(self) -> None:
+        invalid = json.loads(json.dumps(self.document))
+        invalid["entries"][0]["dependencies"] = [40]
+        invalid["entries"][1]["dependencies"] = [39]
+        self.assertTrue(
+            any(
+                "dependency cycle detected" in error
+                for error in self.validator.validate(invalid)
+            )
+        )
 
     def test_affected_contracts_require_non_empty_strings(self) -> None:
         invalid = json.loads(json.dumps(self.document))
@@ -112,6 +131,16 @@ class ConsolidationLedgerTests(unittest.TestCase):
         self.assertTrue(any("final_evidence.review_state must equal approved" in error for error in errors))
         self.assertTrue(any("final_evidence.accepted_merge_sha" in error for error in errors))
         self.assertTrue(any("final_evidence.checked_at" in error for error in errors))
+
+    def test_unknown_evidence_status_is_rejected(self) -> None:
+        invalid = json.loads(json.dumps(self.document))
+        invalid["entries"][0]["evidence_status"] = "closed"
+        self.assertTrue(
+            any(
+                "evidence_status must be one of" in error
+                for error in self.validator.validate(invalid)
+            )
+        )
 
     def test_unknown_disposition_is_rejected(self) -> None:
         invalid = json.loads(json.dumps(self.document))
