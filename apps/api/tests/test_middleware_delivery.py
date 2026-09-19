@@ -85,6 +85,10 @@ async def test_disabled_delivery_fails_closed():
 
 def test_private_middleware_hostname_is_pinned_in_delivery_overlays():
     repository = Path(__file__).resolve().parents[3]
-    for environment in ("staging", "production"):
-        compose = (repository / f"deploy/{environment}/docker-compose.middleware.yml").read_text()
+    compose_paths = (
+        repository / "deploy/staging/docker-compose.middleware.yml",
+        repository / "docker-compose.middleware.yml",
+    )
+    for compose_path in compose_paths:
+        compose = compose_path.read_text()
         assert 'middleware.internal.codestra.agency:10.40.0.1' in compose
