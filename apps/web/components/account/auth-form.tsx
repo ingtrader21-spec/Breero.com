@@ -6,6 +6,7 @@ import { Button, Checkbox, FormField, Input } from "@breero/ui";
 import { customerApi, customerSession } from "@/lib/customer/api";
 import { notifyCustomerSessionChanged } from "@/lib/customer/session-actions";
 import { keycloak } from "@/lib/keycloak";
+import { routeToPortal } from "@/lib/portal";
 
 type Mode = "login" | "register" | "forgot" | "reset" | "verify";
 type SubmissionState = "idle" | "loading" | "success" | "error";
@@ -35,6 +36,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
         });
         customerSession.save(session);
         notifyCustomerSessionChanged();
+        await routeToPortal(nextPath);
+        return;
       } else if (mode === "register") {
         if (keycloak.enabled) throw new Error("Account creation is not open for this release");
         const session = await customerApi.auth.register({
@@ -44,9 +47,13 @@ export function AuthForm({ mode }: { mode: Mode }) {
         });
         customerSession.save(session);
         notifyCustomerSessionChanged();
+        await routeToPortal();
+        return;
       } else if (mode === "forgot") {
+        if (keycloak.enabled) throw new Error("Password recovery is managed by the secure sign-in provider");
         await customerApi.auth.forgotPassword({ email: String(data.get("email")) });
       } else if (mode === "reset") {
+        if (keycloak.enabled) throw new Error("Password recovery is managed by the secure sign-in provider");
         const password = String(data.get("password"));
         if (password !== String(data.get("confirm_password"))) {
           throw new Error("Passwords do not match");
@@ -56,6 +63,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
           new_password: password,
         });
       } else {
+        if (keycloak.enabled) throw new Error("Email verification is managed by the secure sign-in provider");
         await customerApi.auth.verifyEmail({ token: query.get("token") ?? "" });
       }
 
