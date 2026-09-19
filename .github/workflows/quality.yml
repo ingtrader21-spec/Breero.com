@@ -82,6 +82,10 @@ jobs:
           fetch-depth: 0
       - name: Validate BREERO scope
         run: scripts/ci/validate-breero-scope.sh
+      - name: Validate pull-request consolidation ledger
+        run: |
+          python scripts/pr_consolidation/validate_ledger.py
+          python -m unittest -v scripts.pr_consolidation.test_validate_ledger
       - name: Validate Git whitespace
         env:
           EVENT_NAME: ${{ github.event_name }}
