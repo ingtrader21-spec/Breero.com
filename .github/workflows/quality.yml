@@ -129,6 +129,10 @@ jobs:
         run: scripts/ci/test-classify-quality-scope.sh
       - name: Prove BREERO scope scenarios
         run: scripts/ci/test-validate-breero-scope.sh
+      - name: Validate PR consolidation ledger
+        run: python scripts/pr_consolidation/validate_ledger.py
+      - name: Test PR consolidation ledger validation
+        run: python -m unittest discover -s scripts/pr_consolidation -p 'test_*.py'
 
   design-system-quality:
     needs: classify
