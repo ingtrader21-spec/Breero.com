@@ -16,7 +16,7 @@ Apply the canonical hardened backend manifest together with the observability ov
 
 ```bash
 docker compose \
-  -f deploy/production/docker-compose.backend.yml \
+  -f docker-compose.production.yml \
   -f deploy/observability/docker-compose.observability.yml \
   --env-file /etc/codestra/breero/production.env \
   config --quiet
