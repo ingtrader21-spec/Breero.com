@@ -69,8 +69,9 @@ const required = {
   "/api/v1/operations/workers/{worker_id}/booking-coverage": ["put"],
   "/api/v1/operations/vendors/{vendor_id}/status": ["patch"],
 
-  "/api/v1/admin/users": ["get"],
-  "/api/v1/admin/users/{user_id}": ["patch"],
+  // Internal-user provisioning is POST-only. Access reads and replacements use
+  // the auth/access/users contract required above, not legacy admin-user routes.
+  "/api/v1/admin/users": ["post"],
   "/api/v1/admin/service-zones": ["get", "post"],
   "/api/v1/admin/service-zones/{service_area_id}": ["get", "patch", "delete"],
   "/api/v1/admin/postal-codes": ["get", "post"],
