@@ -47,7 +47,7 @@ async def test_login_dashboard_domain_sender_compose_outbox_delivery(
         account = User(
             email=f"email-admin-{marker}@example.com",
             full_name="Tenant Email Admin",
-            password_hash=hash_password("Tenant-email-test-123!"),
+            password_hash=await hash_password("Tenant-email-test-123!"),
             role=UserRole.admin,
             is_active=True,
             email_verified=True,
@@ -173,7 +173,7 @@ async def test_vendor_scope_cannot_cross_tenant_email_resources_or_secret_namesp
         provider = User(
             email=f"provider-{marker}@example.com",
             full_name="Scoped Provider",
-            password_hash=hash_password("Tenant-email-test-123!"),
+            password_hash=await hash_password("Tenant-email-test-123!"),
             role=UserRole.vendor_admin,
             is_active=True,
             email_verified=True,
@@ -245,7 +245,7 @@ async def test_outbox_listing_filters_tenant_scope_before_the_page_limit() -> No
         owner = User(
             email=f"quiet-owner-{marker}@example.com",
             full_name="Quiet Tenant Owner",
-            password_hash=hash_password("Tenant-email-test-123!"),
+            password_hash=await hash_password("Tenant-email-test-123!"),
             role=UserRole.vendor_admin,
             is_active=True,
             email_verified=True,
@@ -253,7 +253,7 @@ async def test_outbox_listing_filters_tenant_scope_before_the_page_limit() -> No
         noisy_owner = User(
             email=f"noisy-owner-{marker}@example.com",
             full_name="Noisy Tenant Owner",
-            password_hash=hash_password("Tenant-email-test-123!"),
+            password_hash=await hash_password("Tenant-email-test-123!"),
             role=UserRole.vendor_admin,
             is_active=True,
             email_verified=True,
