@@ -11345,6 +11345,7 @@
     },
     "/api/v1/jobs": {
       "get": {
+        "description": "List jobs; the collection path is registered by the package router.",
         "operationId": "list_jobs_api_v1_jobs_get",
         "parameters": [
           {
