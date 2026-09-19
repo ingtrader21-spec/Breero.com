@@ -151,7 +151,10 @@ class OutboxService:
                 event.last_error_code = getattr(exc, "code", type(exc).__name__).upper()[:80]
                 event.last_error_at = datetime.now(UTC)
                 terminal = bool(getattr(exc, "terminal", False))
-                if terminal or event.attempt_count >= MAX_ATTEMPTS:
+                if bool(getattr(exc, "pending_configuration", False)):
+                    event.status = EventStatus.PENDING_CONFIGURATION
+                    event.processed_at = None
+                elif terminal or event.attempt_count >= MAX_ATTEMPTS:
                     event.status = EventStatus.FAILED_TERMINAL
                     event.processed_at = datetime.now(UTC)
                 else:
@@ -170,8 +173,11 @@ class OutboxService:
         )
         if not event:
             raise LookupError("Integration event not found")
-        if event.status not in (EventStatus.DEAD_LETTER, EventStatus.FAILED, EventStatus.FAILED_TERMINAL):
-            raise ValueError("Only failed integration events can be retried")
+        if event.status not in (
+            EventStatus.DEAD_LETTER, EventStatus.FAILED, EventStatus.FAILED_TERMINAL,
+            EventStatus.PENDING_CONFIGURATION,
+        ):
+            raise ValueError("Only failed or configuration-pending integration events can be retried")
         event.status = EventStatus.PENDING
         event.attempt_count = 0
         event.next_attempt_at = datetime.now(UTC)

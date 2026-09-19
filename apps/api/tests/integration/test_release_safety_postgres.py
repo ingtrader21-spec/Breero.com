@@ -216,7 +216,7 @@ async def test_activation_and_manual_retry_deliver_once_and_are_audited() -> Non
         assert await outbox.activate_pending_configuration() == 0
         actor_id = uuid.uuid4()
         await outbox.retry(terminal.id, actor_id)
-        with pytest.raises(ValueError, match="Only failed integration events"):
+        with pytest.raises(ValueError, match="Only failed or configuration-pending integration events"):
             await outbox.retry(terminal.id, actor_id)
 
         deliveries: list[uuid.UUID] = []
@@ -376,4 +376,3 @@ async def test_parking_and_activation_synchronize_public_submission_status() -> 
         await session.refresh(event)
         assert event.status == EventStatus.PENDING
         assert submission.downstream_status == DownstreamStatus.PENDING
-

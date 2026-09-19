@@ -140,6 +140,7 @@ def test_stripe_keys_cannot_mix_test_and_live_modes():
         "marketplace_messaging_enabled",
         "marketplace_reviews_enabled",
         "marketing_email_enabled",
+        "live_email_delivery",
         "marketing_sms_enabled",
     ],
 )

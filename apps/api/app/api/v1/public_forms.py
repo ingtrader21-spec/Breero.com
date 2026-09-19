@@ -1,11 +1,15 @@
 from typing import Annotated
 
-import redis.asyncio as redis
-from fastapi import APIRouter, Depends, Header, Request, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import settings
 from app.core.errors import DomainError
+from app.core.rate_limit import (
+    enforce_rate_limit as enforce_shared_rate_limit,
+)
+from app.core.rate_limit import (
+    source_for_request,
+)
 from app.db.session import get_db
 from app.domains.public_submissions.models import SubmissionType
 from app.domains.public_submissions.schemas import (
@@ -20,18 +24,17 @@ router = APIRouter()
 
 
 async def enforce_rate_limit(request: Request) -> str:
-    source = request.client.host if request.client else "unknown"
-    client = redis.from_url(settings.redis_url)
     try:
-        key = f"public-form:{source}"
-        count = await client.incr(key)
-        if count == 1:
-            await client.expire(key, 60)
-        if count > 10:
-            raise DomainError("RATE_LIMITED", "Too many submissions; try again shortly", 429)
-    finally:
-        await client.aclose()
-    return source
+        await enforce_shared_rate_limit(request, "public-form", 10, 60)
+    except HTTPException as exc:
+        if exc.status_code == 429:
+            raise DomainError(
+                "RATE_LIMITED",
+                "Too many submissions; try again shortly",
+                429,
+            ) from exc
+        raise
+    return source_for_request(request)
 
 
 async def accept(data, submission_type, key, source, session):

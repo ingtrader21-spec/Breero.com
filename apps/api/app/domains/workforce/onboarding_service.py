@@ -82,7 +82,7 @@ class ProviderRegistrationService:
                 User(
                     email=email,
                     full_name=data.full_name.strip(),
-                    password_hash=hash_password(data.password),
+                    password_hash=await hash_password(data.password),
                     role=UserRole.vendor_admin,
                     is_active=True,
                     email_verified=False,
@@ -150,6 +150,7 @@ class ProviderRegistrationService:
             )
             deliverable = (
                 settings.email_enabled
+                and settings.live_email_delivery
                 and settings.transactional_email_mode != "disabled"
             )
             self.session.add(
