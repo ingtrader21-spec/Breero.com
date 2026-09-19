@@ -1,11 +1,11 @@
 import type {
-  AddressValidation, AddressValidationRequest, AuthSession, AvailabilitySearchRequest,
-  AvailabilitySlot, Booking, BookingConfirmation, BookingCreateRequest, BookingCreateResponse, ChangePasswordRequest, CustomerAddress,
-  CustomerAddressInput, CustomerBookingList, CustomerPayment, CustomerProfile,
-  CustomerProfilePatch, ForgotPasswordRequest, LoginRequest, MessageResponse, Page,
-  Payment, PaymentIntentRequest, PublicCapabilities, Quote, RefreshRequest, RegisterRequest,
-  ResetPasswordRequest, ServiceDetail, ServiceQuestion, ServiceSummary, TokenRequest,
-  User, UUID,
+  AccessCatalog, AccessProfileUpdate, AddressValidation, AddressValidationRequest, AuthSession,
+  AvailabilitySearchRequest, AvailabilitySlot, Booking, BookingConfirmation, BookingCreateRequest,
+  BookingCreateResponse, ChangePasswordRequest, CustomerAddress, CustomerAddressInput,
+  CustomerBookingList, CustomerPayment, CustomerProfile, CustomerProfilePatch, ForgotPasswordRequest,
+  LoginMode, LoginRequest, MessageResponse, Page, Payment, PaymentIntentRequest, PortalContext,
+  PublicCapabilities, Quote, RefreshRequest, RegisterRequest, ResetPasswordRequest, ServiceDetail,
+  ServiceQuestion, ServiceSummary, TokenRequest, User, UUID,
 } from "@breero/types";
 import { ApiTransport, type Transport, type TransportOptions } from "./transport";
 
@@ -13,12 +13,16 @@ export interface PageParams { page?: number; pageSize?: number }
 export interface BreeroApi {
   public: { capabilities(signal?: AbortSignal): Promise<PublicCapabilities> };
   auth: {
+    loginMode(signal?: AbortSignal): Promise<LoginMode>;
     login(input: LoginRequest): Promise<AuthSession>; register(input: RegisterRequest): Promise<AuthSession>;
     refresh(input: RefreshRequest): Promise<AuthSession>; logout(input: RefreshRequest): Promise<void>;
     logoutAll(signal?: AbortSignal): Promise<void>; forgotPassword(input: ForgotPasswordRequest): Promise<MessageResponse>;
     resetPassword(input: ResetPasswordRequest): Promise<MessageResponse>; changePassword(input: ChangePasswordRequest): Promise<MessageResponse>;
     verifyEmail(input: TokenRequest): Promise<MessageResponse>; resendVerification(signal?: AbortSignal): Promise<MessageResponse>;
-    me(signal?: AbortSignal): Promise<User>;
+    me(signal?: AbortSignal): Promise<User>; context(signal?: AbortSignal): Promise<PortalContext>;
+    accessCatalog(signal?: AbortSignal): Promise<AccessCatalog>;
+    userAccess(userId: UUID, signal?: AbortSignal): Promise<PortalContext>;
+    replaceUserAccess(userId: UUID, input: AccessProfileUpdate, signal?: AbortSignal): Promise<PortalContext>;
   };
   services: { list(signal?: AbortSignal): Promise<ServiceSummary[]>; detail(id: UUID, signal?: AbortSignal): Promise<ServiceDetail>; questions(id: UUID, signal?: AbortSignal): Promise<ServiceQuestion[]> };
   addresses: { validate(input: AddressValidationRequest, signal?: AbortSignal): Promise<AddressValidation> };
@@ -50,6 +54,7 @@ export function createApiClient(http: Transport): BreeroApi {
   return {
     public: { capabilities: (signal) => http.request("/public/capabilities", { signal }) },
     auth: {
+      loginMode: (signal) => http.request("/auth/login-mode", { signal }),
       login: (body) => http.request("/auth/login", { method: "POST", body, retry: false }),
       register: (body) => http.request("/auth/register", { method: "POST", body, retry: false }),
       refresh: (body) => http.request("/auth/refresh", { method: "POST", body, retry: false }),
@@ -61,6 +66,10 @@ export function createApiClient(http: Transport): BreeroApi {
       verifyEmail: (body) => http.request("/auth/email/verify", { method: "POST", body, retry: false }),
       resendVerification: (signal) => http.request("/auth/email/resend-verification", { method: "POST", signal, retry: false }),
       me: (signal) => http.request("/auth/me", { signal }),
+      context: (signal) => http.request("/auth/context", { signal }),
+      accessCatalog: (signal) => http.request("/auth/access/catalog", { signal }),
+      userAccess: (userId, signal) => http.request(`/auth/access/users/${encoded(userId)}`, { signal }),
+      replaceUserAccess: (userId, body, signal) => http.request(`/auth/access/users/${encoded(userId)}`, { method: "PUT", body, signal, retry: false }),
     },
     services: {
       list: (signal) => http.request("/services", { signal }),
