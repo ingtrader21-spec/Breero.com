@@ -111,7 +111,7 @@ test("request-service submission remains pending manual dispatch", async ({ page
     .getByRole("textbox", { name: "Email", exact: true })
     .fill("owner-canary@example.test");
   await page.getByRole("textbox", { name: "Phone", exact: true }).fill("+12025550123");
-  await page.getByLabel("Service").selectOption("cleaning");
+  await page.getByRole("combobox", { name: "Service", exact: true }).selectOption("cleaning");
   await page.getByLabel("Street address").fill("1600 Pennsylvania Avenue NW");
   await page.getByLabel("City").fill("Washington");
   await page.getByLabel("State or district").selectOption("DC");
@@ -152,7 +152,7 @@ test("catalog refresh failure uses the standard request catalog", async ({ page 
   await page.route("**/api/services", (route) => route.fulfill({ status: 503 }));
   await page.goto("/request-service");
   await expect(page.getByText(/standard service list is shown/i)).toBeVisible();
-  await expect(page.getByLabel("Service")).toContainText("Roofing");
+  await expect(page.getByRole("combobox", { name: "Service", exact: true })).toContainText("Roofing");
   await expect(page.getByRole("button", { name: "Request service" })).toBeEnabled();
 });
 
