@@ -104,11 +104,29 @@ async def operations_overview(
     return await PortalReadService(session).operations_overview()
 
 
-@router.get("/admin/overview", response_model=AdminOverview)
+@router.get(
+    "/admin/overview",
+    response_model=AdminOverview,
+    responses={403: {"description": "Insufficient permissions for the complete admin overview."}},
+)
 async def admin_overview(
     session: AsyncSession = Depends(get_db),
-    _: User = Depends(require_permissions("admin.capabilities.read", "admin.audit.read")),
+    _: User = Depends(
+        require_permissions(
+            "admin.capabilities.read",
+            "admin.audit.read",
+            "admin.access.manage",
+            "admin.integrations.read",
+            "ops.dispatch.read",
+            "ops.bookings.read",
+            "ops.providers.read",
+            "ops.customers.read",
+            "finance.ledger.read",
+            "finance.payouts.read",
+        )
+    ),
 ) -> AdminOverview:
+    """Require access to every section before reading the cross-domain overview."""
     return await PortalReadService(session).admin_overview()
 
 

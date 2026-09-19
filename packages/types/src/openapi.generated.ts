@@ -1436,7 +1436,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Admin Overview */
+        /**
+         * Admin Overview
+         * @description Require access to every section before reading the cross-domain overview.
+         */
         get: operations["admin_overview_api_v1_portal_admin_overview_get"];
         put?: never;
         post?: never;
@@ -7942,6 +7945,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["AdminOverview"];
                 };
+            };
+            /** @description Insufficient permissions for the complete admin overview. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

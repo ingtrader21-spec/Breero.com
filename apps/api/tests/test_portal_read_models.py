@@ -4,12 +4,25 @@ from typing import cast
 
 import pytest
 from fastapi import HTTPException
+from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.db.session import get_db
 from app.domains.auth.access_service import DEFAULT_PERMISSIONS
-from app.domains.auth.models import AccessRole
-from app.domains.finance.models import PayoutStatus
+from app.domains.auth.dependencies import current_user
+from app.domains.auth.models import (
+    AccessAssignment,
+    AccessRole,
+    Department,
+    RolePermission,
+    TenantScope,
+    User,
+    UserPermission,
+    UserRole,
+)
+from app.domains.common.outbox import AuditLog
+from app.domains.finance.models import EarningStatus, PayoutStatus, VendorEarning
 from app.domains.finance.repository import FinanceRepository
 from app.domains.finance.service import FinanceService
 from app.domains.portal.service import PortalReadService
@@ -56,6 +69,154 @@ def test_effective_capabilities_report_payouts_disabled() -> None:
     capabilities = PortalReadService.capabilities()
     assert capabilities.payouts is False
     assert capabilities.automatic_assignment is False
+
+
+ADMIN_OVERVIEW_PERMISSIONS = (
+    "admin.capabilities.read",
+    "admin.audit.read",
+    "admin.access.manage",
+    "admin.integrations.read",
+    "ops.dispatch.read",
+    "ops.bookings.read",
+    "ops.providers.read",
+    "ops.customers.read",
+    "finance.ledger.read",
+    "finance.payouts.read",
+)
+
+
+class AdminOverviewSession:
+    """Keep access resolution and the read model real; replace only database I/O."""
+
+    def __init__(self) -> None:
+        self.assignments: list[AccessAssignment] = []
+        self.role_permissions: list[RolePermission] = []
+        self.user_permissions: list[UserPermission] = []
+        self.overview_reads = 0
+
+    async def scalar(self, query):
+        if query.get_final_froms()[0].name == "access_profiles":
+            return None
+        self.overview_reads += 1
+        return 7
+
+    async def scalars(self, query):
+        entity = query.column_descriptions[0]["entity"]
+        rows = {
+            AccessAssignment: self.assignments,
+            RolePermission: self.role_permissions,
+            UserPermission: self.user_permissions,
+            AuditLog: [],
+        }[entity]
+        if entity is AuditLog:
+            self.overview_reads += 1
+        return SimpleNamespace(all=lambda: rows)
+
+    async def execute(self, query):
+        self.overview_reads += 1
+        rows = (
+            [(EarningStatus.PENDING, "USD", 2, 15000)]
+            if query.column_descriptions[0]["entity"] is VendorEarning
+            else []
+        )
+        return SimpleNamespace(all=lambda: rows)
+
+
+@pytest.fixture
+def admin_overview_client(monkeypatch):
+    actor = User(
+        id=uuid.uuid4(),
+        email="admin@example.com",
+        password_hash="unused",
+        full_name="Restricted Admin",
+        role=UserRole.admin,
+        is_active=True,
+        email_verified=True,
+    )
+    session = AdminOverviewSession()
+
+    async def override_user():
+        return actor
+
+    async def override_db():
+        yield session
+
+    monkeypatch.setitem(app.dependency_overrides, current_user, override_user)
+    monkeypatch.setitem(app.dependency_overrides, get_db, override_db)
+    return TestClient(app), session, actor
+
+
+def test_admin_overview_rejects_default_admin_before_reading_composite(admin_overview_client):
+    client, session, _ = admin_overview_client
+
+    response = client.get("/api/v1/portal/admin/overview")
+
+    assert response.status_code == 403
+    assert response.json() == {"detail": "Insufficient permissions"}
+    assert session.overview_reads == 0
+
+
+@pytest.mark.parametrize("denied_permission", ADMIN_OVERVIEW_PERMISSIONS)
+def test_admin_overview_honors_each_user_permission_deny(
+    admin_overview_client, denied_permission
+):
+    client, session, actor = admin_overview_client
+    session.role_permissions = [
+        RolePermission(role_key="admin", permission=permission, allow=True)
+        for permission in ADMIN_OVERVIEW_PERMISSIONS
+    ]
+    session.user_permissions = [
+        UserPermission(
+            user_id=actor.id, brand_key="breero", permission=denied_permission, allow=False
+        )
+    ]
+
+    response = client.get("/api/v1/portal/admin/overview")
+
+    assert response.status_code == 403
+    assert response.json() == {"detail": "Insufficient permissions"}
+    assert session.overview_reads == 0
+
+
+@pytest.mark.parametrize("access", ["explicit_grants", "superadmin"])
+def test_admin_overview_allows_complete_access_with_payouts_disabled(
+    admin_overview_client, access
+):
+    client, session, actor = admin_overview_client
+    if access == "superadmin":
+        session.assignments = [
+            AccessAssignment(
+                user_id=actor.id,
+                brand_key="breero",
+                role_key="superadmin",
+                department=Department.administration.value,
+                tenant_scope=TenantScope.global_.value,
+                vendor_id=None,
+                active=True,
+                is_primary=True,
+            )
+        ]
+    else:
+        session.user_permissions = [
+            UserPermission(
+                user_id=actor.id, brand_key="breero", permission=permission, allow=True
+            )
+            for permission in ADMIN_OVERVIEW_PERMISSIONS
+        ]
+
+    response = client.get("/api/v1/portal/admin/overview")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["users_total"] == 7
+    assert payload["customers_total"] == 7
+    assert payload["service_zones_total"] == 7
+    assert payload["earnings"] == [
+        {"status": "PENDING", "currency": "USD", "count": 2, "amount_minor": 15000}
+    ]
+    assert payload["capabilities"]["payouts"] is False
+    assert payload["outbox"] == []
+    assert payload["recent_audit"] == []
 
 
 class FakeSession:

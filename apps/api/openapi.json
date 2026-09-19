@@ -12445,6 +12445,7 @@
     },
     "/api/v1/portal/admin/overview": {
       "get": {
+        "description": "Require access to every section before reading the cross-domain overview.",
         "operationId": "admin_overview_api_v1_portal_admin_overview_get",
         "responses": {
           "200": {
@@ -12456,6 +12457,9 @@
               }
             },
             "description": "Successful Response"
+          },
+          "403": {
+            "description": "Insufficient permissions for the complete admin overview."
           }
         },
         "security": [
