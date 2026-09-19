@@ -195,7 +195,7 @@ EXPECTED_CHECK_WORKFLOW_SHA256 = {
     },
     "ingtrader21-spec/Breero.com": {
         ".github/workflows/production-orchestrator-contract.yml": ORCHESTRATOR_CONTRACT_WORKFLOW_SHA256,
-        ".github/workflows/quality.yml": "9e8367e853316594a325fbcb0f22f1e701c35c205b15e66a5228ae8b4ce10ce4",
+        ".github/workflows/quality.yml": "2be72e0820aea5373c0f273b260dd9be5599698802864ae50fb28077abe53c6a",
     },
     "appolon1908-hue/Moneybee-Backend": {
         ".github/workflows/production-orchestrator-contract.yml": ORCHESTRATOR_CONTRACT_WORKFLOW_SHA256,
@@ -217,8 +217,8 @@ SHARED_PRODUCTION_VALIDATOR_SHA256 = (
     "83d2fce102104543b871530f11115f20"
 )
 BREERO_PRODUCTION_VALIDATOR_SHA256 = (
-    "8cbbf4de38c7634d81f624a774c42831"
-    "ce69a60ca37747726a53f8ba7ecb9b8b"
+    "7b918fb02602dceb51e7d4e841916326"
+    "701cdd9e94c42ef31664ba4ac1cc9dc4"
 )
 KEYCLOAK_PRODUCTION_VALIDATOR_SHA256 = (
     "6006bbc7850ce7666de926b6cad2585b"
@@ -362,6 +362,8 @@ EXPECTED_CHECK_WORKFLOW_EXECUTABLE_SHA256 = {
             "scripts/ci/test-classify-quality-scope.sh": "0365cd71d85e00facf1a64c2f11734e413430af75e4cf39e0e52971d13d5c473",
             "scripts/ci/test-validate-breero-scope.sh": "ea29de36868e28ff82e3ec151f896aed388d2421f5907151c4c13480dae20bf8",
             "scripts/ci/validate-breero-scope.sh": "f8ffb8a3953c56d7d6722938825bfb33fced802ba162f4cefd3d12be8ffb9a1e",
+            "scripts/pr_consolidation/validate_ledger.py": "cb2ad21f2b5dce32619297d296092453a5b0b40474645271bdc1b5eaf006aa59",
+            "scripts/pr_consolidation/test_validate_ledger.py": "7e11152e9d0bae74a378a4afd3ddba9e1f77bef22b4dc787e1363b0b03917b9b",
         },
     },
     "appolon1908-hue/Moneybee-Backend": {
@@ -410,8 +412,8 @@ EXPECTED_REQUIRED_CHECK_SOURCE_CLOSURE_SHA256 = {
         "19ad25962daeeff809b9a9d391b1e2f0"
     ),
     "ingtrader21-spec/Breero.com": (
-        "aeed86f0900cc0604765f223c99335fa"
-        "aae271fbc4d65682d58161c1c402ec37"
+        "a7bc094c9bbcfb1b6f22e36ac7561c22"
+        "2d30dce262046d56b89e61691f50380e"
     ),
     "appolon1908-hue/Moneybee-Backend": (
         "a283e388028892ced3ac8445893ec2fa"
@@ -2290,6 +2292,8 @@ def self_test() -> int:
         "unlisted transitive executable drift did not change the source closure",
     )
     breero_quality_closure = {
+        "scripts/pr_consolidation/validate_ledger.py",
+        "scripts/pr_consolidation/test_validate_ledger.py",
         ".github/workflows/backend-production.yml",
         ".github/workflows/frontend-production.yml",
         ".github/workflows/release-images.yml",
