@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "system": "breero-marketplace",
+  "repository": "appolon1908-hue/Breero.com",
+  "branch": "integration/n8n-marketplace-automation-v2-20260827",
+  "authority": "marketplace-domain-system-of-record",
+  "integration_boundary": "codestra-middleware-only",
+  "n8n": {
+    "role": "orchestration-and-human-review-only",
+    "direct_database_access": false,
+    "direct_provider_access": false,
+    "direct_payment_access": false,
+    "assignment_authority": false,
+    "credentials_allowed": false
+  },
+  "events": [
+    "breero.customer.created",
+    "breero.provider.created",
+    "breero.provider.review_required",
+    "breero.provider.approved",
+    "breero.lead.created",
+    "breero.lead.qualified",
+    "breero.quote.requested",
+    "breero.quote.received",
+    "breero.provider.assignment_requested",
+    "breero.provider.assigned",
+    "breero.job.created",
+    "breero.job.status_changed",
+    "breero.job.exception",
+    "breero.payment.status_changed",
+    "breero.review.created"
+  ],
+  "commands": [
+    "breero.lead.route_plan",
+    "breero.lead.create_review",
+    "breero.provider.create_review",
+    "breero.provider.activate_approved",
+    "breero.quote.request",
+    "breero.quote.reconcile",
+    "breero.job.assign_provider",
+    "breero.job.create_task",
+    "breero.job.escalate_exception",
+    "breero.customer.notification_request",
+    "breero.provider.notification_request",
+    "breero.odoo_projection.reconcile"
+  ],
+  "workflows": [
+    "breero.marketplace.lead-route.v1",
+    "breero.marketplace.provider-onboarding.v1",
+    "breero.marketplace.quote-received.v1",
+    "breero.marketplace.provider-assign.v1",
+    "breero.marketplace.job-exception.v1"
+  ],
+  "capabilities": {
+    "BREERO_WRITE": false,
+    "LEAD_PUBLISH": false,
+    "PROVIDER_ASSIGNMENT": false,
+    "PAYMENT_EXECUTION": false,
+    "ENABLE_EXTERNAL_DELIVERY": false,
+    "DEAD_LETTER_REPLAY": false
+  },
+  "invariants": {
+    "transactional_outbox_required": true,
+    "tenant_isolation_required": true,
+    "quote_versioning_required": true,
+    "job_concurrency_required": true,
+    "provider_eligibility_checked_by_breero": true,
+    "exact_replay_returns_original_result": true,
+    "conflicting_replay_rejected": true,
+    "workflows_active_in_git": false,
+    "production_changed": false
+  }
+}
