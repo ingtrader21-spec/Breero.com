@@ -1,0 +1,20 @@
+name: breero-scope-guard
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  scope-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject cross-project naming
+        shell: bash
+        run: scripts/ci/validate-breero-scope.sh
+      - name: Verify scope guard regression cases
+        run: scripts/ci/test-validate-breero-scope.sh
