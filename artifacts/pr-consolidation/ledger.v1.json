@@ -1425,8 +1425,10 @@
         "merge_base_sha": "93d72d032d8a382e15f0869f51dc42b7722926d9"
       },
       "owning_domain": "Operations HTTP adapters over booking, dispatch and workforce",
-      "dependencies": [],
-      "dependency_basis": "No prerequisite PR explicitly declared for this slice in the supplied plan; semantic dependency audit remains pending.",
+      "dependencies": [
+        55
+      ],
+      "dependency_basis": "Task 5 requires public submissions (#55) to merge and verify before API refactors begin.",
       "affected_contracts": [
         "Operations routes, dependencies and operation IDs",
         "Booking/credential/dispatch/workforce HTTP contracts"
@@ -1647,8 +1649,10 @@
         "merge_base_sha": "93d72d032d8a382e15f0869f51dc42b7722926d9"
       },
       "owning_domain": "Jobs/work-request HTTP adapters and access scope",
-      "dependencies": [],
-      "dependency_basis": "No prerequisite PR explicitly declared for this slice in the supplied plan; semantic dependency audit remains pending.",
+      "dependencies": [
+        55
+      ],
+      "dependency_basis": "Task 5 requires public submissions (#55) to merge and verify before API refactors begin.",
       "affected_contracts": [
         "Jobs/work-request routes and compatibility imports",
         "Tenant, pagination and lifecycle errors",
@@ -2101,8 +2105,10 @@
         "merge_base_sha": "f76a397142c2b0da1f94b849ca67f468219d64a1"
       },
       "owning_domain": "API foundation and integration adapter contracts",
-      "dependencies": [],
-      "dependency_basis": "No prerequisite PR explicitly declared for this slice in the supplied plan; semantic dependency audit remains pending.",
+      "dependencies": [
+        55
+      ],
+      "dependency_basis": "Task 5 requires public submissions (#55) to merge and verify before API refactors begin.",
       "affected_contracts": [
         "Endpoint policy registry",
         "OpenAPI operation identity and route capabilities",

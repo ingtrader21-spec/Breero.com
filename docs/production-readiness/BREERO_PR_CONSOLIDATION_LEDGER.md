@@ -51,10 +51,10 @@ accepted SHA is assigned, and no capability changes in this task.
 | [41](https://github.com/ingtrader21-spec/Breero.com/pull/41) | Backend bootstrap | replacement_required | 2: fail-closed tooling |
 | [47](https://github.com/ingtrader21-spec/Breero.com/pull/47) | Execution/architecture authority | replacement_required | 21: shared authority documentation |
 | [55](https://github.com/ingtrader21-spec/Breero.com/pull/55) | Public submissions | replacement_required | 5: persisted intake contracts |
-| [58](https://github.com/ingtrader21-spec/Breero.com/pull/58) | Operations API | candidate | 6: preserve routes and behavior |
-| [59](https://github.com/ingtrader21-spec/Breero.com/pull/59) | Jobs API | replacement_required | 7: separate dependency delta |
+| [58](https://github.com/ingtrader21-spec/Breero.com/pull/58) | Operations API | candidate | 6: after accepted #55; preserve routes and behavior |
+| [59](https://github.com/ingtrader21-spec/Breero.com/pull/59) | Jobs API | replacement_required | 7: after accepted #55; separate dependency delta |
 | [60](https://github.com/ingtrader21-spec/Breero.com/pull/60) | Settings | candidate | 3: preserve configuration contract |
-| [62](https://github.com/ingtrader21-spec/Breero.com/pull/62) | Endpoint registry | replacement_required | 8: fail-closed route ownership |
+| [62](https://github.com/ingtrader21-spec/Breero.com/pull/62) | Endpoint registry | replacement_required | 8: after accepted #55; fail-closed route ownership |
 | [65](https://github.com/ingtrader21-spec/Breero.com/pull/65) | Deployment preflight | replacement_required | 4: read-only validation |
 | [67](https://github.com/ingtrader21-spec/Breero.com/pull/67) | Shared UI shell | replacement_required | 18: one replacement with #117 |
 | [69](https://github.com/ingtrader21-spec/Breero.com/pull/69) | Portal dashboards | replacement_required | 17: accepted #109/#115/#110 contracts |
@@ -104,8 +104,10 @@ Task 1 modifies no historical PR and closes none. Its CI integration runs the
 validator and tests in the existing always-applicable scope/docs job. Existing
 workflow/executable digest bindings and the source-closure digest must be updated
 together; no runtime authority or protection is relaxed. The initial main's
-source-closure pin was already stale despite its successful self-test; actual
-final-tree equality must be checked separately.
+source-closure pin and three executable pins (release-image workflow, API Dockerfile
+and web Dockerfile) were already stale despite its successful self-test. Their
+bindings are refreshed to unchanged protected-main source bytes. Actual final-tree
+equality and every executable byte binding must be checked separately.
 
 The referenced design specification and approved dependency-license policy were
 unavailable at preparation. License inventory alone cannot satisfy the plan's

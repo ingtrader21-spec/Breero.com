@@ -46,6 +46,22 @@ class LedgerTests(unittest.TestCase):
                     data["prs"][0]["number"] = 999
                 self.assertTrue(self.validate(data))
 
+    def test_api_refactors_preserve_public_submissions_prerequisite(self):
+        by_number = {row["number"]: row for row in self.ledger["prs"]}
+        for number in (58, 59, 62):
+            with self.subTest(number=number):
+                self.assertIn(55, by_number[number]["dependencies"])
+
+    def test_valid_accepted_record_passes_structural_validation(self):
+        data = copy.deepcopy(self.ledger)
+        data["prs"][0].update(replacement_pr=200, accepted_sha="a" * 40)
+        data["prs"][0]["evidence"].update(
+            status="accepted", acceptance_evidence_urls=[
+                "https://github.com/ingtrader21-spec/Breero.com/pull/200"
+            ]
+        )
+        self.assertEqual(self.validate(data), [])
+
     def test_required_fields_cannot_be_omitted(self):
         for field in ("original", "owning_domain", "dependencies", "affected_contracts",
                       "disposition", "disposition_reason", "replacement_pr", "accepted_sha",
@@ -95,6 +111,10 @@ class LedgerTests(unittest.TestCase):
                            ("accepted_sha", "short"), ("accepted_sha", "a" * 40)):
             with self.subTest(field=field, value=bad):
                 data = copy.deepcopy(self.ledger)
+                data["prs"][0].update(replacement_pr=None, accepted_sha=None)
+                data["prs"][0]["evidence"].update(
+                    status="captured_not_accepted", acceptance_evidence_urls=[]
+                )
                 data["prs"][0][field] = bad
                 self.assertTrue(self.validate(data))
 
@@ -102,6 +122,8 @@ class LedgerTests(unittest.TestCase):
         for value in (None, "green", "accepted"):
             with self.subTest(value=value):
                 data = copy.deepcopy(self.ledger)
+                data["prs"][0].update(replacement_pr=None, accepted_sha=None)
+                data["prs"][0]["evidence"]["acceptance_evidence_urls"] = []
                 data["prs"][0]["evidence"]["status"] = value
                 self.assertTrue(self.validate(data))
 
