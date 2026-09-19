@@ -9,7 +9,12 @@ from app.api.v1 import auth
 from app.domains.auth.access_service import DASHBOARD_BY_ROLE, DEFAULT_ACCESS, DEFAULT_PERMISSIONS
 from app.domains.auth.dependencies import _keycloak_user
 from app.domains.auth.models import AccessRole, Department, TenantScope, User, UserRole
-from app.domains.auth.schemas import AccessAssignmentInput, AccessProfileUpdate
+from app.domains.auth.schemas import (
+    AccessAssignmentInput,
+    AccessProfileUpdate,
+    ForgotPasswordRequest,
+    RegisterRequest,
+)
 
 
 class FakeIdentitySession:
@@ -133,6 +138,42 @@ def test_local_credentials_are_disabled_when_keycloak_is_authoritative(monkeypat
     monkeypatch.setattr(auth, "settings", SimpleNamespace(keycloak_enabled=True))
     with pytest.raises(HTTPException) as exc_info:
         auth.local_auth_only()
+    assert exc_info.value.status_code == status.HTTP_403_FORBIDDEN
+    assert "identity provider" in str(exc_info.value.detail)
+
+
+@pytest.mark.asyncio
+async def test_local_public_registration_is_blocked_when_keycloak_is_authoritative(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(auth, "settings", SimpleNamespace(keycloak_enabled=True))
+    request = SimpleNamespace(headers={}, client=None)
+    data = RegisterRequest(
+        email="new-user@example.com",
+        password="local-password-not-used",
+        full_name="New User",
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        await auth.register(data, request, FakeIdentitySession(), None)  # type: ignore[arg-type]
+
+    assert exc_info.value.status_code == status.HTTP_403_FORBIDDEN
+    assert exc_info.value.detail == "Public account registration is disabled"
+
+
+@pytest.mark.asyncio
+async def test_local_password_recovery_is_blocked_when_keycloak_is_authoritative(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(auth, "settings", SimpleNamespace(keycloak_enabled=True))
+
+    with pytest.raises(HTTPException) as exc_info:
+        await auth.forgot(
+            ForgotPasswordRequest(email="person@example.com"),
+            FakeIdentitySession(),  # type: ignore[arg-type]
+            None,
+        )
+
     assert exc_info.value.status_code == status.HTTP_403_FORBIDDEN
     assert "identity provider" in str(exc_info.value.detail)
 
