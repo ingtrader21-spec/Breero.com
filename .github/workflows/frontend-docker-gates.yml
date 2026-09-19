@@ -1,0 +1,104 @@
+name: Frontend Docker gates
+
+on:
+  pull_request:
+    paths:
+      - ".dockerignore"
+      - "deploy/frontend/**"
+      - ".github/workflows/frontend-docker-gates.yml"
+      - "apps/web/**"
+      - "packages/api-client/**"
+      - "packages/types/**"
+      - "packages/ui/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+  push:
+    branches: [main]
+    paths:
+      - ".dockerignore"
+      - "deploy/frontend/**"
+      - ".github/workflows/frontend-docker-gates.yml"
+      - "apps/web/**"
+      - "packages/api-client/**"
+      - "packages/types/**"
+      - "packages/ui/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-docker-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend-docker-quality:
+    name: frontend-docker-quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Enforce the canonical production identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RIn --exclude='*.md' 'auth\.codestra\.agency' deploy/frontend; then
+            echo '::error::Legacy Keycloak issuer is forbidden in frontend deployment files.'
+            exit 1
+          fi
+          grep -F 'https://auth.codestra.co/realms/codestra' deploy/frontend/Dockerfile
+          grep -F 'NEXT_PUBLIC_KEYCLOAK_ISSUER=https://auth.codestra.co/realms/codestra' deploy/frontend/.env.frontend.example
+
+      - name: Validate the hardened Compose contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd deploy/frontend
+          export BREERO_FRONTEND_IMAGE='ghcr.io/example/breero-web@sha256:0000000000000000000000000000000000000000000000000000000000000000'
+          export BREERO_FRONTEND_ENV_FILE='.env.frontend.example'
+          export BREERO_FRONTEND_NETWORK='breero_frontend'
+          docker compose -f docker-compose.frontend.yml config --quiet
+          rendered="$(docker compose -f docker-compose.frontend.yml config)"
+          grep -F 'read_only: true' <<<"$rendered"
+          grep -F 'no-new-privileges:true' <<<"$rendered"
+          if grep -Eq 'published:|host_port:|0\.0\.0\.0:3000' <<<"$rendered"; then
+            echo '::error::The frontend container must not publish port 3000 directly.'
+            exit 1
+          fi
+
+      - name: Build the production frontend image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build \
+            --file deploy/frontend/Dockerfile \
+            --build-arg NEXT_PUBLIC_APP_URL=https://breero.com \
+            --build-arg NEXT_PUBLIC_API_BASE_URL=https://api.breero.com/api/v1 \
+            --build-arg NEXT_PUBLIC_DEPLOYMENT_ENV=production \
+            --build-arg NEXT_PUBLIC_KEYCLOAK_ENABLED=true \
+            --build-arg NEXT_PUBLIC_KEYCLOAK_ISSUER=https://auth.codestra.co/realms/codestra \
+            --build-arg NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=breero-web-production \
+            --tag breero-web:ci \
+            .
+
+      - name: Verify runtime identity and healthcheck metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(docker image inspect breero-web:ci --format '{{.Config.User}}')" = 'breero'
+          healthcheck_command="$(docker image inspect breero-web:ci --format '{{index .Config.Healthcheck.Test 0}}')"
+          case "$healthcheck_command" in
+            CMD|CMD-SHELL) ;;
+            *)
+              echo "::error::Expected an active CMD or CMD-SHELL healthcheck, found '$healthcheck_command'."
+              exit 1
+              ;;
+          esac

@@ -1,0 +1,893 @@
+{
+  "schema_version": "breero.security-gate-prerequisites.v1",
+  "recorded_at": "2026-09-19T16:19:55.313834+00:00",
+  "repository": "ingtrader21-spec/Breero.com",
+  "repository_id": 1331354808,
+  "base_sha": "2292fd7533faa5752a3df7a8243e217447694367",
+  "status": "CANDIDATE_NOT_MERGED",
+  "user_scope_extension": "Separate prerequisite repair PR authorized for transferred-repository identity and portal runtime bundled-npm vulnerabilities.",
+  "source": {
+    "git_tree": "dbe3edf0fdc4a66413b699281e2e9496243d36b0",
+    "base_sha": "2292fd7533faa5752a3df7a8243e217447694367",
+    "candidate_commit": null
+  },
+  "identity_validation": {
+    "command": [
+      "docker",
+      "run",
+      "--rm",
+      "--network",
+      "none",
+      "--memory=2g",
+      "--cpus=2",
+      "-v",
+      "C:\\Users\\Usuario\\.codex\\worktrees\\breero-gate-prerequisites-20260919\\.superpowers\\sdd\\gate-prerequisites\\staged-source:/src:rw",
+      "-v",
+      "C:\\Users\\Usuario\\Desktop\\Breero.com\\.git:/git:ro",
+      "-w",
+      "/src",
+      "-e",
+      "GITHUB_REPOSITORY=ingtrader21-spec/Breero.com",
+      "-e",
+      "GITHUB_REPOSITORY_ID=1331354808",
+      "-e",
+      "GH_TOKEN=test-token",
+      "-e",
+      "EXPECTED_SHA=2292fd7533faa5752a3df7a8243e217447694367",
+      "-e",
+      "COMPARISON_SHA=2292fd7533faa5752a3df7a8243e217447694367",
+      "-e",
+      "GIT_DIR=/git/worktrees/breero-gate-prerequisites-20260919",
+      "-e",
+      "GIT_WORK_TREE=/src",
+      "-e",
+      "GIT_CONFIG_COUNT=1",
+      "-e",
+      "GIT_CONFIG_KEY_0=safe.directory",
+      "-e",
+      "GIT_CONFIG_VALUE_0=/src",
+      "breero-gate-validator:20260919",
+      ".codestra/validate-production-orchestrator-contract.py"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 15.6,
+    "source": {
+      "git_tree": "dbe3edf0fdc4a66413b699281e2e9496243d36b0",
+      "base_sha": "2292fd7533faa5752a3df7a8243e217447694367",
+      "candidate_commit": null
+    },
+    "log_sha256": "50395c17f1925d5fdfbd316586a1ef913d83791005278a675918b7f7990112fe"
+  },
+  "identity_negative_cases": [
+    "former owner",
+    "unregistered owner",
+    "mismatched contract repository",
+    "wrong contract stable ID",
+    "wrong event stable ID"
+  ],
+  "binding_negative_cases": [
+    "missing Breero digest",
+    "duplicate Breero digest",
+    "nonliteral Breero digest",
+    "modified portal Dockerfile bytes"
+  ],
+  "trust_isolation": [
+    {
+      "file": ".codestra/validate-production-orchestrator-contract.py",
+      "binding": "EXPECTED_IDENTITIES",
+      "other_repositories_unchanged": true
+    },
+    {
+      "file": ".codestra/validate-production-orchestrator-contract.py",
+      "binding": "EXPECTED_ARTIFACT_POLICIES",
+      "other_repositories_unchanged": true
+    },
+    {
+      "file": ".codestra/validate-production-orchestrator-contract.py",
+      "binding": "EXPECTED_RELEASE_VALIDATOR_SECURITY_SHA256",
+      "other_repositories_unchanged": true
+    },
+    {
+      "file": ".codestra/validate-production-orchestrator-contract.py",
+      "binding": "APPROVED_COMPLEX_SCRIPT_SHA256",
+      "other_repositories_unchanged": true
+    },
+    {
+      "file": ".codestra/validate-production-orchestrator-contract.py",
+      "binding": "APPROVED_CONTROL_PLANE_WORKFLOW_SHA256",
+      "other_repositories_unchanged": true
+    },
+    {
+      "file": ".codestra/validate-production-orchestrator-contract.py",
+      "binding": "APPROVED_JOB_EXECUTABLE_CONFIGURATION_SHA256",
+      "other_repositories_unchanged": true
+    },
+    {
+      "file": ".codestra/validate-release-intent.py",
+      "binding": "EXPECTED_CHECK_WORKFLOWS",
+      "other_repositories_unchanged": true
+    },
+    {
+      "file": ".codestra/validate-release-intent.py",
+      "binding": "EXPECTED_CHECK_WORKFLOW_SHA256",
+      "other_repositories_unchanged": true
+    },
+    {
+      "file": ".codestra/validate-release-intent.py",
+      "binding": "EXPECTED_CHECK_WORKFLOW_EXECUTABLE_SHA256",
+      "other_repositories_unchanged": true
+    },
+    {
+      "file": ".codestra/validate-release-intent.py",
+      "binding": "EXPECTED_REQUIRED_CHECK_SOURCE_CLOSURE_SHA256",
+      "other_repositories_unchanged": true
+    }
+  ],
+  "runtime_before": [
+    {
+      "app": "admin",
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "none",
+        "--entrypoint",
+        "node",
+        "breero-security-admin:20260919",
+        "-e",
+        "const fs=require('fs'); const paths=['/usr/local/lib/node_modules/npm','/usr/local/bin/npm','/usr/local/bin/npx']; const found=paths.filter(p=>fs.existsSync(p)); if(found.length){console.error('Unused runtime package-manager paths present: '+found.join(', '));process.exit(1)};console.log('RUNTIME_PACKAGE_MANAGER_ABSENT=PASS')"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Unused runtime package-manager paths present: /usr/local/lib/node_modules/npm, /usr/local/bin/npm, /usr/local/bin/npx\n",
+      "image_source_sha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+      "dockerfile_equal_to_prerequisite_base": true
+    },
+    {
+      "app": "ops",
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "none",
+        "--entrypoint",
+        "node",
+        "breero-security-ops:20260919",
+        "-e",
+        "const fs=require('fs'); const paths=['/usr/local/lib/node_modules/npm','/usr/local/bin/npm','/usr/local/bin/npx']; const found=paths.filter(p=>fs.existsSync(p)); if(found.length){console.error('Unused runtime package-manager paths present: '+found.join(', '));process.exit(1)};console.log('RUNTIME_PACKAGE_MANAGER_ABSENT=PASS')"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Unused runtime package-manager paths present: /usr/local/lib/node_modules/npm, /usr/local/bin/npm, /usr/local/bin/npx\n",
+      "image_source_sha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+      "dockerfile_equal_to_prerequisite_base": true
+    },
+    {
+      "app": "partner",
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "none",
+        "--entrypoint",
+        "node",
+        "breero-security-partner:20260919",
+        "-e",
+        "const fs=require('fs'); const paths=['/usr/local/lib/node_modules/npm','/usr/local/bin/npm','/usr/local/bin/npx']; const found=paths.filter(p=>fs.existsSync(p)); if(found.length){console.error('Unused runtime package-manager paths present: '+found.join(', '));process.exit(1)};console.log('RUNTIME_PACKAGE_MANAGER_ABSENT=PASS')"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Unused runtime package-manager paths present: /usr/local/lib/node_modules/npm, /usr/local/bin/npm, /usr/local/bin/npx\n",
+      "image_source_sha": "5b833933c18ebcaa380fc3988cf9efe219c43642",
+      "dockerfile_equal_to_prerequisite_base": true
+    }
+  ],
+  "runtime_after": [
+    {
+      "app": "admin",
+      "image": "breero-gate-admin:20260919",
+      "source": {
+        "git_tree": "dbe3edf0fdc4a66413b699281e2e9496243d36b0",
+        "base_sha": "2292fd7533faa5752a3df7a8243e217447694367",
+        "candidate_commit": null
+      },
+      "runtime_package_manager_probe": {
+        "command": [
+          "docker",
+          "run",
+          "--rm",
+          "--network",
+          "none",
+          "--entrypoint",
+          "node",
+          "breero-gate-admin:20260919",
+          "-e",
+          "const fs=require('fs'); const paths=['/usr/local/lib/node_modules/npm','/usr/local/bin/npm','/usr/local/bin/npx']; const found=paths.filter(p=>fs.existsSync(p)); if(found.length){console.error('Unused runtime package-manager paths present: '+found.join(', '));process.exit(1)}; if(process.getuid()!==10001)process.exit(2);console.log('RUNTIME_PACKAGE_MANAGER_ABSENT=PASS; USER=10001')"
+        ],
+        "exit_code": 0,
+        "stdout": "RUNTIME_PACKAGE_MANAGER_ABSENT=PASS; USER=10001\n"
+      },
+      "health_probe": {
+        "exit_code": 0,
+        "stdout": "{\"status\":\"ok\",\"service\":\"breero-admin\"}\n",
+        "stderr": ""
+      },
+      "network": "none",
+      "published_ports": [],
+      "production_activated": false
+    },
+    {
+      "app": "ops",
+      "image": "breero-gate-ops:20260919",
+      "source": {
+        "git_tree": "dbe3edf0fdc4a66413b699281e2e9496243d36b0",
+        "base_sha": "2292fd7533faa5752a3df7a8243e217447694367",
+        "candidate_commit": null
+      },
+      "runtime_package_manager_probe": {
+        "command": [
+          "docker",
+          "run",
+          "--rm",
+          "--network",
+          "none",
+          "--entrypoint",
+          "node",
+          "breero-gate-ops:20260919",
+          "-e",
+          "const fs=require('fs'); const paths=['/usr/local/lib/node_modules/npm','/usr/local/bin/npm','/usr/local/bin/npx']; const found=paths.filter(p=>fs.existsSync(p)); if(found.length){console.error('Unused runtime package-manager paths present: '+found.join(', '));process.exit(1)}; if(process.getuid()!==10001)process.exit(2);console.log('RUNTIME_PACKAGE_MANAGER_ABSENT=PASS; USER=10001')"
+        ],
+        "exit_code": 0,
+        "stdout": "RUNTIME_PACKAGE_MANAGER_ABSENT=PASS; USER=10001\n"
+      },
+      "health_probe": {
+        "exit_code": 0,
+        "stdout": "{\"status\":\"ok\",\"service\":\"breero-ops\"}\n",
+        "stderr": ""
+      },
+      "network": "none",
+      "published_ports": [],
+      "production_activated": false
+    },
+    {
+      "app": "partner",
+      "image": "breero-gate-partner:20260919",
+      "source": {
+        "git_tree": "dbe3edf0fdc4a66413b699281e2e9496243d36b0",
+        "base_sha": "2292fd7533faa5752a3df7a8243e217447694367",
+        "candidate_commit": null
+      },
+      "runtime_package_manager_probe": {
+        "command": [
+          "docker",
+          "run",
+          "--rm",
+          "--network",
+          "none",
+          "--entrypoint",
+          "node",
+          "breero-gate-partner:20260919",
+          "-e",
+          "const fs=require('fs'); const paths=['/usr/local/lib/node_modules/npm','/usr/local/bin/npm','/usr/local/bin/npx']; const found=paths.filter(p=>fs.existsSync(p)); if(found.length){console.error('Unused runtime package-manager paths present: '+found.join(', '));process.exit(1)}; if(process.getuid()!==10001)process.exit(2);console.log('RUNTIME_PACKAGE_MANAGER_ABSENT=PASS; USER=10001')"
+        ],
+        "exit_code": 0,
+        "stdout": "RUNTIME_PACKAGE_MANAGER_ABSENT=PASS; USER=10001\n"
+      },
+      "health_probe": {
+        "exit_code": 0,
+        "stdout": "{\"status\":\"ok\",\"service\":\"breero-partner\"}\n",
+        "stderr": ""
+      },
+      "network": "none",
+      "published_ports": [],
+      "production_activated": false
+    }
+  ],
+  "images": {
+    "admin": {
+      "build": {
+        "command": [
+          "docker",
+          "buildx",
+          "build",
+          "--sbom=true",
+          "--provenance=mode=max",
+          "--metadata-file",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-gate-prerequisites-20260919\\.superpowers\\sdd\\gate-prerequisites\\admin-image-metadata.json",
+          "--load",
+          "--build-arg",
+          "APP_NAME=admin",
+          "--build-arg",
+          "NEXT_PUBLIC_API_BASE_URL=https://api.breero.com/api/v1",
+          "-f",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-gate-prerequisites-20260919\\.superpowers\\sdd\\gate-prerequisites\\Dockerfile.portals-offline-build",
+          "-t",
+          "breero-gate-admin:20260919",
+          "."
+        ],
+        "git_tree": "dbe3edf0fdc4a66413b699281e2e9496243d36b0",
+        "exit_code": 0,
+        "duration_seconds": 79.93,
+        "log_sha256": "1efd32e8488556aee530d3403b6bfc196792a1c52397c21f910fbd16900612be",
+        "application_build_network": "none",
+        "dockerfile_modification": "Validation Dockerfile equals the candidate tracked Dockerfile except for adding RUN --network=none to the application build command."
+      },
+      "scan": {
+        "tag": "breero-gate-admin:20260919",
+        "source": {
+          "git_tree": "dbe3edf0fdc4a66413b699281e2e9496243d36b0",
+          "base_sha": "2292fd7533faa5752a3df7a8243e217447694367",
+          "candidate_commit": null
+        },
+        "command": [
+          "docker",
+          "run",
+          "--rm",
+          "--memory=2g",
+          "--cpus=2",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-gate-prerequisites-20260919\\.superpowers\\sdd\\gate-prerequisites:/evidence:ro",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\trivy-cache:/root/.cache/",
+          "aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969",
+          "image",
+          "--input",
+          "/evidence/admin-image.tar",
+          "--scanners",
+          "vuln",
+          "--severity",
+          "HIGH,CRITICAL",
+          "--format",
+          "json",
+          "--exit-code",
+          "1"
+        ],
+        "exit_code": 0,
+        "parse_success": true,
+        "duration_seconds": 29.45,
+        "image_archive_sha256": "02653a555823130d16fdf1481a0ada953586861542cf9247f722bd8d43ca6a09",
+        "findings": [],
+        "finding_count": 0,
+        "attestations": [
+          {
+            "predicate_type": "https://slsa.dev/provenance/v1",
+            "sha256": "f3ee7ae968fb106c9995cd7512512a15004a04c240984436a4b0ea882b383175",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-gate-admin@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "448e883519bfde9898ce973a5c96637c649ad071d4544dce75eec095e223cc03"
+                }
+              }
+            ]
+          },
+          {
+            "predicate_type": "https://spdx.dev/Document",
+            "sha256": "1ac232c3d09ca0f2c0d16c6f20802521bbc115de256b68d05d9db0131d8c4a68",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-gate-admin@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "448e883519bfde9898ce973a5c96637c649ad071d4544dce75eec095e223cc03"
+                }
+              }
+            ]
+          }
+        ],
+        "layer_vitest_declarations_including_deleted_files": [
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/cidr-regex/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/fdir/package.json",
+            "field": "devDependencies",
+            "vitest": "^0.34.6"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/is-cidr/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/c877adcd8385b2a3f9d9821513df814902347e1be5526f154d7cfbda724f747f",
+            "path": "app/apps/admin/package.json",
+            "field": "devDependencies",
+            "vitest": "^2.1.8"
+          }
+        ],
+        "effective_vitest_declarations": [
+          {
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "path": "app/apps/admin/package.json",
+            "field": "devDependencies",
+            "vitest": "^2.1.8"
+          }
+        ],
+        "installed_vitest_packages": [],
+        "high_critical_package_locations": [],
+        "suppression_file": null,
+        "ignore_unfixed": false,
+        "official_signed_provenance": false
+      },
+      "image_digest": "sha256:4c11e24db0c5b83efaaf264aca9a0767556839f663e72f8e04b206b8e154e5d7",
+      "before_findings": {
+        "critical": 1,
+        "high": 10,
+        "location": "/usr/local/lib/node_modules/npm/node_modules/"
+      }
+    },
+    "ops": {
+      "build": {
+        "command": [
+          "docker",
+          "buildx",
+          "build",
+          "--sbom=true",
+          "--provenance=mode=max",
+          "--metadata-file",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-gate-prerequisites-20260919\\.superpowers\\sdd\\gate-prerequisites\\ops-image-metadata.json",
+          "--load",
+          "--build-arg",
+          "APP_NAME=ops",
+          "--build-arg",
+          "NEXT_PUBLIC_API_BASE_URL=https://api.breero.com/api/v1",
+          "-f",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-gate-prerequisites-20260919\\.superpowers\\sdd\\gate-prerequisites\\Dockerfile.portals-offline-build",
+          "-t",
+          "breero-gate-ops:20260919",
+          "."
+        ],
+        "git_tree": "dbe3edf0fdc4a66413b699281e2e9496243d36b0",
+        "exit_code": 0,
+        "duration_seconds": 77.92,
+        "log_sha256": "f533d0c74590dd4d27264a872e623297909ac33d66f5831bd6ebf2636f88153f",
+        "application_build_network": "none",
+        "dockerfile_modification": "Validation Dockerfile equals the candidate tracked Dockerfile except for adding RUN --network=none to the application build command."
+      },
+      "scan": {
+        "tag": "breero-gate-ops:20260919",
+        "source": {
+          "git_tree": "dbe3edf0fdc4a66413b699281e2e9496243d36b0",
+          "base_sha": "2292fd7533faa5752a3df7a8243e217447694367",
+          "candidate_commit": null
+        },
+        "command": [
+          "docker",
+          "run",
+          "--rm",
+          "--memory=2g",
+          "--cpus=2",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-gate-prerequisites-20260919\\.superpowers\\sdd\\gate-prerequisites:/evidence:ro",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\trivy-cache:/root/.cache/",
+          "aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969",
+          "image",
+          "--input",
+          "/evidence/ops-image.tar",
+          "--scanners",
+          "vuln",
+          "--severity",
+          "HIGH,CRITICAL",
+          "--format",
+          "json",
+          "--exit-code",
+          "1"
+        ],
+        "exit_code": 0,
+        "parse_success": true,
+        "duration_seconds": 26.4,
+        "image_archive_sha256": "6a9c08c5cc03d4e8a5d874390c03aafc310855e23ead97561be0f57cd7d671d7",
+        "findings": [],
+        "finding_count": 0,
+        "attestations": [
+          {
+            "predicate_type": "https://slsa.dev/provenance/v1",
+            "sha256": "142e4843f2ca03a7cb5dfcfdf333ad211cfdd19cee66ae9576f0b794dec276c7",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-gate-ops@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "6cc17c83687de21406b3fd3199b93947fd6913b65a638fceab4b4e8132f4fa3d"
+                }
+              }
+            ]
+          },
+          {
+            "predicate_type": "https://spdx.dev/Document",
+            "sha256": "061bfc4c5e0eefaa4507aae06ce6454ea56e5b65ee28a0a829e7e23fa176f168",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-gate-ops@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "6cc17c83687de21406b3fd3199b93947fd6913b65a638fceab4b4e8132f4fa3d"
+                }
+              }
+            ]
+          }
+        ],
+        "layer_vitest_declarations_including_deleted_files": [
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/cidr-regex/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/fdir/package.json",
+            "field": "devDependencies",
+            "vitest": "^0.34.6"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/is-cidr/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/fb462a71b94fc4f78594ea9e74577e6927b285f5ace542b7edf26a6ca2920e3c",
+            "path": "app/apps/ops/package.json",
+            "field": "devDependencies",
+            "vitest": "^2.1.8"
+          }
+        ],
+        "effective_vitest_declarations": [
+          {
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "path": "app/apps/ops/package.json",
+            "field": "devDependencies",
+            "vitest": "^2.1.8"
+          }
+        ],
+        "installed_vitest_packages": [],
+        "high_critical_package_locations": [],
+        "suppression_file": null,
+        "ignore_unfixed": false,
+        "official_signed_provenance": false
+      },
+      "image_digest": "sha256:0313c567b182574083bc55f322c6f7d0c39462862c1d1906902cb7f3bc71dda8",
+      "before_findings": {
+        "critical": 1,
+        "high": 10,
+        "location": "/usr/local/lib/node_modules/npm/node_modules/"
+      }
+    },
+    "partner": {
+      "build": {
+        "command": [
+          "docker",
+          "buildx",
+          "build",
+          "--sbom=true",
+          "--provenance=mode=max",
+          "--metadata-file",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-gate-prerequisites-20260919\\.superpowers\\sdd\\gate-prerequisites\\partner-image-metadata.json",
+          "--load",
+          "--build-arg",
+          "APP_NAME=partner",
+          "--build-arg",
+          "NEXT_PUBLIC_API_BASE_URL=https://api.breero.com/api/v1",
+          "-f",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-gate-prerequisites-20260919\\.superpowers\\sdd\\gate-prerequisites\\Dockerfile.portals-offline-build",
+          "-t",
+          "breero-gate-partner:20260919",
+          "."
+        ],
+        "git_tree": "dbe3edf0fdc4a66413b699281e2e9496243d36b0",
+        "exit_code": 0,
+        "duration_seconds": 85.97,
+        "log_sha256": "4239affd3b8450a025cc72417bc80429fa43319a6d9c98c248649c6254a754ca",
+        "application_build_network": "none",
+        "dockerfile_modification": "Validation Dockerfile equals the candidate tracked Dockerfile except for adding RUN --network=none to the application build command."
+      },
+      "scan": {
+        "tag": "breero-gate-partner:20260919",
+        "source": {
+          "git_tree": "dbe3edf0fdc4a66413b699281e2e9496243d36b0",
+          "base_sha": "2292fd7533faa5752a3df7a8243e217447694367",
+          "candidate_commit": null
+        },
+        "command": [
+          "docker",
+          "run",
+          "--rm",
+          "--memory=2g",
+          "--cpus=2",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-gate-prerequisites-20260919\\.superpowers\\sdd\\gate-prerequisites:/evidence:ro",
+          "-v",
+          "C:\\Users\\Usuario\\.codex\\worktrees\\breero-security-20260919\\.superpowers\\sdd\\security-foundation-recovery\\trivy-cache:/root/.cache/",
+          "aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969",
+          "image",
+          "--input",
+          "/evidence/partner-image.tar",
+          "--scanners",
+          "vuln",
+          "--severity",
+          "HIGH,CRITICAL",
+          "--format",
+          "json",
+          "--exit-code",
+          "1"
+        ],
+        "exit_code": 0,
+        "parse_success": true,
+        "duration_seconds": 29.41,
+        "image_archive_sha256": "7704a67d14c14e1b41fcdf1e495aadd293e0084f96b8c67a825297b939490c8d",
+        "findings": [],
+        "finding_count": 0,
+        "attestations": [
+          {
+            "predicate_type": "https://slsa.dev/provenance/v1",
+            "sha256": "a3b1bf58f6606638d52ba36aee1bec4e6294a161f076dc3215e2c3c1f3cd23cd",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-gate-partner@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "acafc6dca94f1257dcdb9efb1bf18dfc79bb7f9aaaaf686552d8e0a28609538b"
+                }
+              }
+            ]
+          },
+          {
+            "predicate_type": "https://spdx.dev/Document",
+            "sha256": "ec7be264945b3da4ed9e719c513ad8818cbd0e740b3c97277ccbd491ea8a62dd",
+            "subject": [
+              {
+                "name": "pkg:docker/breero-gate-partner@20260919?platform=linux%2Famd64",
+                "digest": {
+                  "sha256": "acafc6dca94f1257dcdb9efb1bf18dfc79bb7f9aaaaf686552d8e0a28609538b"
+                }
+              }
+            ]
+          }
+        ],
+        "layer_vitest_declarations_including_deleted_files": [
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/cidr-regex/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/fdir/package.json",
+            "field": "devDependencies",
+            "vitest": "^0.34.6"
+          },
+          {
+            "layer": "blobs/sha256/1a3a899a8294dd12f21fb3f36579c74b05013aacbcf71d6db947dda5e1c59d06",
+            "path": "usr/local/lib/node_modules/npm/node_modules/is-cidr/package.json",
+            "field": "devDependencies",
+            "vitest": "3.0.5"
+          },
+          {
+            "layer": "blobs/sha256/d8c074962f24dad2c363b5ec27feaeabff217b8d5620870353319a1c30cd7a7e",
+            "path": "app/apps/partner/package.json",
+            "field": "devDependencies",
+            "vitest": "^2.1.8"
+          }
+        ],
+        "effective_vitest_declarations": [
+          {
+            "path": "usr/local/lib/node_modules/corepack/package.json",
+            "field": "devDependencies",
+            "vitest": "^3.0.5"
+          },
+          {
+            "path": "app/apps/partner/package.json",
+            "field": "devDependencies",
+            "vitest": "^2.1.8"
+          }
+        ],
+        "installed_vitest_packages": [],
+        "high_critical_package_locations": [],
+        "suppression_file": null,
+        "ignore_unfixed": false,
+        "official_signed_provenance": false
+      },
+      "image_digest": "sha256:3726000764285f59775be9d3e40648c7bcff4264653b99096001a430bdf73749",
+      "before_findings": {
+        "critical": 1,
+        "high": 10,
+        "location": "/usr/local/lib/node_modules/npm/node_modules/"
+      }
+    }
+  },
+  "secret_scan": {
+    "command": [
+      "docker",
+      "run",
+      "--rm",
+      "--memory=2g",
+      "--cpus=2",
+      "-v",
+      "C:\\Users\\Usuario\\.codex\\worktrees\\breero-gate-prerequisites-20260919\\.superpowers\\sdd\\gate-prerequisites\\staged-source:/src:ro",
+      "aquasec/trivy@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969",
+      "fs",
+      "--scanners",
+      "secret",
+      "--format",
+      "json",
+      "--exit-code",
+      "1",
+      "/src"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 9.34,
+    "findings": [],
+    "finding_count": 0,
+    "parse_success": true,
+    "errors": []
+  },
+  "sast": {
+    "command": [
+      "docker",
+      "run",
+      "--rm",
+      "--memory=2g",
+      "--cpus=2",
+      "-v",
+      "C:\\Users\\Usuario\\.codex\\worktrees\\breero-gate-prerequisites-20260919\\.superpowers\\sdd\\gate-prerequisites\\staged-source:/src:ro",
+      "-w",
+      "/src",
+      "semgrep/semgrep@sha256:34ab619bf1391a24bfda3f05debd0d8a6ce3093c2d5f9d39cfc00f83c1397823",
+      "semgrep",
+      "scan",
+      "--config",
+      "p/security-audit",
+      "--metrics=off",
+      "--json",
+      "--error",
+      "--disable-version-check"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 75.61,
+    "findings": [],
+    "finding_count": 0,
+    "parse_success": true,
+    "errors": [
+      {
+        "type": [
+          "PartialParsing",
+          [
+            {
+              "path": "apps/web/app/refund-policy/page.tsx",
+              "start": {
+                "line": 8,
+                "col": 1056,
+                "offset": 0
+              },
+              "end": {
+                "line": 8,
+                "col": 1071,
+                "offset": 15
+              }
+            }
+          ]
+        ],
+        "code": 3,
+        "level": "warn"
+      },
+      {
+        "type": [
+          "PartialParsing",
+          [
+            {
+              "path": "apps/web/app/sitemap.ts",
+              "start": {
+                "line": 2,
+                "col": 322,
+                "offset": 0
+              },
+              "end": {
+                "line": 2,
+                "col": 328,
+                "offset": 6
+              }
+            }
+          ]
+        ],
+        "code": 3,
+        "level": "warn"
+      },
+      {
+        "type": [
+          "PartialParsing",
+          [
+            {
+              "path": "deploy/frontend/Dockerfile",
+              "start": {
+                "line": 20,
+                "col": 34,
+                "offset": 0
+              },
+              "end": {
+                "line": 30,
+                "col": 34,
+                "offset": 532
+              }
+            }
+          ]
+        ],
+        "code": 3,
+        "level": "warn"
+      },
+      {
+        "type": [
+          "PartialParsing",
+          [
+            {
+              "path": "packages/api-client/src/index.ts",
+              "start": {
+                "line": 6,
+                "col": 8,
+                "offset": 0
+              },
+              "end": {
+                "line": 6,
+                "col": 12,
+                "offset": 4
+              }
+            }
+          ]
+        ],
+        "code": 3,
+        "level": "warn"
+      }
+    ]
+  },
+  "limitations": [
+    "Development snapshots are not exact final-head GitHub CI or post-merge evidence.",
+    "Local unsigned SPDX/SLSA attestations are not repository-approved signed release provenance.",
+    "SAST has four partial-parsing warnings outside modified files.",
+    "Original security mission license-policy and signed-baseline requirements remain in force.",
+    "Vitest manifest remediation remains isolated in PR134 and eight main-branch Dependabot alerts are not claimed resolved here."
+  ],
+  "production_activated": false,
+  "live_provider_calls": false,
+  "reconciliation_authorized": false,
+  "merge_sha": null,
+  "rulings": [
+    "Ruling: create a second external worktree from fresh origin/main, as expressly authorized prerequisite work - preserve the existing security candidate and both original clean clones - cost if wrong: the branch can be relocated without changing user files.",
+    "Ruling: user approval supersedes the previous prohibition on prerequisite portal/configuration work only for these two demonstrated blockers - all other scope and green-gate requirements remain - cost if wrong: no additional domain or policy change is permitted.",
+    "Ruling: evidence from security source5b83393 is historical before-state only; this branch requires its own failing and passing verification and exact-head CI - cost if wrong: no old passing result is used as approval.",
+    "Ruling: identity fingerprint finalization waits for Task2 runtime Dockerfile edit because that exact file is pinned inside release policy - both repairs share a trust digest and must be finalized as one reviewed gate - cost if wrong: neither task is marked complete before combined validation.",
+    "Ruling: preserve GHCR namespaces and other repository trust hashes while introducing Breero-specific bindings - transfer evidence establishes the GitHub repository rename, not registry migration - cost if wrong: release remains subject to unchanged registry evidence checks."
+  ]
+}
