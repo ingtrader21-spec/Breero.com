@@ -5,6 +5,9 @@
 node_modules/
 test-results/
 playwright-report/
+
+# Local isolated execution worktrees
+.worktrees/
 *.tsbuildinfo
 .env.*
 !.env.example
