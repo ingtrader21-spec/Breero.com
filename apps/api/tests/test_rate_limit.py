@@ -107,3 +107,20 @@ def test_local_fallback_rejects_unseen_identity_at_hard_cap(
 def test_source_comes_from_proxy_normalized_request_client() -> None:
     app = FastAPI()
     assert rate_limit_module.source_for_request(request_for(app)) == "203.0.113.10"
+
+
+@pytest.mark.asyncio
+async def test_public_form_error_preserves_retry_after(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.api.v1 import public_forms
+    from app.core.errors import DomainError
+
+    async def reject(*_args):
+        raise HTTPException(429, "Slow down", headers={"Retry-After": "37"})
+
+    monkeypatch.setattr(public_forms, "enforce_shared_rate_limit", reject)
+    with pytest.raises(DomainError) as error:
+        await public_forms.enforce_rate_limit(request_for(FastAPI()))
+
+    assert error.value.status_code == 429
+    assert error.value.code == "RATE_LIMITED"
+    assert error.value.headers["Retry-After"] == "37"
