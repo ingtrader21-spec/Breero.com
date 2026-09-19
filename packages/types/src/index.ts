@@ -100,3 +100,5 @@ export interface CustomerPayment {
   captured_amount_minor: number; refunded_amount_minor: number; currency: string;
   failure_code: string | null; created_at: ISODateTime; updated_at: ISODateTime;
 }
+
+export * from "./portal";

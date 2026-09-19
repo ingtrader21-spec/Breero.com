@@ -25,6 +25,9 @@ concurrency:
 jobs:
   source-gate:
     name: Verify merged exact source
+    # RUNTIME_MUTATION_DISABLED=true
+    # Publication must use the registered release-images.yml identity and policy.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     outputs:
       sha: ${{ steps.verify.outputs.sha }}
@@ -57,6 +60,9 @@ jobs:
 
   publish:
     name: Publish ${{ matrix.app }} image
+    # RUNTIME_MUTATION_DISABLED=true
+    # Preserve this candidate until publication is reconciled with approved policy.
+    if: ${{ false }}
     needs: source-gate
     runs-on: ubuntu-latest
     strategy:

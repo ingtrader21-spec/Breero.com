@@ -46,11 +46,13 @@ jobs:
             filter: "@breero/admin"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 10.0.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "22"
           cache: pnpm
-      - run: corepack enable
       - name: Frozen workspace install
         env:
           NODE_ENV: development
@@ -132,7 +134,7 @@ jobs:
           mkdir -p /tmp/breero-secrets
           printf '%s' 'validation-client-secret' > /tmp/breero-secrets/client
           printf '%s' 'validation-session-secret-at-least-32-characters' > /tmp/breero-secrets/session
-          args=(--rm -d --read-only --user 10001:10001 --cap-drop ALL --security-opt no-new-privileges --tmpfs /tmp:rw,noexec,nosuid,nodev,size=64m)
+          args=(--rm -d --read-only --user 10001:10001 --cap-drop ALL --security-opt no-new-privileges --tmpfs '/tmp:rw,noexec,nosuid,nodev,size=64m')
           if [[ '${{ matrix.app }}' != web ]]; then
             args+=(
               -e PORTAL_PUBLIC_ORIGIN=https://${{ matrix.app }}.example.test

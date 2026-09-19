@@ -28,6 +28,7 @@ x-portal-common: &portal-common
       limits:
         cpus: "1.00"
         memory: 768M
+        pids: 256
       reservations:
         cpus: "0.10"
         memory: 128M

@@ -1,4 +1,14 @@
+self-hosted-runner:
+  labels:
+    - breero-deploy
+
 paths:
   .github/workflows/quality.yml:
+    ignore:
+      - 'constant expression "false" in condition'
+  .github/workflows/portal-deploy.yml:
+    ignore:
+      - 'constant expression "false" in condition'
+  .github/workflows/portal-image-release.yml:
     ignore:
       - 'constant expression "false" in condition'

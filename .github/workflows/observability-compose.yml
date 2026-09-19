@@ -1,38 +1,71 @@
 name: Observability Compose validation
+
 on:
   pull_request:
     paths:
+      - '**/*.json'
+      - .codestra/production-orchestrator-contract.v1.json
+      - .env.production.example
+      - docker-compose.production.yml
+      - docker-compose.middleware.yml
       - deploy/observability/**
-      - deploy/production/docker-compose.backend.yml
+      - deploy/production/**
+      - scripts/ci/validate-json-contracts.py
       - .github/workflows/observability-compose.yml
   push:
     branches: [main]
     paths:
+      - '**/*.json'
+      - .codestra/production-orchestrator-contract.v1.json
+      - .env.production.example
+      - docker-compose.production.yml
+      - docker-compose.middleware.yml
       - deploy/observability/**
-      - deploy/production/docker-compose.backend.yml
+      - deploy/production/**
+      - scripts/ci/validate-json-contracts.py
       - .github/workflows/observability-compose.yml
+
 permissions:
   contents: read
+
+concurrency:
+  group: observability-compose-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   compose:
-    runs-on: ubuntu-latest
-    env:
-      BREERO_PROD_API_IMAGE: ghcr.io/example/breero-api@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-      BREERO_PROD_API_ENV: api.env.example
-      BREERO_PROD_POSTGRES_ENV: postgres.env.example
-      BREERO_PROD_REDIS_ENV: redis.env.example
-      DATABASE_URL_REFERENCE: /tmp/breero-observability-ci-secret
-      REDIS_URL_REFERENCE: /tmp/breero-observability-ci-secret
-      JWT_SECRET_REFERENCE: /tmp/breero-observability-ci-secret
-      JWT_REFRESH_SECRET_REFERENCE: /tmp/breero-observability-ci-secret
-      GEOAPIFY_API_KEY_REFERENCE: /tmp/breero-observability-ci-secret
-      POSTGRES_PASSWORD_REFERENCE: /tmp/breero-observability-ci-secret
-      REDIS_PASSWORD_REFERENCE: /tmp/breero-observability-ci-secret
-      BREERO_OTLP_TRACES_ENDPOINT: http://otel-collector:4318/v1/traces
-      BREERO_OTLP_HEADERS_FILE_REFERENCE: /tmp/breero-observability-ci-secret
+    name: compose-overlay-contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - name: Create empty validation fixture
-        run: touch /tmp/breero-observability-ci-secret
-      - name: Validate production overlay without starting services
-        run: docker compose -f deploy/production/docker-compose.backend.yml -f deploy/observability/docker-compose.observability.yml config --quiet
+      - name: Check out exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Validate JSON syntax, duplicate keys, and image-count contract
+        run: python3 scripts/ci/validate-json-contracts.py
+      - name: Create empty validation fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          for fixture in \
+            /tmp/breero-database-url \
+            /tmp/breero-redis-url \
+            /tmp/breero-jwt-access \
+            /tmp/breero-jwt-refresh \
+            /tmp/breero-geoapify \
+            /tmp/breero-postgres-password \
+            /tmp/breero-redis-password \
+            /tmp/breero-middleware-ca \
+            /tmp/breero-middleware-hmac \
+            /tmp/breero-middleware-client-cert \
+            /tmp/breero-middleware-client-key \
+            /tmp/breero-otlp-headers; do
+            install -m 600 /dev/null "$fixture"
+          done
+      - name: Validate all production overlay combinations without starting services
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose --env-file deploy/production/compose-validation.env -f docker-compose.production.yml config --quiet
+          docker compose --env-file deploy/production/compose-validation.env -f docker-compose.production.yml -f docker-compose.middleware.yml config --quiet
+          docker compose --env-file deploy/production/compose-validation.env -f docker-compose.production.yml -f deploy/observability/docker-compose.observability.yml config --quiet
+          docker compose --env-file deploy/production/compose-validation.env -f docker-compose.production.yml -f docker-compose.middleware.yml -f deploy/observability/docker-compose.observability.yml config --quiet

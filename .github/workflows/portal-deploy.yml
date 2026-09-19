@@ -50,6 +50,9 @@ concurrency:
 jobs:
   preflight:
     name: Exact-artifact and safety preflight
+    # RUNTIME_MUTATION_DISABLED=true
+    # This manual deployment path is pending controller-owned source registration.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     outputs:
       release_sha: ${{ steps.source.outputs.sha }}
@@ -130,20 +133,28 @@ jobs:
           bash scripts/validate_portal_release.sh '${{ inputs.environment }}'
       - name: Write planning summary
         shell: bash
+        env:
+          PLAN_ENVIRONMENT: ${{ inputs.environment }}
+          PLAN_RELEASE_SHA: ${{ inputs.release_sha }}
+          PLAN_CHANGE_ID: ${{ inputs.change_id }}
+          PLAN_APPLY: ${{ inputs.apply }}
         run: |
           {
             echo '## BREERO portal deployment plan'
             echo
-            echo '- Environment: `${{ inputs.environment }}`'
-            echo '- Release: `${{ inputs.release_sha }}`'
-            echo '- Change: `${{ inputs.change_id }}`'
-            echo '- Apply requested: `${{ inputs.apply }}`'
+            printf -- '- Environment: `%s`\n' "$PLAN_ENVIRONMENT"
+            printf -- '- Release: `%s`\n' "$PLAN_RELEASE_SHA"
+            printf -- '- Change: `%s`\n' "$PLAN_CHANGE_ID"
+            printf -- '- Apply requested: `%s`\n' "$PLAN_APPLY"
             echo '- Caddy/Kong/Keycloak changes: **not applied by this workflow**'
           } >> "${GITHUB_STEP_SUMMARY}"
 
   apply:
     name: Apply approved portal release
-    if: ${{ inputs.apply }}
+    # RUNTIME_MUTATION_DISABLED=true
+    # Application branches have no runtime mutation authority. Activation requires
+    # an approved controller-owned deployment path and separate release evidence.
+    if: ${{ false }}
     needs: preflight
     runs-on:
       - self-hosted

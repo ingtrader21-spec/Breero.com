@@ -665,7 +665,7 @@ function EarningsPanel() {
   const earnings = usePortalQuery<ListResponse<Earning>>("/portal/provider/earnings?limit=500");
   const payouts = usePortalQuery<ListResponse<PayoutBatch>>("/portal/provider/payout-batches?limit=200");
   const { state } = usePortalSession();
-  const rows = earnings.data?.items ?? [];
+  const rows = useMemo(() => earnings.data?.items ?? [], [earnings.data?.items]);
   const byCurrency = useMemo(() => {
     const result = new Map<string, { available: number; pending: number; paid: number }>();
     for (const item of rows) {
