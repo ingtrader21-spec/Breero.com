@@ -5,6 +5,7 @@ import pytest
 from fastapi import HTTPException
 
 from app.api.v1 import jobs
+from app.api.v1.jobs import dependencies, read, work_requests
 from app.domains.auth.models import AccessRole, User, UserRole
 
 
@@ -62,7 +63,7 @@ def patch_roles(monkeypatch, roles: list[AccessRole]) -> None:
     async def fake_effective_roles(_session, _user):
         return set(roles)
 
-    monkeypatch.setattr(jobs, "effective_roles", fake_effective_roles)
+    monkeypatch.setattr(dependencies, "effective_roles", fake_effective_roles)
 
 
 @pytest.mark.asyncio
@@ -76,7 +77,8 @@ async def test_get_job_denies_vendor_scoped_rbac_grant_for_a_different_vendor(mo
     job = make_job()
     other_vendor = SimpleNamespace(id=uuid.uuid4())
 
-    monkeypatch.setattr(jobs, "JobRepository", FakeJobRepository(job))
+    monkeypatch.setattr(read, "JobRepository", FakeJobRepository(job))
+    monkeypatch.setattr(work_requests, "JobRepository", FakeJobRepository(job))
     patch_roles(monkeypatch, [AccessRole.vendor_admin])
 
     with pytest.raises(HTTPException) as exc_info:
@@ -91,7 +93,8 @@ async def test_get_job_allows_vendor_scoped_rbac_grant_for_the_owning_vendor(mon
     job = make_job()
     owning_vendor = SimpleNamespace(id=job.vendor_id)
 
-    monkeypatch.setattr(jobs, "JobRepository", FakeJobRepository(job))
+    monkeypatch.setattr(read, "JobRepository", FakeJobRepository(job))
+    monkeypatch.setattr(work_requests, "JobRepository", FakeJobRepository(job))
     patch_roles(monkeypatch, [AccessRole.vendor_admin])
 
     result = await jobs.get_job(job.id, ScalarSession(owning_vendor), user)
@@ -107,7 +110,8 @@ async def test_get_job_denies_when_effective_roles_grant_nothing_recognized(monk
     user = make_user(UserRole.customer)
     job = make_job()
 
-    monkeypatch.setattr(jobs, "JobRepository", FakeJobRepository(job))
+    monkeypatch.setattr(read, "JobRepository", FakeJobRepository(job))
+    monkeypatch.setattr(work_requests, "JobRepository", FakeJobRepository(job))
     patch_roles(monkeypatch, [])
 
     with pytest.raises(HTTPException) as exc_info:
@@ -124,7 +128,8 @@ async def test_list_work_requests_denies_customer_scoped_rbac_grant_for_a_differ
     job = make_job()
     other_customer = SimpleNamespace(id=uuid.uuid4())
 
-    monkeypatch.setattr(jobs, "JobRepository", FakeJobRepository(job))
+    monkeypatch.setattr(read, "JobRepository", FakeJobRepository(job))
+    monkeypatch.setattr(work_requests, "JobRepository", FakeJobRepository(job))
     patch_roles(monkeypatch, [AccessRole.customer])
 
     with pytest.raises(HTTPException) as exc_info:
@@ -144,7 +149,8 @@ async def test_list_work_requests_allows_when_a_second_role_grants_access(monkey
     non_matching_customer = SimpleNamespace(id=uuid.uuid4())
     matching_worker = SimpleNamespace(id=job.worker_id)
 
-    monkeypatch.setattr(jobs, "JobRepository", FakeJobRepository(job))
+    monkeypatch.setattr(read, "JobRepository", FakeJobRepository(job))
+    monkeypatch.setattr(work_requests, "JobRepository", FakeJobRepository(job))
     patch_roles(monkeypatch, [AccessRole.customer, AccessRole.technician])
 
     result = await jobs.list_work_requests(
