@@ -1,0 +1,166 @@
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(190px, 260px);
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1.5rem;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.moduleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.moduleCard {
+  min-height: 245px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.moduleHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.moduleCard h3,
+.moduleCard p {
+  margin: 0;
+}
+
+.permission {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--br-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+}
+
+.moduleActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: auto;
+}
+
+.linkButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.drawerDetails {
+  display: grid;
+  gap: 1rem;
+}
+
+.drawerDetails dl,
+.targetSummary dl {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.45fr) minmax(0, 1fr);
+  gap: 0.65rem 1rem;
+  margin: 0;
+}
+
+.drawerDetails dt,
+.targetSummary dt {
+  color: var(--br-muted);
+  font-weight: 700;
+}
+
+.drawerDetails dd,
+.targetSummary dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.drawerFooter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.accessLookup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.targetSummary {
+  margin-block: 1rem;
+}
+
+.assignmentList {
+  display: grid;
+  gap: 1rem;
+  margin-block: 1rem;
+}
+
+.assignmentCard {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.assignmentHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.assignmentHeading h3 {
+  margin: 0;
+}
+
+.reviewList {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.reviewList li {
+  padding: 0.85rem;
+  border: 1px solid var(--br-line);
+  border-radius: var(--br-radius-sm);
+}
+
+.statusMessage {
+  margin-top: 1rem;
+}
+
+@media (max-width: 720px) {
+  .toolbar,
+  .accessLookup {
+    grid-template-columns: 1fr;
+  }
+
+  .drawerDetails dl,
+  .targetSummary dl {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+
+  .moduleActions > *,
+  .linkButton {
+    width: 100%;
+  }
+}
