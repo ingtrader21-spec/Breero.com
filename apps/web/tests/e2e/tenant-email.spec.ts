@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("login to tenant email provisioning, compose and durable outbox", async ({ page }) => {
   await page.goto("/login");
-  await expect(page).toHaveURL(/\/account\/login$/);
+  await expect(page).toHaveURL(/\/login$/);
 
   await page.getByLabel("Email address").fill("e2e-admin@breero.test");
   await page.getByLabel("Password").fill("E2E-admin-password-123!");
