@@ -24,11 +24,13 @@ class DomainError(Exception):
         status_code: int = 400,
         *,
         fields: Mapping[str, Any] | None = None,
+        headers: Mapping[str, str] | None = None,
     ) -> None:
         self.code = code
         self.message = message
         self.status_code = status_code
         self.fields = dict(fields) if fields is not None else None
+        self.headers = {str(key): str(value) for key, value in (headers or {}).items()}
         super().__init__(message)
 
 
@@ -155,10 +157,12 @@ def install_error_handlers(app: FastAPI) -> None:
                 code=exc.code,
                 message=exc.message,
                 fields=exc.fields,
+                headers=exc.headers,
             )
         return JSONResponse(
             status_code=exc.status_code,
             content={"error": {"code": exc.code, "message": exc.message}},
+            headers=exc.headers,
         )
 
     @app.exception_handler(StarletteHTTPException)
