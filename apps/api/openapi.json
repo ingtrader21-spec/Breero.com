@@ -1181,7 +1181,7 @@
             "type": "string"
           },
           "transactional_contact_allowed": {
-            "default": true,
+            "default": false,
             "title": "Transactional Contact Allowed",
             "type": "boolean"
           },
@@ -3214,7 +3214,7 @@
             "type": "string"
           },
           "transactional_contact_allowed": {
-            "default": true,
+            "default": false,
             "title": "Transactional Contact Allowed",
             "type": "boolean"
           },
@@ -4601,7 +4601,7 @@
             "type": "string"
           },
           "transactional_contact_allowed": {
-            "default": true,
+            "default": false,
             "title": "Transactional Contact Allowed",
             "type": "boolean"
           },
