@@ -408,10 +408,10 @@ Nothing is complete merely because it renders or an endpoint exists.
 
 Completion requires tested authorization, persistence, concurrency, migrations, rollback/forward-fix, exact-head CI, final-SHA review, staging evidence for releases and enforced protected capabilities.
 
-## 10. Current authority state
+## 10. Historical authority snapshot — 2026-08-27
 
 ```text
-CURRENT_MAIN_SHA=35beb55eedb3f58eb39caf40ffaa9795978d6ee7
+HISTORICAL_MAIN_SHA=35beb55eedb3f58eb39caf40ffaa9795978d6ee7
 DESIGN_AUTHORITY_PR=67
 DASHBOARD_INTERACTIONS_PR=69
 IDENTITY_RBAC_PR=68
@@ -420,3 +420,5 @@ PRODUCTION_DEPLOYED=NO
 LIVE_SERVER_CHANGED=NO
 ULTIMATE_MISSION_COMPLETE=NO
 ```
+
+This snapshot records the original planning baseline. Resolve current implementation and remaining work from `docs/architecture/CURRENT_SYSTEM.md`, accepted `main` code, and current PR state. It does not override subsequently accepted identity, onboarding, or booking-intent implementations.

@@ -80,7 +80,7 @@ observability
 
 Each domain owns models, schemas, repository queries, application/domain services, permissions, events and typed exceptions. FastAPI routes do not own multi-step business transactions.
 
-## Current implementation snapshot
+## Historical implementation snapshot — 2026-08-27
 
 ```text
 MAIN=35beb55eedb3f58eb39caf40ffaa9795978d6ee7
@@ -103,7 +103,7 @@ LIVE_SERVER_CHANGED=NO
 
 PR #68 owns identity, sessions, effective permission checks, tenant scope, portal context and protected internal-user provisioning. PR #85 is stacked on it and owns provider registration, provider profile, onboarding persistence, submission and administrator application decisions.
 
-Neither branch is merged into `main`. Their green checks prove only their exact review heads, not production readiness.
+At that historical snapshot neither branch was merged. Both identity and provider onboarding have since reached the accepted baseline. Use `docs/architecture/CURRENT_SYSTEM.md`, current `main` source, and live PR state for implementation decisions; these historical check results do not establish current readiness.
 
 ## Compatibility decisions
 
@@ -117,7 +117,7 @@ Implementation must add reviewed `/client/*` contracts or aliases before removin
 
 The target architecture explicitly separates pre-submission `booking_intents` from durable submitted `bookings`.
 
-The current `Booking` model and status set must not be expanded further to absorb the intent lifecycle. The next booking-foundation branch adds a dedicated intent aggregate and its four CRUD endpoints, leaving existing booking behavior intact.
+The accepted code already has the dedicated `BookingIntent` aggregate in `apps/api/app/domains/booking_intents/models.py` and create, read, update, and abandon handlers in `apps/api/app/api/v1/booking_intents.py`. Subsequent booking work must extend and validate these existing contracts, preserve their authorization and lifecycle rules, and leave existing booking behavior intact. Do not create a second intent aggregate or duplicate routes.
 
 ### Response envelopes
 
