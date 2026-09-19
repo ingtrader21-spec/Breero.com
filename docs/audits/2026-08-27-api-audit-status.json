@@ -1,0 +1,148 @@
+{
+  "audit_date": "2026-08-27",
+  "repository": "appolon1908-hue/Breero.com",
+  "audit_branch": "docs/api-audit-repo-memory",
+  "protected_main": "35beb55eedb3f58eb39caf40ffaa9795978d6ee7",
+  "main_schema_readiness": "017_provider_credentials",
+  "status": {
+    "audit_report_complete": true,
+    "repository_memory_added": true,
+    "api_implementation_located": true,
+    "test_entry_points_located": true,
+    "git_state_recorded": false,
+    "runtime_code_changed": false,
+    "database_changed": false,
+    "live_server_changed": false,
+    "production_ready": false
+  },
+  "implementation_entry_points": {
+    "fastapi_app": "apps/api/app/main.py",
+    "v1_router": "apps/api/app/api/v1/router.py",
+    "v2_router": "apps/api/app/api/v2/router.py",
+    "domains": "apps/api/app/domains",
+    "integrations": "apps/api/app/integrations",
+    "workers": "apps/api/app/workers",
+    "migrations": "apps/api/migrations/versions",
+    "openapi_artifact": "apps/api/openapi.json",
+    "openapi_generator": "apps/api/scripts/generate_openapi.py",
+    "frontend_contract_check": "scripts/check-frontend-openapi.mjs"
+  },
+  "test_entry_points": {
+    "backend_config": "apps/api/pyproject.toml",
+    "backend_tests": "apps/api/tests",
+    "frontend_vitest": "apps/web/vitest.config.ts",
+    "frontend_playwright": "apps/web/playwright.config.ts",
+    "frontend_tests": "apps/web/tests",
+    "required_quality": ".github/workflows/quality.yml",
+    "backend_quality": ".github/workflows/backend-production.yml",
+    "frontend_quality": ".github/workflows/frontend-production.yml"
+  },
+  "active_api_stack": [
+    {
+      "order": 1,
+      "pr": 68,
+      "branch": "be/auth-identity-tenancy-rbac",
+      "head": "2f19401b9c6a0da18a14b6779767595f6e0903fc",
+      "merged": false
+    },
+    {
+      "order": 2,
+      "pr": 85,
+      "branch": "be/provider-onboarding-api-completion",
+      "head": "99cd22e1ce074f526746208ec3266aa4b750a4ed",
+      "merged": false
+    },
+    {
+      "order": 3,
+      "pr": 86,
+      "branch": "be/booking-intents-api",
+      "head": "50c96b2392dcef54ae2b83614dc3d6ffb22ed3ed",
+      "merged": false
+    },
+    {
+      "order": 4,
+      "pr": 87,
+      "branch": "be/address-geography-timezone-service-zones",
+      "head": "7afa81238a717aa42f91c3305a1c01015a04119b",
+      "merged": false
+    },
+    {
+      "order": 5,
+      "pr": 88,
+      "branch": "be/provider-services-skills",
+      "head": "b2610a3434d9d241e7d75cffa602bb5605ae600b",
+      "merged": false
+    }
+  ],
+  "highest_impact_findings": [
+    {
+      "severity": "P0",
+      "id": "API-001",
+      "title": "Target API dependency stack is not merged into protected main"
+    },
+    {
+      "severity": "P0",
+      "id": "API-002",
+      "title": "Required browser E2E runs against mock API mode rather than real FastAPI/PostgreSQL"
+    },
+    {
+      "severity": "P0",
+      "id": "API-003",
+      "title": "Capability-dependent router registration makes the canonical OpenAPI profile environment-dependent"
+    },
+    {
+      "severity": "P0",
+      "id": "API-004",
+      "title": "Complete endpoint ownership and security policy registry is absent from main"
+    },
+    {
+      "severity": "P1",
+      "id": "API-005",
+      "title": "Target client/booking namespaces diverge from legacy customer/addresses/availability/bookings routes"
+    },
+    {
+      "severity": "P1",
+      "id": "API-006",
+      "title": "Readiness is hard-coded to one Alembic revision"
+    },
+    {
+      "severity": "P1",
+      "id": "API-007",
+      "title": "V1 and V2 error contracts are inconsistent"
+    },
+    {
+      "severity": "P1",
+      "id": "API-008",
+      "title": "Frontend contract check covers a release subset rather than the complete API"
+    },
+    {
+      "severity": "P1",
+      "id": "API-009",
+      "title": "API inventory and README do not encode the exact runtime contract profile"
+    },
+    {
+      "severity": "P2",
+      "id": "API-010",
+      "title": "Mandatory integration-test skip count is not explicitly gated",
+      "classification": "prospective_hardening"
+    },
+    {
+      "severity": "P1",
+      "id": "API-011",
+      "title": "Node runtime target is not repository-enforced"
+    },
+    {
+      "severity": "P2",
+      "id": "API-012",
+      "title": "Backend package metadata declares Alembic twice"
+    }
+  ],
+  "next_slices": [
+    "stabilize and merge PRs 68, 85, 86, 87 and 88 in order",
+    "refactor/api-contract-determinism",
+    "refactor/api-runtime-policy-registry-v2",
+    "ci/real-api-e2e-certification",
+    "be/client-route-compatibility",
+    "ci/release-schema-identity"
+  ]
+}

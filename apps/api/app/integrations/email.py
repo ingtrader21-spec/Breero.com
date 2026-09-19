@@ -12,6 +12,20 @@ from app.config import settings
 from app.integrations.payouts import IntegrationNotConfigured
 
 
+class EmailDeliveryDisabled(IntegrationNotConfigured):
+    code = "EMAIL_DELIVERY_DISABLED"
+    pending_configuration = True
+
+
+def require_live_email_delivery() -> None:
+    if not (
+        settings.live_email_delivery
+        and settings.email_enabled
+        and settings.transactional_email_mode == "controlled_canary"
+    ):
+        raise EmailDeliveryDisabled("Email delivery is disabled or awaiting configuration")
+
+
 @dataclass(frozen=True)
 class RenderedEmail:
     subject: str
@@ -42,13 +56,15 @@ class ConsoleEmailGateway(FakeEmailGateway):
 
 class SmtpEmailGateway:
     async def send(self, *, to: str, subject: str, text: str) -> str:
+        require_live_email_delivery()
         if not settings.smtp_host or not settings.smtp_from_email:
-            raise IntegrationNotConfigured("Email provider is not configured")
+            raise EmailDeliveryDisabled("Email provider is not configured")
         message = EmailMessage()
         message["From"], message["To"], message["Subject"] = settings.smtp_from_email, to, subject
         message.set_content(text)
 
         def deliver() -> None:
+            require_live_email_delivery()
             with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=20) as client:
                 client.starttls()
                 if settings.smtp_username:
@@ -65,16 +81,11 @@ class EmailAdapter:
     def __init__(self) -> None:
         self.delivery_url = os.getenv("EMAIL_DELIVERY_URL", "")
         self.api_key = os.getenv("EMAIL_DELIVERY_API_KEY", "")
-        self.environment = os.getenv("APP_ENV", "development")
 
     async def send(self, event_type: str, payload: dict[str, Any]) -> None:
+        require_live_email_delivery()
         if not self.delivery_url:
-            if self.environment in {"production", "staging"}:
-                raise IntegrationNotConfigured("Email provider is not configured")
-            structlog.get_logger(__name__).info(
-                "local_email_delivery", event_type=event_type, recipient=payload.get("email")
-            )
-            return
+            raise EmailDeliveryDisabled("Email provider is not configured")
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
         async with httpx.AsyncClient(timeout=20) as client:
             response = await client.post(

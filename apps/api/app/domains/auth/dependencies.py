@@ -91,7 +91,7 @@ async def current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required"
         )
-    claims = decode_access_token(credentials.credentials)
+    claims = await decode_access_token(credentials.credentials)
     repository = UserRepository(session)
     user: User | None
     if settings.keycloak_enabled:

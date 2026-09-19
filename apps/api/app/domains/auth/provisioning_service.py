@@ -78,7 +78,7 @@ class InternalUserProvisioningService:
                 User(
                     email=email,
                     full_name=data.full_name.strip(),
-                    password_hash=hash_password(new_opaque_token()),
+                    password_hash=await hash_password(new_opaque_token()),
                     role=legacy_role,
                     is_active=True,
                     email_verified=settings.keycloak_enabled,
@@ -115,6 +115,7 @@ class InternalUserProvisioningService:
                 )
                 deliverable = (
                     settings.email_enabled
+                    and settings.live_email_delivery
                     and settings.transactional_email_mode != "disabled"
                 )
                 invitation_state = (

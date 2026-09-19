@@ -1,6 +1,6 @@
 # Capability registry
 
-This records source defaults at the accepted baseline in [CURRENT_SYSTEM.md](CURRENT_SYSTEM.md), not live environment values. [SOURCE_INVENTORY.json](SOURCE_INVENTORY.json) enumerates every boolean and mode field in `Settings` and `ObservabilitySettings`. Default flag values are not proof that all related task or transport code honors them.
+This records source defaults at the accepted baseline, with the email-guard extension explicitly noted below. The original baseline is documented in [CURRENT_SYSTEM.md](CURRENT_SYSTEM.md), not live environment values. [SOURCE_INVENTORY.json](SOURCE_INVENTORY.json) enumerates the baseline boolean and mode fields in `Settings` and `ObservabilitySettings`. Default flag values are not proof that all related task or transport code honors them.
 
 | Source setting | Default | Effective source behavior / certification gap |
 |---|---|---|
@@ -24,26 +24,32 @@ This records source defaults at the accepted baseline in [CURRENT_SYSTEM.md](CUR
 | `GEOCODING_ENABLED` | false | Address/geography public route families excluded; administrative zone routes remain mounted |
 | `MIDDLEWARE_ENABLED` | false | Adapter rejects delivery; worker parks/reactivates public-submission CRM events only |
 | `ODOO_ENABLED` | false | DEPRECATED: true is rejected at Settings startup in every environment |
-| `EMAIL_ENABLED` | false | Legacy configuration setting; EmailAdapter HTTP delivery does not check it |
+| `EMAIL_ENABLED` | false | Required alongside LIVE_EMAIL_DELIVERY and the accepted transactional mode at HTTP/SMTP send boundaries |
+| `LIVE_EMAIL_DELIVERY` | false | Added after the baseline snapshot; guards HTTP/SMTP, parks disabled events, and cannot be enabled in production Settings |
 | `SMS_ENABLED` | false | SMS configuration setting; fake/unconfigured gateways only |
 | `METRICS_ENABLED` | true | Executable `/metrics` exposition, excluded from OpenAPI; ingress must keep it private |
 | `OTEL_ENABLED` | false | Optional API/worker instrumentation; true requires configured OTLP endpoint |
-| `TRANSACTIONAL_EMAIL_MODE` | `controlled_canary` | Not a delivery kill switch: EmailAdapter and outbox notification dispatch do not enforce it |
+| `TRANSACTIONAL_EMAIL_MODE` | `controlled_canary` | HTTP/SMTP require this exact mode plus both email flags; disabled/unknown modes cannot send; no recipient allowlist certification |
 | `TRANSACTIONAL_SMS_MODE` | `controlled_canary` | Accepted configuration values are disabled/controlled_canary; no complete SMS transport enforcement exists |
 
 ## Transport and frontend switches outside Settings
 
 | Setting / source | Default | Actual boundary |
 |---|---|---|
-| `EMAIL_DELIVERY_URL` in `app/integrations/email.py` | empty | Nonempty value selects direct HTTP email delivery regardless of EMAIL_ENABLED or TRANSACTIONAL_EMAIL_MODE; not a governed Klyrow path |
+| `EMAIL_DELIVERY_URL` in `app/integrations/email.py` | empty | Nonempty value configures the legacy HTTP destination, subject to all email guards; not a governed Klyrow path |
 | `EMAIL_DELIVERY_API_KEY` in the same adapter | empty | Optional HTTP authentication; not an enablement or consent control; value is never inventoried |
 | `NEXT_PUBLIC_KEYCLOAK_ENABLED` in `apps/web/lib/keycloak.ts` | false unless exactly `true` | Browser login selection only; backend remains authentication/authorization authority |
 | `NEXT_PUBLIC_KEYCLOAK_ISSUER` / `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID` | empty / `breero-web-production` | Browser PKCE configuration; canonical issuer must be supplied at build/deployment |
 
-Without EMAIL_DELIVERY_URL, EmailAdapter raises in production/staging but treats development delivery as a successful local log. Auth events can be pending even with transactional mode disabled. `SmtpEmailGateway.send` checks host/from configuration, not a live-delivery switch. Thus neither an empty URL, an EMAIL_ENABLED=false report nor controlled_canary guarantees the mission's zero-delivery/recoverable-parking property across all entrypoints. Fix at the shared dispatch/adapter boundary and test retry paths before certification.
+The email-guard extension supersedes the baseline transport findings above. Missing
+HTTP/SMTP configuration and disabled delivery park outbox events rather than
+reporting a local no-op as successful delivery. Replay remains explicit and audited;
+see [EMAIL_DELIVERY_GUARD.md](../runbooks/EMAIL_DELIVERY_GUARD.md). The generated
+SOURCE_INVENTORY.json remains the dated baseline snapshot; it is not an activation
+record or a regenerated inventory of this extension.
 
 ## Mission names and implementation/activation separation
 
-The mission names `PAYOUTS_ENABLED`, `AUTO_ASSIGN_PROVIDER`, `AUTO_CONFIRM_BOOKING`, `MESSAGING_ENABLED`, `REVIEWS_ENABLED`, `LIVE_EMAIL_DELIVERY`, `LIVE_SMS_DELIVERY`, `FEATURED_PROVIDERS_ENABLED`, `MARKETING_ENABLED`, and `AI_AUTOMATION_ENABLED` are not existing normalized Settings fields. Absence is not an enforced kill switch. Preserve existing API behavior and introduce reviewed aliases/guards additively in their owning workstreams. No missing commercial or AI capability is authorized for activation.
+The mission names `PAYOUTS_ENABLED`, `AUTO_ASSIGN_PROVIDER`, `AUTO_CONFIRM_BOOKING`, `MESSAGING_ENABLED`, `REVIEWS_ENABLED`, `LIVE_SMS_DELIVERY`, `FEATURED_PROVIDERS_ENABLED`, `MARKETING_ENABLED`, and `AI_AUTOMATION_ENABLED` are not existing normalized Settings fields. Absence is not an enforced kill switch. Preserve existing API behavior and introduce reviewed aliases/guards additively in their owning workstreams. No missing commercial or AI capability is authorized for activation.
 
 Production Settings currently reject enabling payments, payouts, paid leads, online checkout, automatic refunds/booking/assignment/confirmation, provider self-service, matching, messaging, reviews or marketing flags. They require scheduling enabled. These restrictions remain in force; this inventory changes none of them. Each activation needs separate staging evidence, monitoring/rollback, independent approval and a production change record.
