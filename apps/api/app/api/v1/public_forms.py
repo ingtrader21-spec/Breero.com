@@ -32,6 +32,7 @@ async def enforce_rate_limit(request: Request) -> str:
                 "RATE_LIMITED",
                 "Too many submissions; try again shortly",
                 429,
+                headers=exc.headers,
             ) from exc
         raise
     return source_for_request(request)
