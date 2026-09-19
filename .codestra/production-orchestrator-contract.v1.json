@@ -52,6 +52,6 @@
     "payment_execution": false
   },
   "blockers": [
-    "Three immutable release images and their complete supply-chain evidence must be produced before candidate admission."
+    "5 immutable release images and their complete supply-chain evidence must be produced before candidate admission."
   ]
 }
