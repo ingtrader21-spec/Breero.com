@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.db.session import SessionLocal
+from app.db.worker_session import WorkerSessionLocal
 from app.domains.booking.models import EXPIRING_BOOKING_STATUSES, Booking, BookingStatus
 from app.domains.common.outbox_service import OutboxService
 from app.domains.finance.service import FinanceService
@@ -44,7 +44,7 @@ async def expire_booking_holds(session: AsyncSession, *, now: datetime) -> int:
 @celery_app.task(name="app.workers.tasks.expire_bookings")
 def expire_bookings() -> int:
     async def run() -> int:
-        async with SessionLocal() as session:
+        async with WorkerSessionLocal() as session:
             return await expire_booking_holds(session, now=datetime.now(UTC))
 
     return asyncio.run(run())
@@ -86,7 +86,7 @@ async def deliver_outbox_event(event, session, adapter, email):
 )
 def publish_outbox() -> int:
     async def run() -> int:
-        async with SessionLocal() as session:
+        async with WorkerSessionLocal() as session:
             adapter = MiddlewareAdapter()
             email = EmailAdapter()
             tenant_email = TenantEmailDeliveryService(session)
@@ -117,7 +117,7 @@ def publish_outbox() -> int:
 @celery_app.task(name="app.workers.tasks.release_earnings")
 def release_earnings() -> int:
     async def run() -> int:
-        async with SessionLocal() as session:
+        async with WorkerSessionLocal() as session:
             return await FinanceService(session).release_eligible()
 
     return asyncio.run(run())
@@ -126,7 +126,7 @@ def release_earnings() -> int:
 @celery_app.task(name="app.workers.tasks.generate_weekly_payout_candidates")
 def generate_weekly_payout_candidates() -> str:
     async def run() -> str:
-        async with SessionLocal() as session:
+        async with WorkerSessionLocal() as session:
             try:
                 batch = await FinanceService(session).create_batch("USD")
                 return str(batch.id)
