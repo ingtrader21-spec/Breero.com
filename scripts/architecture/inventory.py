@@ -166,7 +166,7 @@ def runtime_inventory():
         raise RuntimeError(
             "Runtime enumeration differs from OpenAPI; inventory is incomplete"
         )
-    saved = json.loads((ROOT / "apps/api/openapi.json").read_text())
+    saved = json.loads((ROOT / "apps/api/openapi.json").read_text(encoding="utf-8"))
     return {
         "framework_routes": [
             {"path": route.path, "methods": sorted(route.methods or [])}
@@ -194,7 +194,7 @@ def collect(baseline: str):
     tasks = []
     route_declarations = []
     for path in sorted((ROOT / "apps/api/app").rglob("*.py")):
-        tree = ast.parse(path.read_text())
+        tree = ast.parse(path.read_text(encoding="utf-8-sig"))
         classes = []
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
@@ -257,7 +257,7 @@ def collect(baseline: str):
                         )
         modules.append({**source(path), "classes": classes})
     for path in sorted((ROOT / "apps/api/migrations/versions").glob("*.py")):
-        values = assignments(ast.parse(path.read_text()).body)
+        values = assignments(ast.parse(path.read_text(encoding="utf-8-sig")).body)
         revisions.append(
             {
                 **source(path),
@@ -318,6 +318,15 @@ def collect(baseline: str):
                 "PYTHONDONTWRITEBYTECODE": "1",
                 **overrides,
             }
+            if os.name == "nt":
+                # A Windows child process needs core OS variables even when the
+                # application environment is intentionally scrubbed. Preserve
+                # only non-credential system plumbing; the empty cwd still
+                # prevents repository .env discovery.
+                for key in ("SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "TEMP", "TMP"):
+                    value = os.environ.get(key)
+                    if value:
+                        env[key] = value
             result = subprocess.run(
                 [
                     sys.executable,
@@ -412,12 +421,12 @@ def main():
     if args.runtime_profile:
         print(json.dumps(runtime_inventory(), sort_keys=True))
         return
-    baseline = args.source_sha or json.loads(OUTPUT.read_text())["baseline_main_sha"]
+    baseline = args.source_sha or json.loads(OUTPUT.read_text(encoding="utf-8"))["baseline_main_sha"]
     if len(baseline) != 40 or any(char not in "0123456789abcdef" for char in baseline):
         parser.error("source SHA must be a full lowercase Git SHA")
     result = json.dumps(collect(baseline), indent=2, sort_keys=True) + "\n"
     if args.check:
-        if OUTPUT.read_text() != result:
+        if OUTPUT.read_text(encoding="utf-8") != result:
             raise SystemExit(
                 "Source inventory drift: review and regenerate the architecture baseline"
             )
@@ -425,7 +434,7 @@ def main():
             "PASS: source inventory matches executable source and runtime route profiles"
         )
     else:
-        OUTPUT.write_text(result)
+        OUTPUT.write_text(result, encoding="utf-8")
         print(OUTPUT.relative_to(ROOT))
 
 
