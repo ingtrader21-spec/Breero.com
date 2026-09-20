@@ -1,596 +1,378 @@
 {
-  "branch_rules": [
-    {
-      "parameters": {
-        "allowed_merge_methods": [
-          "squash"
-        ],
-        "dismiss_stale_reviews_on_push": true,
-        "require_code_owner_review": false,
-        "require_extra_approval_for_unattributed_changes": true,
-        "require_last_push_approval": true,
-        "required_approving_review_count": 1,
-        "required_review_thread_resolution": true,
-        "required_reviewers": []
-      },
-      "ruleset_id": 22202166,
-      "ruleset_source": "appolon1908-hue/Breero.com",
-      "ruleset_source_type": "Repository",
-      "type": "pull_request"
-    },
-    {
-      "ruleset_id": 22202166,
-      "ruleset_source": "appolon1908-hue/Breero.com",
-      "ruleset_source_type": "Repository",
-      "type": "required_linear_history"
-    },
-    {
-      "ruleset_id": 22202166,
-      "ruleset_source": "appolon1908-hue/Breero.com",
-      "ruleset_source_type": "Repository",
-      "type": "non_fast_forward"
-    },
-    {
-      "ruleset_id": 22202166,
-      "ruleset_source": "appolon1908-hue/Breero.com",
-      "ruleset_source_type": "Repository",
-      "type": "deletion"
-    },
-    {
-      "parameters": {
-        "do_not_enforce_on_create": false,
-        "required_status_checks": [
-          {
-            "context": "quality",
-            "integration_id": 15368
-          },
-          {
-            "context": "orchestrator-contract",
-            "integration_id": 15368
-          }
-        ],
-        "strict_required_status_checks_policy": true
-      },
-      "ruleset_id": 22202166,
-      "ruleset_source": "appolon1908-hue/Breero.com",
-      "ruleset_source_type": "Repository",
-      "type": "required_status_checks"
-    }
-  ],
-  "captured_at": "2026-09-13T08:05:31.498619+00:00",
+  "captured_at": "2026-09-20T23:45:44.354Z",
+  "repository": "ingtrader21-spec/Breero.com",
   "default_branch": "main",
-  "main_sha": "c8b5d31df80cd715ae189db9e16d6ff082c0d51f",
-  "open_issues": [
+  "main_sha": "8b2b22adf94c5a5d7c7699e3fb5d1a536a6beeec",
+  "rulesets": [
     {
-      "labels": [],
-      "number": 120,
-      "title": "[P0][release] Dependency-safe merge and production cutover queue",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/120"
+      "id": 22208362,
+      "name": "AI automated production branch gates",
+      "enforcement": "active",
+      "target": "branch",
+      "rules": [
+        {
+          "type": "pull_request",
+          "parameters": {
+            "required_approving_review_count": 0,
+            "dismiss_stale_reviews_on_push": false,
+            "required_reviewers": [],
+            "require_code_owner_review": false,
+            "require_last_push_approval": false,
+            "required_review_thread_resolution": true,
+            "require_extra_approval_for_unattributed_changes": true,
+            "allowed_merge_methods": [
+              "squash"
+            ]
+          }
+        },
+        {
+          "type": "required_linear_history",
+          "parameters": null
+        },
+        {
+          "type": "non_fast_forward",
+          "parameters": null
+        },
+        {
+          "type": "deletion",
+          "parameters": null
+        }
+      ]
     },
     {
-      "labels": [],
-      "number": 119,
-      "title": "[P0][governance] Protected merges blocked: exact-head last-push approval missing",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/119"
-    },
-    {
-      "labels": [],
-      "number": 111,
-      "title": "TEMP TEST DO NOT CREATE",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/111"
-    },
-    {
-      "labels": [],
-      "number": 84,
-      "title": "[EPIC][P2] Node.js 24 and pnpm runtime certification",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/84"
-    },
-    {
-      "labels": [],
-      "number": 83,
-      "title": "[EPIC][P1] Durable integrations and enforced external-delivery kill switches",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/83"
-    },
-    {
-      "labels": [],
-      "number": 82,
-      "title": "[EPIC][P2] Privacy-safe AI project assistant and scope clarification",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/82"
-    },
-    {
-      "labels": [],
-      "number": 81,
-      "title": "[EPIC][P1] Analytics, privacy, observability, security and release certification",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/81"
-    },
-    {
-      "labels": [],
-      "number": 80,
-      "title": "[EPIC][P2] Lead management, featured providers and disabled payment infrastructure",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/80"
-    },
-    {
-      "labels": [],
-      "number": 79,
-      "title": "[EPIC][P2] Messaging, notifications, support, reviews and provider performance",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/79"
-    },
-    {
-      "labels": [],
-      "number": 78,
-      "title": "[EPIC][P1] Complete customer, provider, worker, operations and admin portals",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/78"
-    },
-    {
-      "labels": [],
-      "number": 77,
-      "title": "[EPIC][P1] Explainable provider matching, scoring and manual dispatch",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/77"
-    },
-    {
-      "labels": [],
-      "number": 76,
-      "title": "[EPIC][P1] Request, quote, booking, reschedule and change-order lifecycles",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/76"
-    },
-    {
-      "labels": [],
-      "number": 75,
-      "title": "[EPIC][P1] Scheduling capacity, travel estimates and atomic 30-minute holds",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/75"
-    },
-    {
-      "labels": [],
-      "number": 74,
-      "title": "[EPIC][P1] Provider network, coverage, scheduling and compliance",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/74"
-    },
-    {
-      "labels": [],
-      "number": 73,
-      "title": "[EPIC][P1] Catalog, address, geography, timezone and operating-hours engine",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/73"
-    },
-    {
-      "labels": [],
-      "number": 66,
-      "title": "Delegate Breero password reset to Codestra Keycloak and retire local reset when OIDC is enabled",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/66"
-    },
-    {
-      "labels": [],
-      "number": 61,
-      "title": "[P0][Architecture] Consolidate code structure and prove API completeness before staging",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/61"
-    },
-    {
-      "labels": [],
-      "number": 53,
-      "title": "[P0] Harden public submissions, idempotency, consent, and outbox delivery",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/53"
-    },
-    {
-      "labels": [],
-      "number": 52,
-      "title": "[P0] Canonical Docker release platform, staging, and production deployment",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/52"
-    },
-    {
-      "labels": [],
-      "number": 51,
-      "title": "[P0] Make every public form and CTA production-ready",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/51"
-    },
-    {
-      "labels": [],
-      "number": 50,
-      "title": "[P0] Clean and certify the BREERO API contract",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/50"
-    },
-    {
-      "labels": [],
-      "number": 49,
-      "title": "[P0] Production identity, tenancy, RBAC, and record-policy foundation",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/49"
-    },
-    {
-      "labels": [],
-      "number": 48,
-      "title": "CODEX MISSION: Implement BREERO features, clean APIs, harden forms/CTAs, and prepare Docker release",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/48"
-    },
-    {
-      "labels": [],
-      "number": 37,
-      "title": "CODEX MISSION: Implement BREERO Marketplace V2 end-to-end",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/37"
-    },
-    {
-      "labels": [],
-      "number": 19,
-      "title": "[P1][production] Public data-plane ports and schema drift block cutover",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/19"
-    },
-    {
-      "labels": [],
-      "number": 18,
-      "title": "[P1][UAT] Isolated staging, persona seed, DNS, and provider credentials unavailable",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/18"
-    },
-    {
-      "labels": [],
-      "number": 17,
-      "title": "[P1][production-host] Disk safety gate blocks staging and deployment",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/17"
-    },
-    {
-      "labels": [],
-      "number": 13,
-      "title": "Frontend Authority 4: API client, integration, test harness, performance and accessibility QA",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/13"
-    },
-    {
-      "labels": [],
-      "number": 12,
-      "title": "Frontend Authority 3: Customer account, bookings, quotes, payments and profile",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/12"
-    },
-    {
-      "labels": [],
-      "number": 11,
-      "title": "Frontend Authority 2: Marketplace, service discovery and complete booking flow",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/11"
-    },
-    {
-      "labels": [],
-      "number": 10,
-      "title": "Frontend Authority 1: Design system, shell, navigation and responsive foundation",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/10"
-    },
-    {
-      "labels": [],
-      "number": 8,
-      "title": "DevOps: CI/CD, production Docker, TLS, backups and deployment to 49.12.145.107",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/8"
-    },
-    {
-      "labels": [],
-      "number": 7,
-      "title": "Operations/admin portals: dispatch, quotes, vendors, finance and configuration",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/7"
-    },
-    {
-      "labels": [],
-      "number": 6,
-      "title": "Partner portal: offers, technician workflow, evidence and earnings",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/6"
-    },
-    {
-      "labels": [],
-      "number": 5,
-      "title": "Public frontend: marketplace, booking wizard and customer experience",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/5"
-    },
-    {
-      "labels": [],
-      "number": 4,
-      "title": "Dispatch and matching: vendors, workers, offers, assignments and job state",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/4"
-    },
-    {
-      "labels": [],
-      "number": 3,
-      "title": "Payments: Stripe checkout, webhook truth, idempotency and refunds foundation",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/3"
-    },
-    {
-      "labels": [],
-      "number": 2,
-      "title": "Booking core: services, address validation, availability and guest booking",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/2"
-    },
-    {
-      "labels": [],
-      "number": 1,
-      "title": "Backend foundation: FastAPI, PostGIS, Redis, Alembic and platform primitives",
-      "url": "https://github.com/appolon1908-hue/Breero.com/issues/1"
+      "id": 22202166,
+      "name": "AI automated production gates",
+      "enforcement": "active",
+      "target": "branch",
+      "rules": [
+        {
+          "type": "pull_request",
+          "parameters": {
+            "required_approving_review_count": 1,
+            "dismiss_stale_reviews_on_push": true,
+            "required_reviewers": [],
+            "require_code_owner_review": false,
+            "require_last_push_approval": true,
+            "required_review_thread_resolution": true,
+            "require_extra_approval_for_unattributed_changes": true,
+            "allowed_merge_methods": [
+              "squash"
+            ]
+          }
+        },
+        {
+          "type": "required_linear_history",
+          "parameters": null
+        },
+        {
+          "type": "non_fast_forward",
+          "parameters": null
+        },
+        {
+          "type": "deletion",
+          "parameters": null
+        },
+        {
+          "type": "required_status_checks",
+          "parameters": {
+            "strict_required_status_checks_policy": true,
+            "do_not_enforce_on_create": false,
+            "required_status_checks": [
+              {
+                "context": "quality",
+                "integration_id": 15368
+              },
+              {
+                "context": "orchestrator-contract",
+                "integration_id": 15368
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "open_pull_requests": [
     {
-      "baseRefName": "main",
-      "headRefName": "architecture/current-state-inventory",
-      "number": 128,
-      "title": "docs(architecture): establish current-system baseline",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/128"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "fix/api-cleanup-validation",
-      "number": 126,
-      "title": "fix(api): bound readiness and repair dependency audit blockers",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/126"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "fix/documented-ready-endpoint-20260910",
-      "number": 124,
-      "title": "fix(api): restore documented /ready endpoint",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/124"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "reconcile/live-runtime-v2-20260909",
       "number": 123,
       "title": "reconcile: promote live Breero runtime into canonical repository",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/123"
+      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/123"
     },
     {
-      "baseRefName": "main",
-      "headRefName": "ops/manual-production-orchestrator-20260903",
-      "number": 121,
-      "title": "release: add exact-head manual production intent contract",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/121"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "codex/codestra-orbit-v2-breero-com",
-      "number": 118,
-      "title": "chore(orbit): register all Breero applications under one shell",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/118"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "feature/horizon-portfolio-shell-v1",
-      "number": 117,
-      "title": "feat(ui): adopt Horizon portfolio shell",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/117"
-    },
-    {
-      "baseRefName": "fe/portal-runtime-foundation",
-      "headRefName": "fe/ops-portal-production",
-      "number": 116,
-      "title": "feat(ops): replace shell with governed operations workspace",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/116"
-    },
-    {
-      "baseRefName": "be/portal-read-models",
-      "headRefName": "fe/generated-openapi-contract",
-      "number": 115,
-      "title": "build(types): generate frontend contracts from canonical OpenAPI",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/115"
-    },
-    {
-      "baseRefName": "fe/portal-runtime-foundation",
-      "headRefName": "ops/portal-production-release",
-      "number": 114,
-      "title": "ops(portals): immutable release, certification, and rollback layer",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/114"
-    },
-    {
-      "baseRefName": "fe/portal-runtime-foundation",
-      "headRefName": "fe/admin-portal-production",
-      "number": 113,
-      "title": "feat(admin): production governance, finance, and platform control plane",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/113"
-    },
-    {
-      "baseRefName": "fe/portal-runtime-foundation",
-      "headRefName": "fe/partner-portal-production",
-      "number": 112,
-      "title": "feat(partner): production provider workspace for partners.breero.com",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/112"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "fe/portal-runtime-foundation",
-      "number": 110,
-      "title": "feat(portals): secure Keycloak BFF runtime for partner, ops, and admin",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/110"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "be/portal-read-models",
-      "number": 109,
-      "title": "feat(portals): scoped provider, operations, and admin read models",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/109"
-    },
-    {
-      "baseRefName": "be/auth-crypto-jwks-argon2",
-      "headRefName": "be/auth-rbac-request-context",
-      "number": 108,
-      "title": "fix(auth): resolve effective RBAC context once per request",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/108"
-    },
-    {
-      "baseRefName": "be/auth-crypto-jwks-argon2",
-      "headRefName": "be/runtime-resource-lifecycle",
-      "number": 107,
-      "title": "fix(runtime): own database and Redis pools through application lifespan",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/107"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "be/worker-async-engine-isolation",
-      "number": 105,
-      "title": "fix(worker): isolate async database connections across Celery event loops",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/105"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "be/auth-crypto-jwks-argon2",
-      "number": 104,
-      "title": "fix(auth): remove blocking password and JWKS work from request loop",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/104"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "security/keycloak-registration-recovery-20260829",
-      "number": 102,
-      "title": "security(auth): lock Breero registration and recovery to Keycloak",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/102"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "infra/consolidate-production-compose",
-      "number": 101,
-      "title": "infra(deploy): consolidate the two divergent production compose stacks",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/101"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "fix/dependabot-critical-vitest-postcss",
-      "number": 100,
-      "title": "fix(deps): resolve all 9 open Dependabot alerts (8 critical, 1 medium)",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/100"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "fix/app-env-strict-validation-v2",
-      "number": 99,
-      "title": "fix(config): reject any APP_ENV value outside a known, fixed set",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/99"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "docs/api-audit-repo-memory",
-      "number": 89,
-      "title": "docs(api): add repository memory and prioritized API audit",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/89"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "integration/n8n-marketplace-automation-v2-20260827",
-      "number": 72,
-      "title": "docs(integration): define governed marketplace automation",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/72"
-    },
-    {
-      "baseRefName": "be/tenant-email-provisioning-outbox",
-      "headRefName": "fe/tenant-email-compose-e2e",
-      "number": 71,
-      "title": "feat(email-ui): add tenant email provisioning and compose workspace",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/71"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "be/tenant-email-provisioning-outbox",
-      "number": 70,
-      "title": "feat(email): add tenant provisioning, compose and durable outbox",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/70"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "fe/portal-login-department-dashboards",
-      "number": 69,
-      "title": "feat(portal): complete role-aware dashboard interactions and access administration",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/69"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "fe/enterprise-design-governance",
-      "number": 67,
-      "title": "feat(ui): enforce complete BREERO enterprise marketplace design system",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/67"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "ci/secure-deployment-preflight",
-      "number": 65,
-      "title": "ci(deploy): add read-only secure deployment preflight",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/65"
-    },
-    {
-      "baseRefName": "refactor/api-router-registry",
-      "headRefName": "refactor/integration-adapter-boundaries",
-      "number": 63,
-      "title": "refactor(integrations): centralize provider-neutral adapter contracts",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/63"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "refactor/api-router-registry",
-      "number": 62,
-      "title": "refactor(api): add fail-closed runtime endpoint policy registry",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/62"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "refactor/backend-configuration",
-      "number": 60,
-      "title": "refactor(config): split settings validation into explicit modules",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/60"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "refactor/jobs-api-boundaries",
-      "number": 59,
-      "title": "refactor(api): split jobs and work requests into clean modules",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/59"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "refactor/operations-api-boundaries",
-      "number": 58,
-      "title": "refactor(api): split operations routes into clean resource modules",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/58"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "be/public-submissions-hardening",
-      "number": 55,
-      "title": "fix(api): harden public submissions, consent and idempotency",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/55"
-    },
-    {
-      "baseRefName": "be/public-submissions-hardening",
-      "headRefName": "fe/public-forms-cta-hardening",
-      "number": 54,
-      "title": "feat(forms): harden public submissions and request-first CTAs",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/54"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "planning/breero-feature-api-forms-docker-program",
-      "number": 47,
-      "title": "docs(codex): define complete branch-safe BREERO marketplace program",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/47"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "ci/docker-production-identity-hardening",
-      "number": 46,
-      "title": "fix(docker): enforce canonical Keycloak issuer for frontend production",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/46"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "bootstrap/frontend-production-foundation",
-      "number": 42,
-      "title": "docs(frontend): define target-state Marketplace V2 routes and safety",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/42"
-    },
-    {
-      "baseRefName": "main",
-      "headRefName": "bootstrap/backend-production-foundation",
       "number": 41,
       "title": "fix(tooling): make BREERO backend bootstrap fail closed and tested",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/41"
+      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/41"
     },
     {
-      "baseRefName": "main",
-      "headRefName": "docs/odoo-campaign-crm-authority",
-      "number": 40,
-      "title": "docs(odoo): define Odoo 19 campaign CRM authority and safety gates",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/40"
+      "number": 62,
+      "title": "refactor(api): add fail-closed runtime endpoint policy registry",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/62"
     },
     {
-      "baseRefName": "main",
-      "headRefName": "docs/marketplace-v2-p0-and-core-authority",
-      "number": 39,
-      "title": "docs(marketplace-v2): harden production implementation authority",
-      "url": "https://github.com/appolon1908-hue/Breero.com/pull/39"
+      "number": 65,
+      "title": "ci(deploy): add read-only secure deployment preflight",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/65"
+    },
+    {
+      "number": 67,
+      "title": "feat(ui): enforce complete BREERO enterprise marketplace design system",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/67"
+    },
+    {
+      "number": 70,
+      "title": "feat(email): add tenant provisioning, compose and durable outbox",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/70"
+    },
+    {
+      "number": 109,
+      "title": "feat(portals): scoped provider, operations, and admin read models",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/109"
+    },
+    {
+      "number": 110,
+      "title": "feat(portals): secure Keycloak BFF runtime for partner, ops, and admin",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/110"
+    },
+    {
+      "number": 117,
+      "title": "feat(ui): adopt Horizon portfolio shell",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/117"
     }
   ],
-  "repository": "appolon1908-hue/Breero.com"
+  "open_issues": [
+    {
+      "number": 119,
+      "title": "[P0][governance] Protected merges blocked: exact-head last-push approval missing",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/119",
+      "labels": []
+    },
+    {
+      "number": 120,
+      "title": "[P0][release] Dependency-safe merge and production cutover queue",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/120",
+      "labels": []
+    },
+    {
+      "number": 111,
+      "title": "TEMP TEST DO NOT CREATE",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/111",
+      "labels": []
+    },
+    {
+      "number": 48,
+      "title": "CODEX MISSION: Implement BREERO features, clean APIs, harden forms/CTAs, and prepare Docker release",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/48",
+      "labels": []
+    },
+    {
+      "number": 84,
+      "title": "[EPIC][P2] Node.js 24 and pnpm runtime certification",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/84",
+      "labels": []
+    },
+    {
+      "number": 81,
+      "title": "[EPIC][P1] Analytics, privacy, observability, security and release certification",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/81",
+      "labels": []
+    },
+    {
+      "number": 73,
+      "title": "[EPIC][P1] Catalog, address, geography, timezone and operating-hours engine",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/73",
+      "labels": []
+    },
+    {
+      "number": 83,
+      "title": "[EPIC][P1] Durable integrations and enforced external-delivery kill switches",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/83",
+      "labels": []
+    },
+    {
+      "number": 74,
+      "title": "[EPIC][P1] Provider network, coverage, scheduling and compliance",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/74",
+      "labels": []
+    },
+    {
+      "number": 82,
+      "title": "[EPIC][P2] Privacy-safe AI project assistant and scope clarification",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/82",
+      "labels": []
+    },
+    {
+      "number": 80,
+      "title": "[EPIC][P2] Lead management, featured providers and disabled payment infrastructure",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/80",
+      "labels": []
+    },
+    {
+      "number": 79,
+      "title": "[EPIC][P2] Messaging, notifications, support, reviews and provider performance",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/79",
+      "labels": []
+    },
+    {
+      "number": 78,
+      "title": "[EPIC][P1] Complete customer, provider, worker, operations and admin portals",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/78",
+      "labels": []
+    },
+    {
+      "number": 77,
+      "title": "[EPIC][P1] Explainable provider matching, scoring and manual dispatch",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/77",
+      "labels": []
+    },
+    {
+      "number": 76,
+      "title": "[EPIC][P1] Request, quote, booking, reschedule and change-order lifecycles",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/76",
+      "labels": []
+    },
+    {
+      "number": 75,
+      "title": "[EPIC][P1] Scheduling capacity, travel estimates and atomic 30-minute holds",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/75",
+      "labels": []
+    },
+    {
+      "number": 52,
+      "title": "[P0] Canonical Docker release platform, staging, and production deployment",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/52",
+      "labels": []
+    },
+    {
+      "number": 61,
+      "title": "[P0][Architecture] Consolidate code structure and prove API completeness before staging",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/61",
+      "labels": []
+    },
+    {
+      "number": 66,
+      "title": "Delegate Breero password reset to Codestra Keycloak and retire local reset when OIDC is enabled",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/66",
+      "labels": []
+    },
+    {
+      "number": 53,
+      "title": "[P0] Harden public submissions, idempotency, consent, and outbox delivery",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/53",
+      "labels": []
+    },
+    {
+      "number": 51,
+      "title": "[P0] Make every public form and CTA production-ready",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/51",
+      "labels": []
+    },
+    {
+      "number": 50,
+      "title": "[P0] Clean and certify the BREERO API contract",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/50",
+      "labels": []
+    },
+    {
+      "number": 49,
+      "title": "[P0] Production identity, tenancy, RBAC, and record-policy foundation",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/49",
+      "labels": []
+    },
+    {
+      "number": 37,
+      "title": "CODEX MISSION: Implement BREERO Marketplace V2 end-to-end",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/37",
+      "labels": []
+    },
+    {
+      "number": 19,
+      "title": "[P1][production] Public data-plane ports and schema drift block cutover",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/19",
+      "labels": []
+    },
+    {
+      "number": 18,
+      "title": "[P1][UAT] Isolated staging, persona seed, DNS, and provider credentials unavailable",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/18",
+      "labels": []
+    },
+    {
+      "number": 17,
+      "title": "[P1][production-host] Disk safety gate blocks staging and deployment",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/17",
+      "labels": []
+    },
+    {
+      "number": 13,
+      "title": "Frontend Authority 4: API client, integration, test harness, performance and accessibility QA",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/13",
+      "labels": []
+    },
+    {
+      "number": 12,
+      "title": "Frontend Authority 3: Customer account, bookings, quotes, payments and profile",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/12",
+      "labels": []
+    },
+    {
+      "number": 11,
+      "title": "Frontend Authority 2: Marketplace, service discovery and complete booking flow",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/11",
+      "labels": []
+    },
+    {
+      "number": 10,
+      "title": "Frontend Authority 1: Design system, shell, navigation and responsive foundation",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/10",
+      "labels": []
+    },
+    {
+      "number": 8,
+      "title": "DevOps: CI/CD, production Docker, TLS, backups and deployment to 49.12.145.107",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/8",
+      "labels": []
+    },
+    {
+      "number": 7,
+      "title": "Operations/admin portals: dispatch, quotes, vendors, finance and configuration",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/7",
+      "labels": []
+    },
+    {
+      "number": 6,
+      "title": "Partner portal: offers, technician workflow, evidence and earnings",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/6",
+      "labels": []
+    },
+    {
+      "number": 5,
+      "title": "Public frontend: marketplace, booking wizard and customer experience",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/5",
+      "labels": []
+    },
+    {
+      "number": 4,
+      "title": "Dispatch and matching: vendors, workers, offers, assignments and job state",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/4",
+      "labels": []
+    },
+    {
+      "number": 3,
+      "title": "Payments: Stripe checkout, webhook truth, idempotency and refunds foundation",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/3",
+      "labels": []
+    },
+    {
+      "number": 2,
+      "title": "Booking core: services, address validation, availability and guest booking",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/2",
+      "labels": []
+    },
+    {
+      "number": 1,
+      "title": "Backend foundation: FastAPI, PostGIS, Redis, Alembic and platform primitives",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/issues/1",
+      "labels": []
+    }
+  ]
 }
