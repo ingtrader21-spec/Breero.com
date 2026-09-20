@@ -9810,6 +9810,32 @@
         ]
       }
     },
+    "/api/v1/auth/csrf": {
+      "get": {
+        "description": "Expose only the double-submit token to approved frontend origins.",
+        "operationId": "browser_csrf_token_api_v1_auth_csrf_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Browser Csrf Token Api V1 Auth Csrf Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Browser Csrf Token",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/v1/auth/email/resend": {
       "post": {
         "operationId": "resend_alias_api_v1_auth_email_resend_post",

@@ -195,10 +195,18 @@ class ProviderPortalService:
             timezone(rule.timezone_id)
         await self.session.execute(
             delete(ProviderAvailabilityRule).where(
-                ProviderAvailabilityRule.provider_professional_id.in_(professional_ids)
+                ProviderAvailabilityRule.provider_professional_id.in_(
+                    select(Worker.id).where(Worker.vendor_id == vendor.id)
+                )
             )
         )
-        records = [ProviderAvailabilityRule(**rule.model_dump()) for rule in rules]
+        records = [
+            ProviderAvailabilityRule(
+                provider_professional_id=rule.professional_id,
+                **rule.model_dump(exclude={"professional_id"}),
+            )
+            for rule in rules
+        ]
         self.session.add_all(records)
         self._audit("provider.availability.replaced", "vendor", vendor.id, {"rule_count": len(records)})
         await self.session.commit()

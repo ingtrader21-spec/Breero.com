@@ -1,9 +1,15 @@
 const enabled = process.env.NEXT_PUBLIC_KEYCLOAK_ENABLED === "true";
 const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api/v1").replace(/\/$/, "");
 
-function csrfToken(): string {
+async function csrfToken(): Promise<string> {
   const value = document.cookie.split("; ").find((item) => item.startsWith("breero_csrf="));
-  return value ? decodeURIComponent(value.split("=")[1] ?? "") : "";
+  if (value && new URL(apiBase, window.location.href).origin === window.location.origin) {
+    return decodeURIComponent(value.split("=")[1] ?? "");
+  }
+  const response = await fetch(`${apiBase}/auth/csrf`, { credentials: "include", cache: "no-store" });
+  if (response.status === 401) return "";
+  if (!response.ok) throw new Error("Unable to verify browser session");
+  return ((await response.json()) as { csrf_token: string }).csrf_token;
 }
 
 export const keycloak = {
@@ -16,7 +22,7 @@ export const keycloak = {
     const response = await fetch(`${apiBase}/auth/keycloak/logout`, {
       method: "POST",
       credentials: "include",
-      headers: { "X-CSRF-Token": csrfToken() },
+      headers: { "X-CSRF-Token": await csrfToken() },
     });
     if (!response.ok && response.status !== 401) throw new Error("Logout failed");
     if (response.ok) {

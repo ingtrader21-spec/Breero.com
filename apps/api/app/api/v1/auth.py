@@ -8,6 +8,8 @@ from app.config import settings
 from app.core.rate_limit import rate_limit
 from app.db.session import get_db
 from app.domains.auth.browser_session import (
+    ACCESS_COOKIE,
+    CSRF_COOKIE,
     REFRESH_COOKIE,
     clear_browser_session,
     set_browser_session,
@@ -52,6 +54,21 @@ def client(request: Request) -> tuple[str | None, str | None]:
 def local_auth_only() -> None:
     if settings.keycloak_enabled or not settings.breero_local_password_auth:
         raise HTTPException(403, "Password authentication is managed by the identity provider")
+
+
+@router.get("/csrf")
+async def browser_csrf_token(request: Request, response: Response) -> dict[str, str]:
+    """Expose only the double-submit token to approved frontend origins."""
+    origin = request.headers.get("origin")
+    own_origin = f"{request.url.scheme}://{request.url.netloc}"
+    if origin and origin != own_origin and origin not in settings.allowed_origins:
+        raise HTTPException(403, "Frontend origin is not allowed")
+    token = request.cookies.get(CSRF_COOKIE)
+    if not token or not (request.cookies.get(ACCESS_COOKIE) or request.cookies.get(REFRESH_COOKIE)):
+        raise HTTPException(401, "Browser session required")
+    response.headers["Cache-Control"] = "no-store"
+    response.headers["Vary"] = "Origin, Cookie"
+    return {"csrf_token": token}
 
 
 @router.post("/register", response_model=TokenResponse, status_code=201)

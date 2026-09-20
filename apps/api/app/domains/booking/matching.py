@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import UTC, date, datetime, time
 
 from geoalchemy2 import Geography
-from sqlalchemy import cast, func, select
+from sqlalchemy import and_, cast, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.errors import DomainError
@@ -16,7 +16,7 @@ from app.domains.booking.capacity_models import (
     ProviderAvailabilityRule,
     ProviderCapacityRule,
 )
-from app.domains.booking.models import Address
+from app.domains.booking.models import Address, Booking, BookingStatus
 from app.domains.booking.timezones import enforce_breero_hours, timezone
 from app.domains.catalog.models import Service
 from app.domains.jobs.models import Job, JobStatus
@@ -241,8 +241,25 @@ class ProviderMatcher:
                 await self.session.scalars(
                     select(BookingCapacityHold).where(
                         BookingCapacityHold.professional_candidate_id == worker_id,
-                        BookingCapacityHold.status == CapacityHoldStatus.HELD,
-                        BookingCapacityHold.expires_at > now,
+                        or_(
+                            and_(
+                                BookingCapacityHold.status == CapacityHoldStatus.HELD,
+                                BookingCapacityHold.expires_at > now,
+                            ),
+                            and_(
+                                BookingCapacityHold.status == CapacityHoldStatus.CONVERTED,
+                                select(Booking.id).where(
+                                    Booking.id == BookingCapacityHold.booking_id,
+                                    Booking.status.not_in([
+                                        BookingStatus.CANCELLED, BookingStatus.EXPIRED,
+                                        BookingStatus.COMPLETED,
+                                    ]),
+                                ).exists(),
+                                ~select(Job.id).where(
+                                    Job.booking_id == BookingCapacityHold.booking_id,
+                                ).exists(),
+                            ),
+                        ),
                         BookingCapacityHold.slot_start_utc < day_end,
                         BookingCapacityHold.slot_end_utc > day_start,
                     )

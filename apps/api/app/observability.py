@@ -207,8 +207,10 @@ def configure_worker_observability() -> None:
     provider = _tracer_provider()
     if provider is None:
         return
+    from app.db.worker_session import worker_engine
+
     CeleryInstrumentor().instrument(tracer_provider=provider)
-    SQLAlchemyInstrumentor().instrument(engine=engine.sync_engine, tracer_provider=provider)
+    SQLAlchemyInstrumentor().instrument(engine=worker_engine.sync_engine, tracer_provider=provider)
     RedisInstrumentor().instrument(tracer_provider=provider)
 
 

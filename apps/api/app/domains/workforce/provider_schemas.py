@@ -82,7 +82,8 @@ class AvailabilityRuleWrite(BaseModel):
 
 
 class AvailabilityRuleRead(AvailabilityRuleWrite):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+    professional_id: uuid.UUID = Field(validation_alias="provider_professional_id")
     id: uuid.UUID
 
 
