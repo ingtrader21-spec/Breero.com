@@ -69,7 +69,7 @@ def test_geography_migration_downgrade_and_reupgrade() -> None:
             }
             assert {
                 "service_zone_services",
-                "service_zone_postal_codes",
+                "service_area_postal_codes",
                 "postal_code_imports",
             } <= tables
             columns = {
@@ -107,8 +107,11 @@ def test_geography_migration_downgrade_and_reupgrade() -> None:
                 )
             }
             assert "service_zone_services" not in tables
-            assert "service_zone_postal_codes" not in tables
+            assert "service_area_postal_codes" not in tables
             assert "postal_code_imports" not in tables
+            # Migration 018 owns the live-runtime service-zone postal table;
+            # downgrading only migration 030 must preserve earlier authority.
+            assert "service_zone_postal_codes" in tables
             address_columns = {
                 row[0]
                 for row in connection.execute(

@@ -4,7 +4,15 @@ import json
 import os
 from pathlib import Path
 
-from app.main import app
+# Canonical contract generation inventories release-gated booking routes without
+# enabling them in production. The runtime still mounts these routes only when
+# PUBLIC_BOOKING_API_ENABLED is explicitly true, and production validation
+# rejects that capability for the current release.
+os.environ.setdefault("GEOCODING_ENABLED", "true")
+os.environ.setdefault("SCHEDULING_ENABLED", "true")
+os.environ.setdefault("PUBLIC_BOOKING_API_ENABLED", "true")
+
+from app.main import app  # noqa: E402
 
 target = Path(os.getenv("OPENAPI_PATH", "openapi.json"))
 schema = app.openapi()
