@@ -8,8 +8,8 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-revision = "018_auth_identity_tenancy_rbac"
-down_revision = "017_provider_credentials"
+revision = "027_access_identity_tenancy_rbac"
+down_revision = "026_keycloak_identity_link"
 branch_labels = None
 depends_on = None
 

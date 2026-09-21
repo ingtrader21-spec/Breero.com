@@ -1,15 +1,15 @@
 """normalize provider service and professional skill selections
 
-Revision ID: 022_provider_services_skills
-Revises: 021_geography_service_zones
+Revision ID: 031_provider_catalog
+Revises: 030_geography_service_zones
 """
 
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-revision = "022_provider_services_skills"
-down_revision = "021_geography_service_zones"
+revision = "031_provider_catalog"
+down_revision = "030_geography_service_zones"
 branch_labels = None
 depends_on = None
 
@@ -127,7 +127,7 @@ def upgrade() -> None:
     )
 
     op.create_table(
-        "provider_services",
+        "provider_catalog_services",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column(
             "vendor_id",
@@ -171,26 +171,26 @@ def upgrade() -> None:
         ),
         sa.CheckConstraint(
             "version > 0",
-            name="ck_provider_services_provider_service_positive_version",
+            name="ck_provider_catalog_services_provider_service_positive_version",
         ),
         sa.CheckConstraint(
             "display_order >= 0",
-            name="ck_provider_services_provider_service_display_order_nonnegative",
+            name="ck_provider_catalog_services_provider_service_display_order_nonnegative",
         ),
         sa.UniqueConstraint(
             "vendor_id",
             "service_id",
-            name="uq_provider_services_vendor_service",
+            name="uq_provider_catalog_services_vendor_service",
         ),
     )
-    op.create_index("ix_provider_services_vendor_id", "provider_services", ["vendor_id"])
-    op.create_index("ix_provider_services_service_id", "provider_services", ["service_id"])
-    op.create_index("ix_provider_services_status", "provider_services", ["status"])
-    op.create_index("ix_provider_services_active", "provider_services", ["active"])
-    op.create_index("ix_provider_services_reviewed_by", "provider_services", ["reviewed_by"])
+    op.create_index("ix_provider_catalog_services_vendor_id", "provider_catalog_services", ["vendor_id"])
+    op.create_index("ix_provider_catalog_services_service_id", "provider_catalog_services", ["service_id"])
+    op.create_index("ix_provider_catalog_services_status", "provider_catalog_services", ["status"])
+    op.create_index("ix_provider_catalog_services_active", "provider_catalog_services", ["active"])
+    op.create_index("ix_provider_catalog_services_reviewed_by", "provider_catalog_services", ["reviewed_by"])
 
     op.create_table(
-        "provider_skills",
+        "provider_catalog_skills",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column(
             "vendor_id",
@@ -239,20 +239,20 @@ def upgrade() -> None:
         ),
         sa.CheckConstraint(
             "version > 0",
-            name="ck_provider_skills_provider_skill_positive_version",
+            name="ck_provider_catalog_skills_provider_skill_positive_version",
         ),
         sa.UniqueConstraint(
             "worker_id",
             "skill_id",
-            name="uq_provider_skills_worker_skill",
+            name="uq_provider_catalog_skills_worker_skill",
         ),
     )
-    op.create_index("ix_provider_skills_vendor_id", "provider_skills", ["vendor_id"])
-    op.create_index("ix_provider_skills_worker_id", "provider_skills", ["worker_id"])
-    op.create_index("ix_provider_skills_skill_id", "provider_skills", ["skill_id"])
-    op.create_index("ix_provider_skills_status", "provider_skills", ["status"])
-    op.create_index("ix_provider_skills_active", "provider_skills", ["active"])
-    op.create_index("ix_provider_skills_reviewed_by", "provider_skills", ["reviewed_by"])
+    op.create_index("ix_provider_catalog_skills_vendor_id", "provider_catalog_skills", ["vendor_id"])
+    op.create_index("ix_provider_catalog_skills_worker_id", "provider_catalog_skills", ["worker_id"])
+    op.create_index("ix_provider_catalog_skills_skill_id", "provider_catalog_skills", ["skill_id"])
+    op.create_index("ix_provider_catalog_skills_status", "provider_catalog_skills", ["status"])
+    op.create_index("ix_provider_catalog_skills_active", "provider_catalog_skills", ["active"])
+    op.create_index("ix_provider_catalog_skills_reviewed_by", "provider_catalog_skills", ["reviewed_by"])
 
     op.execute(
         """
@@ -331,7 +331,7 @@ def upgrade() -> None:
 
     op.execute(
         """
-        INSERT INTO provider_services (
+        INSERT INTO provider_catalog_services (
             id,
             vendor_id,
             service_id,
@@ -386,7 +386,7 @@ def upgrade() -> None:
             CROSS JOIN LATERAL jsonb_array_elements_text(application.skills) item(value)
             WHERE jsonb_typeof(application.skills) = 'array'
         )
-        INSERT INTO provider_skills (
+        INSERT INTO provider_catalog_skills (
             id,
             vendor_id,
             worker_id,
@@ -444,8 +444,8 @@ def downgrade() -> None:
         )
         """
     )
-    op.drop_table("provider_skills")
-    op.drop_table("provider_services")
+    op.drop_table("provider_catalog_skills")
+    op.drop_table("provider_catalog_services")
     op.drop_table("service_skill_requirements")
     op.drop_table("skill_definitions")
     postgresql.ENUM(name="provider_catalog_approval_status").drop(op.get_bind())

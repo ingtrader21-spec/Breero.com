@@ -217,8 +217,8 @@ SHARED_PRODUCTION_VALIDATOR_SHA256 = (
     "83d2fce102104543b871530f11115f20"
 )
 BREERO_PRODUCTION_VALIDATOR_SHA256 = (
-    "abccc28c773a26b9bbdf7c7c7f1dc444"
-    "c5a215f20d58fedf47077b5836b84104"
+    "13fcdd112fb70801764dafd81ac18821"
+    "e548d9f9d3d4d6fa933d78373142d8e3"
 )
 KEYCLOAK_PRODUCTION_VALIDATOR_SHA256 = (
     "6006bbc7850ce7666de926b6cad2585b"
@@ -335,8 +335,8 @@ EXPECTED_CHECK_WORKFLOW_EXECUTABLE_SHA256 = {
         },
         ".github/workflows/quality.yml": {
             ".github/workflows/backend-production.yml": (
-                "45b2918627995cb3491f55b3a3b537e"
-                "4a34598d7b32877879b9e2c912c266591"
+                "22ebd9d26c48220d4c5eb62b54ee75f0"
+                "2a22e6cef69e1c74e149a6b31b2ed284"
             ),
             ".github/workflows/frontend-production.yml": (
                 "ba5f99dcdbcdb78e4e638153fb740ab1"

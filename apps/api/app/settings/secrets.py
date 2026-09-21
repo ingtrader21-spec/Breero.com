@@ -3,6 +3,8 @@ from typing import Any
 from app.secret_files import apply_secret_files
 
 SECRET_BINDINGS: tuple[tuple[str, str], ...] = (
+    ("keycloak_client_secret", "keycloak_client_secret_file"),
+    ("keycloak_provisioner_client_secret", "keycloak_provisioner_client_secret_file"),
     ("database_url", "database_url_file"),
     ("redis_url", "redis_url_file"),
     ("jwt_secret", "jwt_secret_file"),

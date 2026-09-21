@@ -74,6 +74,12 @@ async def test_access_token_round_trip_has_strict_registered_claims() -> None:
     assert claims["role"] == "operations"
     assert claims["iss"] == security.LOCAL_JWT_ISSUER
     assert claims["aud"] == security.LOCAL_JWT_AUDIENCE
+    user_id = uuid.uuid4()
+    claims = await decode_access_token(create_access_token(user_id, "operations"))
+    assert claims["sub"] == str(user_id)
+    assert claims["role"] == "operations"
+    assert claims["iss"] == security.LOCAL_JWT_ISSUER
+    assert claims["aud"] == security.LOCAL_JWT_AUDIENCE
     assert claims["nbf"] == claims["iat"]
     assert uuid.UUID(claims["jti"])
 

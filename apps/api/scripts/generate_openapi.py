@@ -6,8 +6,14 @@ import os
 from pathlib import Path
 from typing import Any
 
-from app.api.policy_registry import get_endpoint_registry, iter_api_route_contexts
-from app.main import app
+# Canonical contract generation inventories release-gated booking routes without
+# enabling them in production. Runtime mounting remains governed by Settings.
+os.environ.setdefault("GEOCODING_ENABLED", "true")
+os.environ.setdefault("SCHEDULING_ENABLED", "true")
+os.environ.setdefault("PUBLIC_BOOKING_API_ENABLED", "true")
+
+from app.api.policy_registry import get_endpoint_registry, iter_api_route_contexts  # noqa: E402
+from app.main import app  # noqa: E402
 
 OPENAPI_METHODS = {"get", "put", "post", "delete", "options", "head", "patch", "trace"}
 POLICY_IDENTITY_FIELDS = {"path", "method", "operation_id"}
