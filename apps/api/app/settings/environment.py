@@ -35,7 +35,17 @@ def required_environment_values(settings: Any) -> dict[str, str]:
         required |= {
             "KEYCLOAK_ISSUER": settings.keycloak_issuer,
             "KEYCLOAK_AUDIENCE": settings.keycloak_audience,
+            "KEYCLOAK_CLIENT_ID": settings.keycloak_client_id,
+            "KEYCLOAK_CLIENT_SECRET": settings.keycloak_client_secret,
+            "KEYCLOAK_REDIRECT_URI": settings.keycloak_redirect_uri,
         }
+        if settings.keycloak_provisioning_enabled:
+            required |= {
+                "KEYCLOAK_PROVISIONER_CLIENT_ID": settings.keycloak_provisioner_client_id,
+                "KEYCLOAK_PROVISIONER_CLIENT_SECRET": settings.keycloak_provisioner_client_secret,
+            }
+        if settings.breero_local_password_auth:
+            raise ValueError("BREERO_LOCAL_PASSWORD_AUTH must be false when Keycloak is enabled")
     if settings.odoo_enabled:
         required["DIRECT_ODOO_PROHIBITED_USE_MIDDLEWARE"] = ""
     if settings.middleware_enabled:

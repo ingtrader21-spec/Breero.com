@@ -2,7 +2,7 @@ import uuid
 from collections.abc import Callable
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.db.session import get_db
 from app.domains.auth.access_service import AccessService
+from app.domains.auth.browser_session import ACCESS_COOKIE
 from app.domains.auth.models import AccessRole, IdentityLink, User, UserRole
 from app.domains.auth.repository import UserRepository
 from app.domains.auth.security import decode_access_token
@@ -84,17 +85,21 @@ async def _keycloak_user(
 
 
 async def current_user(
+    request: Request,
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
     session: Annotated[AsyncSession, Depends(get_db)],
 ) -> User:
-    if not credentials:
+    token = credentials.credentials if credentials else request.cookies.get(ACCESS_COOKIE)
+    if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required"
         )
-    claims = await decode_access_token(credentials.credentials)
+    claims = await decode_access_token(token)
     repository = UserRepository(session)
     user: User | None
-    if settings.keycloak_enabled:
+    issuer = str(claims.get("iss") or "").rstrip("/")
+    keycloak_issuer = str(settings.keycloak_issuer or "").rstrip("/")
+    if settings.keycloak_enabled and issuer and issuer == keycloak_issuer:
         user = await _keycloak_user(claims, repository, session)
     else:
         try:
@@ -103,11 +108,21 @@ async def current_user(
             raise HTTPException(status_code=401, detail="Invalid token") from exc
         user = await repository.by_id(user_id)
     if not user or not user.is_active or (
-        not settings.keycloak_enabled and claims.get("cv", 1) != user.credential_version
+        not (settings.keycloak_enabled and issuer and issuer == keycloak_issuer)
+        and claims.get("cv", 1) != user.credential_version
     ):
         raise HTTPException(status_code=401, detail="Invalid or inactive account")
     return user
 
+
+async def optional_current_user(
+    request: Request,
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
+    session: Annotated[AsyncSession, Depends(get_db)],
+) -> User | None:
+    if not credentials and not request.cookies.get(ACCESS_COOKIE):
+        return None
+    return await current_user(request, credentials, session)
 
 def require_roles(*roles: UserRole) -> Callable:
     allowed_roles = frozenset(

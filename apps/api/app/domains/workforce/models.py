@@ -23,9 +23,12 @@ from app.db.base import Base
 
 class VendorStatus(str, enum.Enum):
     PENDING = "PENDING"
+    UNDER_REVIEW = "UNDER_REVIEW"
     ACTIVE = "ACTIVE"
+    PAUSED = "PAUSED"
     SUSPENDED = "SUSPENDED"
     REJECTED = "REJECTED"
+    OFFBOARDED = "OFFBOARDED"
 
 
 class WorkerStatus(str, enum.Enum):
@@ -57,6 +60,14 @@ class Vendor(Base):
     display_name: Mapped[str] = mapped_column(String(120))
     email: Mapped[str] = mapped_column(String(320), unique=True)
     phone: Mapped[str] = mapped_column(String(32))
+    provider_type: Mapped[str] = mapped_column(String(32), nullable=False, default="COMPANY")
+    business_address: Mapped[str | None] = mapped_column(String(240))
+    city: Mapped[str | None] = mapped_column(String(120))
+    state: Mapped[str | None] = mapped_column(String(3))
+    postal_code: Mapped[str | None] = mapped_column(String(10))
+    onboarding_status: Mapped[str] = mapped_column(String(32), nullable=False, default="PENDING")
+    compliance_status: Mapped[str] = mapped_column(String(32), nullable=False, default="PENDING")
+    timezone_id: Mapped[str | None] = mapped_column(String(64))
     owner_user_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), unique=True)
     status: Mapped[VendorStatus] = mapped_column(
         Enum(VendorStatus, name="vendor_status"), index=True
@@ -94,6 +105,10 @@ class Worker(Base):
     current_location: Mapped[object | None] = mapped_column(Geography("POINT", srid=4326))
     location_updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     available: Mapped[bool] = mapped_column(Boolean, default=True)
+    default_timezone_id: Mapped[str | None] = mapped_column(String(64))
+    maximum_jobs_per_day: Mapped[int] = mapped_column(Integer, nullable=False, default=6)
+    maximum_minutes_per_day: Mapped[int] = mapped_column(Integer, nullable=False, default=600)
+    sunday_emergency_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 

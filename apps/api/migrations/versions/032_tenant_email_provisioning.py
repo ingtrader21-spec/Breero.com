@@ -1,15 +1,15 @@
 """tenant email domains, senders, credentials and queued messages
 
-Revision ID: 019_tenant_email_provisioning
-Revises: 018_auth_identity_tenancy_rbac
+Revision ID: 032_tenant_email_provisioning
+Revises: 031_provider_catalog
 """
 
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-revision = "023_tenant_email_provisioning"
-down_revision = "022_provider_services_skills"
+revision = "032_tenant_email_provisioning"
+down_revision = "031_provider_catalog"
 branch_labels = None
 depends_on = None
 

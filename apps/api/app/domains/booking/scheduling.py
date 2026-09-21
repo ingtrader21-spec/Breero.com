@@ -108,24 +108,32 @@ class OperatorSchedulingService:
 
     async def confirm(self, booking_id: uuid.UUID, worker_id: uuid.UUID, actor_id: uuid.UUID, reason: str) -> Job:
         booking = await self._locked_booking(booking_id)
-        if booking.status not in {BookingStatus.REQUESTED, BookingStatus.PENDING_MANUAL_DISPATCH, BookingStatus.TENTATIVE_HOLD}:
+        if booking.status not in {
+            BookingStatus.REQUESTED,
+            BookingStatus.PENDING_MANUAL_DISPATCH,
+            BookingStatus.TENTATIVE_HOLD,
+            BookingStatus.PROVIDER_ASSIGNED,
+        }:
             raise DomainError("BOOKING_NOT_CONFIRMABLE", "Booking is not awaiting operator confirmation", 409)
         worker, vendor = await self._qualified_worker(booking, worker_id)
         existing = await self.session.scalar(select(Job).where(Job.booking_id == booking.id))
         if existing:
-            raise DomainError("BOOKING_ALREADY_SCHEDULED", "Booking already has a job", 409)
-        job = Job(
-            booking_id=booking.id, customer_id=booking.customer_id, service_id=booking.service_id,
-            address_id=booking.address_id, status=JobStatus.ASSIGNED,
-            scheduled_start=booking.window_start, scheduled_end=booking.window_end,
-            vendor_id=vendor.id, worker_id=worker.id,
-        )
-        self.session.add(job)
-        await self.session.flush()
-        self.session.add(Assignment(
-            job_id=job.id, vendor_id=vendor.id, worker_id=worker.id,
-            status=AssignmentStatus.ACTIVE, assigned_by=actor_id,
-        ))
+            if existing.worker_id != worker.id:
+                raise DomainError("BOOKING_ASSIGNMENT_MISMATCH", "Assigned professional does not match", 409)
+            job = existing
+        else:
+            job = Job(
+                booking_id=booking.id, customer_id=booking.customer_id, service_id=booking.service_id,
+                address_id=booking.address_id, status=JobStatus.ASSIGNED,
+                scheduled_start=booking.window_start, scheduled_end=booking.window_end,
+                vendor_id=vendor.id, worker_id=worker.id,
+            )
+            self.session.add(job)
+            await self.session.flush()
+            self.session.add(Assignment(
+                job_id=job.id, vendor_id=vendor.id, worker_id=worker.id,
+                status=AssignmentStatus.ACTIVE, assigned_by=actor_id,
+            ))
         booking.provider_worker_id = worker.id
         booking.status = BookingStatus.CONFIRMED
         self._record(booking, actor_id, "booking.operator_confirm", reason, worker.id)

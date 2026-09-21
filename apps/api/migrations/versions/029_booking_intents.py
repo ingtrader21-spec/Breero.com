@@ -1,15 +1,15 @@
 """separate pre-submission booking intents from submitted bookings
 
-Revision ID: 020_booking_intents
-Revises: 019_provider_onboarding
+Revision ID: 029_booking_intents
+Revises: 028_provider_onboarding
 """
 
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-revision = "020_booking_intents"
-down_revision = "019_provider_onboarding"
+revision = "029_booking_intents"
+down_revision = "028_provider_onboarding"
 branch_labels = None
 depends_on = None
 
