@@ -36,7 +36,7 @@ describe("BREERO client", () => {
     expect(calls.map(([url]) => new URL(String(url)).pathname)).toEqual([
       "/api/v1/auth/browser/login", "/api/v1/auth/browser/register/client",
       "/api/v1/auth/browser/refresh", "/api/v1/auth/browser/logout",
-      "/api/v1/auth/login-mode", "/api/v1/auth/context",
+      "/api/v1/auth/login-mode", "/api/v1/auth/access/me",
     ]);
     expect(calls.every(([, init]) => init.credentials === "include")).toBe(true);
     expect(calls[2][1].body).toBeUndefined();
@@ -68,7 +68,7 @@ describe("BREERO client", () => {
 
   it("requests the authenticated portal context", async () => {
     const fetcher = vi.fn(async (url: URL | RequestInfo, init?: RequestInit) => {
-      expect(String(url)).toBe("https://api.test/api/v1/auth/context");
+      expect(String(url)).toBe("https://api.test/api/v1/auth/access/me");
       expect(init?.method ?? "GET").toBe("GET");
       return new Response(JSON.stringify(portalContext), { status: 200 });
     });

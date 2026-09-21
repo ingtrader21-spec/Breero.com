@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.domains.auth.access_service import AccessService
-from app.domains.auth.dependencies import require_permissions
+from app.domains.auth.dependencies import current_user, require_permissions
 from app.domains.auth.models import AccessRole, Department, TenantScope, User
 from app.domains.auth.schemas import AccessProfileUpdate, PortalContext
 
@@ -17,6 +17,15 @@ BrandKey = Annotated[
     str,
     Query(min_length=1, max_length=64, pattern=r"^[a-z0-9_-]+$"),
 ]
+
+
+@router.get("/me", response_model=PortalContext)
+async def current_access_context(
+    user: Annotated[User, Depends(current_user)],
+    session: Annotated[AsyncSession, Depends(get_db)],
+    brand_key: BrandKey = "breero",
+) -> PortalContext:
+    return await AccessService(session).context(user, brand_key)
 
 
 @router.get("/catalog")

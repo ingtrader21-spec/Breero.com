@@ -66,7 +66,7 @@ export function createApiClient(http: Transport): BreeroApi {
       verifyEmail: (body) => http.request("/auth/email/verify", { method: "POST", body, retry: false }),
       resendVerification: (signal) => http.request("/auth/email/resend-verification", { method: "POST", signal, retry: false }),
       me: (signal) => http.request("/auth/me", { signal }),
-      context: (signal) => http.request("/auth/context", { signal }),
+      context: (signal) => http.request("/auth/access/me", { signal }),
       accessCatalog: (signal) => http.request("/auth/access/catalog", { signal }),
       userAccess: (userId, signal) => http.request(`/auth/access/users/${encoded(userId)}`, { signal }),
       replaceUserAccess: (userId, body, signal) => http.request(`/auth/access/users/${encoded(userId)}`, { method: "PUT", body, signal, retry: false }),

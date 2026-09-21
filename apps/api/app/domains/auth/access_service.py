@@ -65,10 +65,17 @@ DEFAULT_PERMISSIONS: dict[AccessRole, set[str]] = {
         "provider.profile.read",
         "provider.profile.write",
         "provider.credentials.read",
+        "provider.workers.read",
         "provider.worker.manage",
         "provider.availability.manage",
+        "provider.services.read",
+        "provider.services.manage",
+        "provider.skills.read",
+        "provider.skills.manage",
         "provider.jobs.read",
         "provider.quotes.manage",
+        "provider.earnings.read",
+        "provider.payouts.read",
     },
     AccessRole.technician: {
         "worker.profile.read",
@@ -136,6 +143,7 @@ DEFAULT_PERMISSIONS: dict[AccessRole, set[str]] = {
         "admin.audit.read",
         "admin.capabilities.read",
         "admin.integrations.read",
+        "admin.integrations.manage",
     },
     AccessRole.superadmin: {"*"},
 }
@@ -239,14 +247,19 @@ class AccessService:
         return await self.context(user, brand_key)
 
     async def _permissions(
-        self, user_id: uuid.UUID, brand_key: str, roles: list[AccessRole]
+        self,
+        user_id: uuid.UUID,
+        brand_key: str,
+        roles: list[AccessRole],
     ) -> set[str]:
         permissions: set[str] = set()
         for role in roles:
             permissions.update(DEFAULT_PERMISSIONS[role])
         role_rows = (
             await self.session.scalars(
-                select(RolePermission).where(RolePermission.role_key.in_([role.value for role in roles]))
+                select(RolePermission).where(
+                    RolePermission.role_key.in_([role.value for role in roles])
+                )
             )
         ).all()
         for role_permission in role_rows:
@@ -271,7 +284,8 @@ class AccessService:
 
     @staticmethod
     def _assignment_reads(
-        user: User, rows: list[AccessAssignment]
+        user: User,
+        rows: list[AccessAssignment],
     ) -> list[AccessAssignmentRead]:
         if not rows:
             role, department, tenant_scope = DEFAULT_ACCESS[user.role]

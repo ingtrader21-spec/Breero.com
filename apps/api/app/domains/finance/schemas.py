@@ -6,6 +6,15 @@ from pydantic import BaseModel, ConfigDict, Field
 from .models import AdjustmentType, CompensationMethod, EarningStatus, PayoutStatus
 
 
+class FinanceVendorRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    legal_name: str
+    display_name: str
+    status: str
+
+
 class CompensationPlanCreate(BaseModel):
     vendor_id: uuid.UUID
     name: str = Field(min_length=1, max_length=160)
@@ -23,9 +32,20 @@ class CompensationPlanRead(BaseModel):
     vendor_id: uuid.UUID
     name: str
     method: CompensationMethod
+    fixed_minor: int | None
+    percentage_bps: int | None
     currency: str
     hold_days: int
     active: bool
+    effective_from: datetime
+    effective_to: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class CompensationPlanList(BaseModel):
+    items: list[CompensationPlanRead]
+    total: int
 
 
 class EarningAdjustmentCreate(BaseModel):
@@ -43,9 +63,13 @@ class EarningRead(BaseModel):
     gross_minor: int
     fee_minor: int
     net_minor: int
+    adjustment_total_minor: int
+    payable_minor: int
     currency: str
     status: EarningStatus
     available_at: datetime
+    payout_batch_id: uuid.UUID | None
+    created_at: datetime
 
 
 class PayoutBatchCreate(BaseModel):
@@ -61,8 +85,19 @@ class PayoutBatchRead(BaseModel):
     currency: str
     total_minor: int
     earning_count: int
+    reviewed_by: uuid.UUID | None
+    reviewed_at: datetime | None
     approved_by: uuid.UUID | None
+    approved_at: datetime | None
+    submitted_at: datetime | None
+    provider_status: str | None
+    failure_reason: str | None
     created_at: datetime
+
+
+class PayoutBatchList(BaseModel):
+    items: list[PayoutBatchRead]
+    total: int
 
 
 class PayoutFailure(BaseModel):

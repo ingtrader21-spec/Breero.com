@@ -19,6 +19,7 @@ from app.api.v1 import (
     jobs,
     operations,
     payments,
+    portal,
     provider,
     provider_catalog,
     provider_leads,
@@ -50,6 +51,7 @@ api_router.include_router(
     prefix="/admin/provider-applications",
     tags=["admin-provider-applications"],
 )
+api_router.include_router(portal.router, prefix="/portal", tags=["portal-read-models"])
 api_router.include_router(services.router, prefix="/services", tags=["services"])
 api_router.include_router(customers.router, prefix="/customer", tags=["customer"])
 api_router.include_router(customers.router, prefix="/client", tags=["client"])
@@ -73,8 +75,9 @@ api_router.include_router(provider.router, prefix="/provider", tags=["provider"]
 api_router.include_router(operations.router, prefix="/operations", tags=["operations"])
 api_router.include_router(admin_dispatch.router, prefix="/admin", tags=["admin-dispatch"])
 api_router.include_router(admin.router, prefix="/admin", tags=["administration"])
-if settings.payout_enabled:
-    api_router.include_router(finance.router, prefix="/finance", tags=["finance"])
+# Read-only finance visibility remains available while payout execution is disabled.
+# Each money-moving command enforces its own explicit capability guard.
+api_router.include_router(finance.router, prefix="/finance", tags=["finance"])
 api_router.include_router(integrations.router, prefix="/integrations", tags=["integrations"])
 api_router.include_router(public_forms.router, tags=["public-forms"])
 if settings.paid_leads_enabled and settings.payments_enabled and settings.stripe_enabled:

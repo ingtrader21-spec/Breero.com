@@ -8,10 +8,13 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
-    "contract:check": "node scripts/check-frontend-openapi.mjs"
+    "contract:generate": "openapi-typescript apps/api/openapi.json -o packages/types/src/openapi.generated.ts",
+    "contract:check:policy": "node scripts/check-frontend-openapi.mjs",
+    "contract:check": "pnpm contract:generate && git diff --exit-code -- packages/types/src/openapi.generated.ts && pnpm contract:check:policy"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "3.2.6",
+    "openapi-typescript": "7.13.0",
     "turbo": "^2.3.0"
   },
   "pnpm": {

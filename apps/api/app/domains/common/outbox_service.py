@@ -15,7 +15,8 @@ INTEGRATION_DISABLED_ERROR_CODE = "INTEGRATION_DISABLED"
 
 
 class OutboxService:
-    def __init__(self, session: AsyncSession): self.session = session
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
     async def _sync_public_submission_status(
         self,
@@ -29,7 +30,6 @@ class OutboxService:
         ]
         if not submission_ids:
             return
-
         # Local import avoids coupling common outbox models to a domain model at import time.
         from app.domains.public_submissions.models import DownstreamStatus, PublicSubmission
 
@@ -40,13 +40,25 @@ class OutboxService:
         )
 
     async def activate_pending_configuration(
-        self, event_prefix: str = "breero.", aggregate_type: str = "public_submission"
+        self,
+        event_prefix: str = "breero.",
+        aggregate_type: str = "public_submission",
+        *,
+        commit: bool = True,
     ) -> int:
-        events = list((await self.session.scalars(select(IntegrationEvent).where(
-            IntegrationEvent.aggregate_type == aggregate_type,
-            IntegrationEvent.status == EventStatus.PENDING_CONFIGURATION,
-            IntegrationEvent.event_type.like(f"{event_prefix}%"),
-        ).with_for_update(skip_locked=True))).all())
+        events = list(
+            (
+                await self.session.scalars(
+                    select(IntegrationEvent)
+                    .where(
+                        IntegrationEvent.aggregate_type == aggregate_type,
+                        IntegrationEvent.status == EventStatus.PENDING_CONFIGURATION,
+                        IntegrationEvent.event_type.like(f"{event_prefix}%"),
+                    )
+                    .with_for_update(skip_locked=True)
+                )
+            ).all()
+        )
         now = datetime.now(UTC)
         for event in events:
             event.status = EventStatus.PENDING
@@ -56,11 +68,18 @@ class OutboxService:
                 event.last_error_code = None
                 event.last_error_at = None
         await self._sync_public_submission_status(events, "PENDING")
-        await self.session.commit()
+        if commit:
+            await self.session.commit()
+        else:
+            await self.session.flush()
         return len(events)
 
     async def park_unconfigured(
-        self, event_prefix: str = "breero.", aggregate_type: str = "public_submission"
+        self,
+        event_prefix: str = "breero.",
+        aggregate_type: str = "public_submission",
+        *,
+        commit: bool = True,
     ) -> int:
         events = list(
             (
@@ -92,7 +111,10 @@ class OutboxService:
             event.last_error_code = INTEGRATION_DISABLED_ERROR_CODE
             event.last_error_at = now
         await self._sync_public_submission_status(events, "PENDING_CONFIGURATION")
-        await self.session.commit()
+        if commit:
+            await self.session.commit()
+        else:
+            await self.session.flush()
         return len(events)
 
     async def claim(
@@ -103,24 +125,34 @@ class OutboxService:
         lease_seconds: int = DEFAULT_LEASE_SECONDS,
     ) -> list[IntegrationEvent]:
         now = now or datetime.now(UTC)
-        events = list((await self.session.scalars(
-            select(IntegrationEvent).where(
-                or_(
-                    and_(
-                        IntegrationEvent.status.in_([
-                            EventStatus.PENDING,
-                            EventStatus.RETRYING,
-                            EventStatus.FAILED_RETRYABLE,
-                        ]),
-                        IntegrationEvent.next_attempt_at <= now,
-                    ),
-                    and_(
-                        IntegrationEvent.status == EventStatus.PROCESSING,
-                        IntegrationEvent.lease_expires_at <= now,
-                    ),
+        events = list(
+            (
+                await self.session.scalars(
+                    select(IntegrationEvent)
+                    .where(
+                        or_(
+                            and_(
+                                IntegrationEvent.status.in_(
+                                    [
+                                        EventStatus.PENDING,
+                                        EventStatus.RETRYING,
+                                        EventStatus.FAILED_RETRYABLE,
+                                    ]
+                                ),
+                                IntegrationEvent.next_attempt_at <= now,
+                            ),
+                            and_(
+                                IntegrationEvent.status == EventStatus.PROCESSING,
+                                IntegrationEvent.lease_expires_at <= now,
+                            ),
+                        )
+                    )
+                    .order_by(IntegrationEvent.created_at)
+                    .with_for_update(skip_locked=True)
+                    .limit(limit)
                 )
-            ).order_by(IntegrationEvent.created_at).with_for_update(skip_locked=True).limit(limit)
-        )).all())
+            ).all()
+        )
         for event in events:
             event.status = EventStatus.PROCESSING
             event.claimed_at = now
@@ -131,7 +163,11 @@ class OutboxService:
         await self.session.commit()
         return events
 
-    async def process(self, deliver: Callable[[IntegrationEvent], Awaitable[object]], limit=50) -> int:
+    async def process(
+        self,
+        deliver: Callable[[IntegrationEvent], Awaitable[object]],
+        limit: int = 50,
+    ) -> int:
         events = await self.claim(limit)
         for event in events:
             try:
@@ -143,10 +179,16 @@ class OutboxService:
                 if result is not None:
                     event.external_model = getattr(result, "model", None)
                     external_id = getattr(result, "external_id", None)
-                    event.external_record_id = str(external_id) if external_id is not None else None
+                    event.external_record_id = (
+                        str(external_id) if external_id is not None else None
+                    )
             except Exception as exc:
-                # Persist a bounded, secret-safe diagnostic. Never persist URLs, credentials, or payloads.
-                message = re.sub(r"(?i)(password|secret|token|api[_-]?key)\s*[:=]\s*\S+", r"\1=[REDACTED]", str(exc))
+                # Persist a bounded, secret-safe diagnostic. Never persist URLs or credentials.
+                message = re.sub(
+                    r"(?i)(password|secret|token|api[_-]?key)\s*[:=]\s*\S+",
+                    r"\1=[REDACTED]",
+                    str(exc),
+                )
                 event.last_error = message[:500]
                 event.last_error_code = getattr(exc, "code", type(exc).__name__).upper()[:80]
                 event.last_error_at = datetime.now(UTC)
@@ -160,7 +202,8 @@ class OutboxService:
                 else:
                     event.status = EventStatus.RETRYING
                     event.next_attempt_at = datetime.now(UTC) + timedelta(
-                        seconds=min(30 * 2 ** (event.attempt_count - 1), 3600) + random.randint(0, 15)
+                        seconds=min(30 * 2 ** (event.attempt_count - 1), 3600)
+                        + random.randint(0, 15)
                     )
             event.lease_expires_at = None
             event.claim_token = None
@@ -185,8 +228,15 @@ class OutboxService:
         event.claimed_at = None
         event.lease_expires_at = None
         event.claim_token = None
-        self.session.add(AuditLog(actor_id=actor_id, action="integration.retry",
-            resource_type="integration_event", resource_id=event.id,
-            metadata_json={"previous_error": event.last_error}, created_at=datetime.now(UTC)))
+        self.session.add(
+            AuditLog(
+                actor_id=actor_id,
+                action="integration.retry",
+                resource_type="integration_event",
+                resource_id=event.id,
+                metadata_json={"previous_error": event.last_error},
+                created_at=datetime.now(UTC),
+            )
+        )
         await self.session.commit()
         return event

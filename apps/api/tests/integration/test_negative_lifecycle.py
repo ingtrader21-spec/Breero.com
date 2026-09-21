@@ -331,7 +331,11 @@ def test_dispatcher_cannot_approve_payout_or_read_arbitrary_payment() -> None:
         return dispatcher
 
     async def override_db():
-        yield MagicMock()
+        session = AsyncMock()
+        session.scalar.return_value = None
+        session.scalars.return_value = MagicMock()
+        session.scalars.return_value.all.return_value = []
+        yield session
 
     app.dependency_overrides[current_user] = override_user
     app.dependency_overrides[get_db] = override_db
