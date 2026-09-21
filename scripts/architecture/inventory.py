@@ -23,6 +23,13 @@ OUTPUT = ROOT / "docs/architecture/SOURCE_INVENTORY.json"
 METHODS = {"get", "post", "put", "patch", "delete", "options", "head", "trace"}
 PROFILES = {
     "default": {},
+    # The checked-in OpenAPI is the canonical contract surface. It inventories
+    # release-gated public booking routes without enabling them in production.
+    "canonical_contract": {
+        "GEOCODING_ENABLED": "true",
+        "SCHEDULING_ENABLED": "true",
+        "PUBLIC_BOOKING_API_ENABLED": "true",
+    },
     "implemented_routes": {
         "GEOCODING_ENABLED": "true",
         "PAYMENTS_ENABLED": "true",
@@ -89,6 +96,9 @@ def runtime_inventory():
         if isinstance(mounted, APIRoute):
             routes.append(mounted)
         elif hasattr(mounted, "effective_route_contexts"):
+            # FastAPI 0.13x preserves the original route *and* an effective
+            # context. Inventory the effective context so nested router prefixes
+            # match the real mounted/OpenAPI path.
             routes.extend(
                 context
                 for context in mounted.effective_route_contexts()
@@ -136,6 +146,7 @@ def runtime_inventory():
                     "domain": route.endpoint.__module__,
                     "source": endpoint_file.relative_to(ROOT).as_posix(),
                     "handler": route.endpoint.__name__,
+                    "runtime_operation_id": getattr(route, "unique_id", None),
                     "included_in_openapi": route.include_in_schema,
                     "operation_id": operation.get("operationId"),
                     "authentication": {
@@ -159,14 +170,42 @@ def runtime_inventory():
         for method in item
         if method in METHODS
     }
-    observed = [
-        (row["method"], row["path"]) for row in operations if row["included_in_openapi"]
-    ]
-    if len(observed) != len(set(observed)) or set(observed) != expected:
+    grouped = {}
+    for row in operations:
+        grouped.setdefault((row["method"], row["path"]), []).append(row)
+    observed = {
+        key
+        for key, rows in grouped.items()
+        if any(row["included_in_openapi"] for row in rows)
+    }
+    if observed != expected:
         raise RuntimeError(
             "Runtime enumeration differs from OpenAPI; inventory is incomplete"
         )
-    saved = json.loads((ROOT / "apps/api/openapi.json").read_text())
+    duplicate_route_registrations = []
+    logical_operations = []
+    for (method, path), rows in sorted(grouped.items()):
+        if len(rows) > 1:
+            duplicate_route_registrations.append(
+                {
+                    "method": method,
+                    "path": path,
+                    "registrations": [
+                        {
+                            "source": row["source"],
+                            "handler": row["handler"],
+                            "runtime_operation_id": row["runtime_operation_id"],
+                        }
+                        for row in rows
+                    ],
+                }
+            )
+        # Dispatch ordering is significant; preserve the first effective
+        # registration while recording every alternate registration above.
+        selected = dict(rows[0])
+        selected["duplicate_registration_count"] = len(rows)
+        logical_operations.append(selected)
+    saved = json.loads((ROOT / "apps/api/openapi.json").read_text(encoding="utf-8"))
     return {
         "framework_routes": [
             {"path": route.path, "methods": sorted(route.methods or [])}
@@ -183,7 +222,8 @@ def runtime_inventory():
         "contract_sha256": hashlib.sha256(
             (json.dumps(schema, indent=2, sort_keys=True) + "\n").encode()
         ).hexdigest(),
-        "operations": sorted(operations, key=lambda row: (row["path"], row["method"])),
+        "duplicate_route_registrations": duplicate_route_registrations,
+        "operations": logical_operations,
     }
 
 
@@ -194,7 +234,7 @@ def collect(baseline: str):
     tasks = []
     route_declarations = []
     for path in sorted((ROOT / "apps/api/app").rglob("*.py")):
-        tree = ast.parse(path.read_text())
+        tree = ast.parse(path.read_text(encoding="utf-8-sig"))
         classes = []
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
@@ -257,7 +297,7 @@ def collect(baseline: str):
                         )
         modules.append({**source(path), "classes": classes})
     for path in sorted((ROOT / "apps/api/migrations/versions").glob("*.py")):
-        values = assignments(ast.parse(path.read_text()).body)
+        values = assignments(ast.parse(path.read_text(encoding="utf-8-sig")).body)
         revisions.append(
             {
                 **source(path),
@@ -318,6 +358,15 @@ def collect(baseline: str):
                 "PYTHONDONTWRITEBYTECODE": "1",
                 **overrides,
             }
+            if os.name == "nt":
+                # A Windows child process needs core OS variables even when the
+                # application environment is intentionally scrubbed. Preserve
+                # only non-credential system plumbing; the empty cwd still
+                # prevents repository .env discovery.
+                for key in ("SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "TEMP", "TMP"):
+                    value = os.environ.get(key)
+                    if value:
+                        env[key] = value
             result = subprocess.run(
                 [
                     sys.executable,
@@ -332,21 +381,56 @@ def collect(baseline: str):
                 text=True,
             )
             profiles[name] = json.loads(result.stdout)
-    all_operations = profiles["implemented_routes"]["operations"]
-    indexed = {(row["method"], row["path"]): row for row in all_operations}
-    for profile in profiles.values():
-        if any(
-            indexed.get((row["method"], row["path"])) != row
-            for row in profile["operations"]
-        ):
-            raise RuntimeError(
-                "Profiles have differing route contracts; record them separately"
+    indexed = {}
+    operation_profile = {}
+    profile_contract_variants = []
+    for profile_name in ("canonical_contract", "implemented_routes", "default"):
+        for row in profiles[profile_name]["operations"]:
+            key = (row["method"], row["path"])
+            previous = indexed.get(key)
+            if previous is None:
+                indexed[key] = row
+                operation_profile[key] = profile_name
+                continue
+            comparable = {
+                k: v
+                for k, v in row.items()
+                if k not in {"duplicate_registration_count"}
+            }
+            previous_comparable = {
+                k: v
+                for k, v in previous.items()
+                if k not in {"duplicate_registration_count"}
+            }
+            if comparable != previous_comparable:
+                profile_contract_variants.append(
+                    {
+                        "method": row["method"],
+                        "path": row["path"],
+                        "authoritative_profile": operation_profile[key],
+                        "variant_profile": profile_name,
+                        "authoritative": previous,
+                        "variant": row,
+                    }
+                )
+                # The canonical contract profile is traversed first and remains
+                # authoritative for shared method/path pairs. Alternate profile
+                # contracts are evidence for M02 rather than silently replacing it.
+                continue
+            previous["duplicate_registration_count"] = max(
+                previous.get("duplicate_registration_count", 1),
+                row.get("duplicate_registration_count", 1),
             )
+    all_operations = sorted(
+        indexed.values(), key=lambda row: (row["path"], row["method"])
+    )
+    for profile in profiles.values():
         profile["operations"] = [
             f"{row['method']} {row['path']}" for row in profile["operations"]
         ]
     return {
         "api_operations": all_operations,
+        "profile_contract_variants": profile_contract_variants,
         "schema_version": 1,
         "baseline_main_sha": baseline,
         "scope": "Source evidence only. Test-profile imports; no deployed configuration or runtime certification.",
@@ -412,12 +496,12 @@ def main():
     if args.runtime_profile:
         print(json.dumps(runtime_inventory(), sort_keys=True))
         return
-    baseline = args.source_sha or json.loads(OUTPUT.read_text())["baseline_main_sha"]
+    baseline = args.source_sha or json.loads(OUTPUT.read_text(encoding="utf-8"))["baseline_main_sha"]
     if len(baseline) != 40 or any(char not in "0123456789abcdef" for char in baseline):
         parser.error("source SHA must be a full lowercase Git SHA")
     result = json.dumps(collect(baseline), indent=2, sort_keys=True) + "\n"
     if args.check:
-        if OUTPUT.read_text() != result:
+        if OUTPUT.read_text(encoding="utf-8") != result:
             raise SystemExit(
                 "Source inventory drift: review and regenerate the architecture baseline"
             )
@@ -425,7 +509,7 @@ def main():
             "PASS: source inventory matches executable source and runtime route profiles"
         )
     else:
-        OUTPUT.write_text(result)
+        OUTPUT.write_text(result, encoding="utf-8")
         print(OUTPUT.relative_to(ROOT))
 
 
