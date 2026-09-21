@@ -423,6 +423,16 @@
         "title": "AddressValidationResponse",
         "type": "object"
       },
+      "AdjustmentType": {
+        "enum": [
+          "REFUND",
+          "DISPUTE",
+          "MANUAL",
+          "REVERSAL"
+        ],
+        "title": "AdjustmentType",
+        "type": "string"
+      },
       "AdminAssignmentRequest": {
         "properties": {
           "professional_id": {
@@ -442,6 +452,117 @@
           "reason"
         ],
         "title": "AdminAssignmentRequest",
+        "type": "object"
+      },
+      "AdminOverview": {
+        "properties": {
+          "bookings": {
+            "items": {
+              "$ref": "#/components/schemas/StatusCount"
+            },
+            "title": "Bookings",
+            "type": "array"
+          },
+          "capabilities": {
+            "$ref": "#/components/schemas/EffectiveCapabilities"
+          },
+          "customers_total": {
+            "title": "Customers Total",
+            "type": "integer"
+          },
+          "earnings": {
+            "items": {
+              "$ref": "#/components/schemas/MoneyStatus"
+            },
+            "title": "Earnings",
+            "type": "array"
+          },
+          "jobs": {
+            "items": {
+              "$ref": "#/components/schemas/StatusCount"
+            },
+            "title": "Jobs",
+            "type": "array"
+          },
+          "outbox": {
+            "items": {
+              "$ref": "#/components/schemas/StatusCount"
+            },
+            "title": "Outbox",
+            "type": "array"
+          },
+          "payout_batches": {
+            "items": {
+              "$ref": "#/components/schemas/StatusCount"
+            },
+            "title": "Payout Batches",
+            "type": "array"
+          },
+          "postal_codes_active": {
+            "title": "Postal Codes Active",
+            "type": "integer"
+          },
+          "postal_codes_total": {
+            "title": "Postal Codes Total",
+            "type": "integer"
+          },
+          "provider_applications": {
+            "items": {
+              "$ref": "#/components/schemas/StatusCount"
+            },
+            "title": "Provider Applications",
+            "type": "array"
+          },
+          "recent_audit": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEventRead"
+            },
+            "title": "Recent Audit",
+            "type": "array"
+          },
+          "service_zones_active": {
+            "title": "Service Zones Active",
+            "type": "integer"
+          },
+          "service_zones_total": {
+            "title": "Service Zones Total",
+            "type": "integer"
+          },
+          "users_active": {
+            "title": "Users Active",
+            "type": "integer"
+          },
+          "users_total": {
+            "title": "Users Total",
+            "type": "integer"
+          },
+          "vendors": {
+            "items": {
+              "$ref": "#/components/schemas/StatusCount"
+            },
+            "title": "Vendors",
+            "type": "array"
+          }
+        },
+        "required": [
+          "capabilities",
+          "users_total",
+          "users_active",
+          "customers_total",
+          "service_zones_total",
+          "service_zones_active",
+          "postal_codes_total",
+          "postal_codes_active",
+          "bookings",
+          "jobs",
+          "vendors",
+          "provider_applications",
+          "earnings",
+          "payout_batches",
+          "outbox",
+          "recent_audit"
+        ],
+        "title": "AdminOverview",
         "type": "object"
       },
       "AdminUnassignmentRequest": {
@@ -660,6 +781,27 @@
         ],
         "title": "AssignmentStatus",
         "type": "string"
+      },
+      "AuditEventList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEventRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "AuditEventList",
+        "type": "object"
       },
       "AuditEventRead": {
         "properties": {
@@ -2244,6 +2386,204 @@
         "title": "CommunicationPreferenceCreate",
         "type": "object"
       },
+      "CompensationMethod": {
+        "enum": [
+          "FIXED_MINOR",
+          "PERCENTAGE",
+          "SERVICE_RATE"
+        ],
+        "title": "CompensationMethod",
+        "type": "string"
+      },
+      "CompensationPlanCreate": {
+        "properties": {
+          "currency": {
+            "default": "USD",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "effective_from": {
+            "format": "date-time",
+            "title": "Effective From",
+            "type": "string"
+          },
+          "fixed_minor": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fixed Minor"
+          },
+          "hold_days": {
+            "default": 7,
+            "maximum": 365.0,
+            "minimum": 0.0,
+            "title": "Hold Days",
+            "type": "integer"
+          },
+          "method": {
+            "$ref": "#/components/schemas/CompensationMethod"
+          },
+          "name": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "percentage_bps": {
+            "anyOf": [
+              {
+                "maximum": 10000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentage Bps"
+          },
+          "vendor_id": {
+            "format": "uuid",
+            "title": "Vendor Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "vendor_id",
+          "name",
+          "method",
+          "effective_from"
+        ],
+        "title": "CompensationPlanCreate",
+        "type": "object"
+      },
+      "CompensationPlanList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CompensationPlanRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "CompensationPlanList",
+        "type": "object"
+      },
+      "CompensationPlanRead": {
+        "properties": {
+          "active": {
+            "title": "Active",
+            "type": "boolean"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "effective_from": {
+            "format": "date-time",
+            "title": "Effective From",
+            "type": "string"
+          },
+          "effective_to": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective To"
+          },
+          "fixed_minor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fixed Minor"
+          },
+          "hold_days": {
+            "title": "Hold Days",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "method": {
+            "$ref": "#/components/schemas/CompensationMethod"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "percentage_bps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percentage Bps"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "vendor_id": {
+            "format": "uuid",
+            "title": "Vendor Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "vendor_id",
+          "name",
+          "method",
+          "fixed_minor",
+          "percentage_bps",
+          "currency",
+          "hold_days",
+          "active",
+          "effective_from",
+          "effective_to",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "CompensationPlanRead",
+        "type": "object"
+      },
       "ContactCreate": {
         "properties": {
           "category": {
@@ -2800,6 +3140,209 @@
         "title": "DispatcherQueueUpdate",
         "type": "object"
       },
+      "EarningAdjustmentCreate": {
+        "properties": {
+          "adjustment_type": {
+            "$ref": "#/components/schemas/AdjustmentType"
+          },
+          "amount_minor": {
+            "title": "Amount Minor",
+            "type": "integer"
+          },
+          "idempotency_key": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount_minor",
+          "adjustment_type",
+          "reason",
+          "idempotency_key"
+        ],
+        "title": "EarningAdjustmentCreate",
+        "type": "object"
+      },
+      "EarningRead": {
+        "properties": {
+          "adjustment_total_minor": {
+            "title": "Adjustment Total Minor",
+            "type": "integer"
+          },
+          "available_at": {
+            "format": "date-time",
+            "title": "Available At",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "fee_minor": {
+            "title": "Fee Minor",
+            "type": "integer"
+          },
+          "gross_minor": {
+            "title": "Gross Minor",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "job_id": {
+            "format": "uuid",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "net_minor": {
+            "title": "Net Minor",
+            "type": "integer"
+          },
+          "payable_minor": {
+            "title": "Payable Minor",
+            "type": "integer"
+          },
+          "payout_batch_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payout Batch Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EarningStatus"
+          },
+          "vendor_id": {
+            "format": "uuid",
+            "title": "Vendor Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "vendor_id",
+          "job_id",
+          "gross_minor",
+          "fee_minor",
+          "net_minor",
+          "adjustment_total_minor",
+          "payable_minor",
+          "currency",
+          "status",
+          "available_at",
+          "payout_batch_id",
+          "created_at"
+        ],
+        "title": "EarningRead",
+        "type": "object"
+      },
+      "EarningStatus": {
+        "enum": [
+          "PENDING",
+          "AVAILABLE",
+          "HELD",
+          "APPROVED",
+          "BATCHED",
+          "PAID",
+          "CANCELLED",
+          "REVERSED"
+        ],
+        "title": "EarningStatus",
+        "type": "string"
+      },
+      "EffectiveCapabilities": {
+        "properties": {
+          "automatic_assignment": {
+            "title": "Automatic Assignment",
+            "type": "boolean"
+          },
+          "instant_booking": {
+            "title": "Instant Booking",
+            "type": "boolean"
+          },
+          "marketplace_matching": {
+            "title": "Marketplace Matching",
+            "type": "boolean"
+          },
+          "messaging": {
+            "title": "Messaging",
+            "type": "boolean"
+          },
+          "middleware_delivery": {
+            "title": "Middleware Delivery",
+            "type": "boolean"
+          },
+          "online_payments": {
+            "title": "Online Payments",
+            "type": "boolean"
+          },
+          "payouts": {
+            "title": "Payouts",
+            "type": "boolean"
+          },
+          "provider_self_service": {
+            "title": "Provider Self Service",
+            "type": "boolean"
+          },
+          "request_intake": {
+            "title": "Request Intake",
+            "type": "boolean"
+          },
+          "reviews": {
+            "title": "Reviews",
+            "type": "boolean"
+          },
+          "scheduling": {
+            "title": "Scheduling",
+            "type": "boolean"
+          },
+          "transactional_email_mode": {
+            "title": "Transactional Email Mode",
+            "type": "string"
+          },
+          "transactional_sms_mode": {
+            "title": "Transactional Sms Mode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_intake",
+          "scheduling",
+          "instant_booking",
+          "online_payments",
+          "payouts",
+          "automatic_assignment",
+          "provider_self_service",
+          "marketplace_matching",
+          "messaging",
+          "reviews",
+          "middleware_delivery",
+          "transactional_email_mode",
+          "transactional_sms_mode"
+        ],
+        "title": "EffectiveCapabilities",
+        "type": "object"
+      },
       "FeatureFlagPatch": {
         "properties": {
           "enabled": {
@@ -2849,6 +3392,35 @@
         "title": "FeatureFlagRead",
         "type": "object"
       },
+      "FinanceVendorRead": {
+        "properties": {
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "legal_name": {
+            "title": "Legal Name",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "legal_name",
+          "display_name",
+          "status"
+        ],
+        "title": "FinanceVendorRead",
+        "type": "object"
+      },
       "ForgotPasswordRequest": {
         "properties": {
           "email": {
@@ -2874,6 +3446,123 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "IntegrationConfigRead": {
+        "properties": {
+          "middleware_ca_configured": {
+            "title": "Middleware Ca Configured",
+            "type": "boolean"
+          },
+          "middleware_client_certificate_configured": {
+            "title": "Middleware Client Certificate Configured",
+            "type": "boolean"
+          },
+          "middleware_enabled": {
+            "title": "Middleware Enabled",
+            "type": "boolean"
+          },
+          "middleware_hmac_configured": {
+            "title": "Middleware Hmac Configured",
+            "type": "boolean"
+          },
+          "middleware_identity_configured": {
+            "title": "Middleware Identity Configured",
+            "type": "boolean"
+          },
+          "middleware_url_configured": {
+            "title": "Middleware Url Configured",
+            "type": "boolean"
+          },
+          "odoo_credentials_configured": {
+            "title": "Odoo Credentials Configured",
+            "type": "boolean"
+          },
+          "odoo_enabled": {
+            "title": "Odoo Enabled",
+            "type": "boolean"
+          },
+          "odoo_url_configured": {
+            "title": "Odoo Url Configured",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "middleware_enabled",
+          "middleware_url_configured",
+          "middleware_ca_configured",
+          "middleware_client_certificate_configured",
+          "middleware_hmac_configured",
+          "middleware_identity_configured",
+          "odoo_enabled",
+          "odoo_url_configured",
+          "odoo_credentials_configured"
+        ],
+        "title": "IntegrationConfigRead",
+        "type": "object"
+      },
+      "IntegrationOperationRead": {
+        "properties": {
+          "actor_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Id"
+          },
+          "affected_count": {
+            "minimum": 0.0,
+            "title": "Affected Count",
+            "type": "integer"
+          },
+          "after_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "After Counts",
+            "type": "object"
+          },
+          "before_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Before Counts",
+            "type": "object"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "operation_type": {
+            "enum": [
+              "activate_pending",
+              "park_unconfigured"
+            ],
+            "title": "Operation Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "operation_type",
+          "actor_id",
+          "before_counts",
+          "after_counts",
+          "affected_count",
+          "created_at"
+        ],
+        "title": "IntegrationOperationRead",
         "type": "object"
       },
       "InternalAccountRole": {
@@ -3134,6 +3823,34 @@
         "title": "MessageResponse",
         "type": "object"
       },
+      "MoneyStatus": {
+        "properties": {
+          "amount_minor": {
+            "title": "Amount Minor",
+            "type": "integer"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "currency",
+          "count",
+          "amount_minor"
+        ],
+        "title": "MoneyStatus",
+        "type": "object"
+      },
       "OfferDecision": {
         "properties": {
           "accept": {
@@ -3304,6 +4021,71 @@
         "title": "OperatingHourWrite",
         "type": "object"
       },
+      "OperationsOverview": {
+        "properties": {
+          "bookings": {
+            "items": {
+              "$ref": "#/components/schemas/StatusCount"
+            },
+            "title": "Bookings",
+            "type": "array"
+          },
+          "capabilities": {
+            "$ref": "#/components/schemas/EffectiveCapabilities"
+          },
+          "intake_items_total": {
+            "title": "Intake Items Total",
+            "type": "integer"
+          },
+          "jobs": {
+            "items": {
+              "$ref": "#/components/schemas/StatusCount"
+            },
+            "title": "Jobs",
+            "type": "array"
+          },
+          "outbox": {
+            "items": {
+              "$ref": "#/components/schemas/StatusCount"
+            },
+            "title": "Outbox",
+            "type": "array"
+          },
+          "provider_applications": {
+            "items": {
+              "$ref": "#/components/schemas/StatusCount"
+            },
+            "title": "Provider Applications",
+            "type": "array"
+          },
+          "recent_jobs": {
+            "items": {
+              "$ref": "#/components/schemas/JobRead"
+            },
+            "title": "Recent Jobs",
+            "type": "array"
+          },
+          "vendors": {
+            "items": {
+              "$ref": "#/components/schemas/StatusCount"
+            },
+            "title": "Vendors",
+            "type": "array"
+          }
+        },
+        "required": [
+          "capabilities",
+          "intake_items_total",
+          "bookings",
+          "jobs",
+          "vendors",
+          "provider_applications",
+          "outbox",
+          "recent_jobs"
+        ],
+        "title": "OperationsOverview",
+        "type": "object"
+      },
       "OperatorBookingConfirmation": {
         "properties": {
           "reason": {
@@ -3353,6 +4135,197 @@
         ],
         "title": "Page",
         "type": "object"
+      },
+      "PayoutBatchCreate": {
+        "properties": {
+          "currency": {
+            "default": "USD",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "vendor_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vendor Id"
+          }
+        },
+        "title": "PayoutBatchCreate",
+        "type": "object"
+      },
+      "PayoutBatchList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PayoutBatchRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "PayoutBatchList",
+        "type": "object"
+      },
+      "PayoutBatchRead": {
+        "properties": {
+          "approved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "earning_count": {
+            "title": "Earning Count",
+            "type": "integer"
+          },
+          "failure_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Reason"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "provider_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Status"
+          },
+          "reference": {
+            "title": "Reference",
+            "type": "string"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "reviewed_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PayoutStatus"
+          },
+          "submitted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted At"
+          },
+          "total_minor": {
+            "title": "Total Minor",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "reference",
+          "status",
+          "currency",
+          "total_minor",
+          "earning_count",
+          "reviewed_by",
+          "reviewed_at",
+          "approved_by",
+          "approved_at",
+          "submitted_at",
+          "provider_status",
+          "failure_reason",
+          "created_at"
+        ],
+        "title": "PayoutBatchRead",
+        "type": "object"
+      },
+      "PayoutStatus": {
+        "enum": [
+          "DRAFT",
+          "PENDING_APPROVAL",
+          "APPROVED",
+          "PROCESSING",
+          "PAID",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "title": "PayoutStatus",
+        "type": "string"
       },
       "PortalContext": {
         "properties": {
@@ -4264,6 +5237,27 @@
         "title": "ProviderApplicationStatus",
         "type": "string"
       },
+      "ProviderCredentialList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderCredentialRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "ProviderCredentialList",
+        "type": "object"
+      },
       "ProviderCredentialRead": {
         "properties": {
           "credential_type": {
@@ -4368,6 +5362,27 @@
           "expires_on"
         ],
         "title": "ProviderCredentialWrite",
+        "type": "object"
+      },
+      "ProviderEarningList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EarningRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "ProviderEarningList",
         "type": "object"
       },
       "ProviderInterestCreate": {
@@ -4651,6 +5666,27 @@
         "title": "ProviderInterestCreate",
         "type": "object"
       },
+      "ProviderJobList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/JobRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "ProviderJobList",
+        "type": "object"
+      },
       "ProviderOnboardingUpdate": {
         "additionalProperties": false,
         "properties": {
@@ -4826,6 +5862,129 @@
           }
         },
         "title": "ProviderOnboardingUpdate",
+        "type": "object"
+      },
+      "ProviderOverview": {
+        "properties": {
+          "application": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProviderApplicationRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "capabilities": {
+            "$ref": "#/components/schemas/EffectiveCapabilities"
+          },
+          "credentials_expiring_soon": {
+            "title": "Credentials Expiring Soon",
+            "type": "integer"
+          },
+          "credentials_total": {
+            "title": "Credentials Total",
+            "type": "integer"
+          },
+          "credentials_verified": {
+            "title": "Credentials Verified",
+            "type": "integer"
+          },
+          "earnings": {
+            "items": {
+              "$ref": "#/components/schemas/MoneyStatus"
+            },
+            "title": "Earnings",
+            "type": "array"
+          },
+          "jobs": {
+            "items": {
+              "$ref": "#/components/schemas/StatusCount"
+            },
+            "title": "Jobs",
+            "type": "array"
+          },
+          "recent_earnings": {
+            "items": {
+              "$ref": "#/components/schemas/EarningRead"
+            },
+            "title": "Recent Earnings",
+            "type": "array"
+          },
+          "recent_jobs": {
+            "items": {
+              "$ref": "#/components/schemas/JobRead"
+            },
+            "title": "Recent Jobs",
+            "type": "array"
+          },
+          "recent_payout_batches": {
+            "items": {
+              "$ref": "#/components/schemas/PayoutBatchRead"
+            },
+            "title": "Recent Payout Batches",
+            "type": "array"
+          },
+          "services_active": {
+            "title": "Services Active",
+            "type": "integer"
+          },
+          "skills_active": {
+            "title": "Skills Active",
+            "type": "integer"
+          },
+          "vendor": {
+            "$ref": "#/components/schemas/VendorRead"
+          },
+          "workers_available": {
+            "title": "Workers Available",
+            "type": "integer"
+          },
+          "workers_total": {
+            "title": "Workers Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "vendor",
+          "application",
+          "capabilities",
+          "workers_total",
+          "workers_available",
+          "services_active",
+          "skills_active",
+          "credentials_total",
+          "credentials_verified",
+          "credentials_expiring_soon",
+          "jobs",
+          "earnings",
+          "recent_jobs",
+          "recent_earnings",
+          "recent_payout_batches"
+        ],
+        "title": "ProviderOverview",
+        "type": "object"
+      },
+      "ProviderPayoutBatchList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PayoutBatchRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "ProviderPayoutBatchList",
         "type": "object"
       },
       "ProviderProfileUpdate": {
@@ -5548,6 +6707,27 @@
           "updated_at"
         ],
         "title": "ProviderSkillRead",
+        "type": "object"
+      },
+      "ProviderWorkerList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/WorkerRead"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "ProviderWorkerList",
         "type": "object"
       },
       "PublicAddressInput": {
@@ -7194,6 +8374,24 @@
           "message"
         ],
         "title": "SmsRevocation",
+        "type": "object"
+      },
+      "StatusCount": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "count"
+        ],
+        "title": "StatusCount",
         "type": "object"
       },
       "SubmissionAccepted": {
@@ -10531,6 +11729,78 @@
             "resource_owner": "identity",
             "response_schema": "builtins.dict",
             "tenant_scope": "route-defined-current-scope"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/access/me": {
+      "get": {
+        "operationId": "current_access_context_api_v1_auth_access_me_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "brand_key",
+            "required": false,
+            "schema": {
+              "default": "breero",
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[a-z0-9_-]+$",
+              "title": "Brand Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortalContext"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Current Access Context",
+        "tags": [
+          "auth-access"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "authenticated-user",
+            "authentication": "bearer",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "authenticated-session",
+            "pii_classification": "internal",
+            "policy_rule": "access-context-self-read",
+            "rate_limit_class": "standard",
+            "record_policy": "current-subject-effective-access-context",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "identity",
+            "response_schema": "app.domains.auth.schemas.PortalContext",
+            "tenant_scope": "requested-brand-context"
           }
         }
       }
@@ -15629,6 +16899,833 @@
         }
       }
     },
+    "/api/v1/finance/compensation-plans": {
+      "get": {
+        "operationId": "list_compensation_plans_api_v1_finance_compensation_plans_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "vendor_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vendor Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "active",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Active"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompensationPlanList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Compensation Plans",
+        "tags": [
+          "finance"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "settings.payout_enabled",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "finance.route-defined-legacy",
+            "pii_classification": "restricted-financial",
+            "policy_rule": "finance-and-payouts",
+            "rate_limit_class": "financial-command",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "finance-payouts",
+            "response_schema": "app.domains.finance.schemas.CompensationPlanList",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      },
+      "post": {
+        "operationId": "create_compensation_plan_api_v1_finance_compensation_plans_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompensationPlanCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompensationPlanRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Compensation Plan",
+        "tags": [
+          "finance"
+        ],
+        "x-breero-policy": {
+          "POST": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "settings.payout_enabled",
+            "deprecation_status": "active",
+            "emitted_effect": "payout-or-ledger-event",
+            "idempotency_key_policy": "required",
+            "if_match_version_policy": "financial-aggregate-and-provider-version",
+            "permission": "finance.route-defined-legacy",
+            "pii_classification": "restricted-financial",
+            "policy_rule": "finance-and-payouts",
+            "rate_limit_class": "financial-command",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "required",
+            "request_schema": "none",
+            "resource_owner": "finance-payouts",
+            "response_schema": "app.domains.finance.schemas.CompensationPlanRead",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      }
+    },
+    "/api/v1/finance/earnings": {
+      "get": {
+        "operationId": "list_earnings_api_v1_finance_earnings_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "vendor_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vendor Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/EarningStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EarningRead"
+                  },
+                  "title": "Response List Earnings Api V1 Finance Earnings Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Earnings",
+        "tags": [
+          "finance"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "settings.payout_enabled",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "finance.route-defined-legacy",
+            "pii_classification": "restricted-financial",
+            "policy_rule": "finance-and-payouts",
+            "rate_limit_class": "financial-command",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "finance-payouts",
+            "response_schema": "builtins.list",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      }
+    },
+    "/api/v1/finance/earnings/{earning_id}/adjustments": {
+      "post": {
+        "operationId": "adjust_earning_api_v1_finance_earnings__earning_id__adjustments_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "earning_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Earning Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EarningAdjustmentCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Adjust Earning",
+        "tags": [
+          "finance"
+        ],
+        "x-breero-policy": {
+          "POST": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "settings.payout_enabled",
+            "deprecation_status": "active",
+            "emitted_effect": "payout-or-ledger-event",
+            "idempotency_key_policy": "required",
+            "if_match_version_policy": "financial-aggregate-and-provider-version",
+            "permission": "finance.route-defined-legacy",
+            "pii_classification": "restricted-financial",
+            "policy_rule": "finance-and-payouts",
+            "rate_limit_class": "financial-command",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "required",
+            "request_schema": "none",
+            "resource_owner": "finance-payouts",
+            "response_schema": "none",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      }
+    },
+    "/api/v1/finance/payout-batches": {
+      "get": {
+        "operationId": "list_payout_batches_api_v1_finance_payout_batches_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PayoutStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "vendor_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vendor Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayoutBatchList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Payout Batches",
+        "tags": [
+          "finance"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "settings.payout_enabled",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "finance.route-defined-legacy",
+            "pii_classification": "restricted-financial",
+            "policy_rule": "finance-and-payouts",
+            "rate_limit_class": "financial-command",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "finance-payouts",
+            "response_schema": "app.domains.finance.schemas.PayoutBatchList",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      },
+      "post": {
+        "operationId": "create_batch_api_v1_finance_payout_batches_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayoutBatchCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayoutBatchRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Batch",
+        "tags": [
+          "finance"
+        ],
+        "x-breero-policy": {
+          "POST": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "settings.payout_enabled",
+            "deprecation_status": "active",
+            "emitted_effect": "payout-or-ledger-event",
+            "idempotency_key_policy": "required",
+            "if_match_version_policy": "financial-aggregate-and-provider-version",
+            "permission": "finance.route-defined-legacy",
+            "pii_classification": "restricted-financial",
+            "policy_rule": "finance-and-payouts",
+            "rate_limit_class": "financial-command",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "required",
+            "request_schema": "none",
+            "resource_owner": "finance-payouts",
+            "response_schema": "app.domains.finance.schemas.PayoutBatchRead",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      }
+    },
+    "/api/v1/finance/payout-batches/{batch_id}/approve": {
+      "post": {
+        "operationId": "approve_batch_api_v1_finance_payout_batches__batch_id__approve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Batch Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayoutBatchRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Approve Batch",
+        "tags": [
+          "finance"
+        ],
+        "x-breero-policy": {
+          "POST": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "settings.payout_enabled",
+            "deprecation_status": "active",
+            "emitted_effect": "payout-or-ledger-event",
+            "idempotency_key_policy": "required",
+            "if_match_version_policy": "financial-aggregate-and-provider-version",
+            "permission": "finance.route-defined-legacy",
+            "pii_classification": "restricted-financial",
+            "policy_rule": "finance-and-payouts",
+            "rate_limit_class": "financial-command",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "required",
+            "request_schema": "none",
+            "resource_owner": "finance-payouts",
+            "response_schema": "app.domains.finance.schemas.PayoutBatchRead",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      }
+    },
+    "/api/v1/finance/payout-batches/{batch_id}/submit": {
+      "post": {
+        "operationId": "submit_batch_api_v1_finance_payout_batches__batch_id__submit_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Batch Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayoutBatchRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Submit Batch",
+        "tags": [
+          "finance"
+        ],
+        "x-breero-policy": {
+          "POST": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "settings.payout_enabled",
+            "deprecation_status": "active",
+            "emitted_effect": "payout-or-ledger-event",
+            "idempotency_key_policy": "required",
+            "if_match_version_policy": "financial-aggregate-and-provider-version",
+            "permission": "finance.route-defined-legacy",
+            "pii_classification": "restricted-financial",
+            "policy_rule": "finance-and-payouts",
+            "rate_limit_class": "financial-command",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "required",
+            "request_schema": "none",
+            "resource_owner": "finance-payouts",
+            "response_schema": "app.domains.finance.schemas.PayoutBatchRead",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      }
+    },
+    "/api/v1/finance/vendors": {
+      "get": {
+        "operationId": "list_finance_vendors_api_v1_finance_vendors_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 500,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FinanceVendorRead"
+                  },
+                  "title": "Response List Finance Vendors Api V1 Finance Vendors Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Finance Vendors",
+        "tags": [
+          "finance"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "settings.payout_enabled",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "finance.route-defined-legacy",
+            "pii_classification": "restricted-financial",
+            "policy_rule": "finance-and-payouts",
+            "rate_limit_class": "financial-command",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "finance-payouts",
+            "response_schema": "builtins.list",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/config": {
+      "get": {
+        "operationId": "integration_config_api_v1_integrations_config_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrationConfigRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Integration Config",
+        "tags": [
+          "integrations"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "integration.delivery.read",
+            "pii_classification": "operational",
+            "policy_rule": "integration-observation",
+            "rate_limit_class": "standard",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "integration-delivery",
+            "response_schema": "app.domains.integrations.schemas.IntegrationConfigRead",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      }
+    },
     "/api/v1/integrations/events/{event_id}/retry": {
       "post": {
         "operationId": "retry_event_api_v1_integrations_events__event_id__retry_post",
@@ -15781,6 +17878,175 @@
             "request_schema": "none",
             "resource_owner": "integration-delivery",
             "response_schema": "none",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/operations": {
+      "get": {
+        "operationId": "integration_operations_api_v1_integrations_operations_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/IntegrationOperationRead"
+                  },
+                  "title": "Response Integration Operations Api V1 Integrations Operations Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Integration Operations",
+        "tags": [
+          "integrations"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "integration.delivery.read",
+            "pii_classification": "operational",
+            "policy_rule": "integration-observation",
+            "rate_limit_class": "standard",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "integration-delivery",
+            "response_schema": "builtins.list",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/outbox/activate-pending": {
+      "post": {
+        "operationId": "activate_pending_outbox_api_v1_integrations_outbox_activate_pending_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrationOperationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Activate Pending Outbox",
+        "tags": [
+          "integrations"
+        ],
+        "x-breero-policy": {
+          "POST": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "always; enqueue only; worker enforces delivery capability",
+            "deprecation_status": "active",
+            "emitted_effect": "delivery-retry",
+            "idempotency_key_policy": "command-id-required-before-activation",
+            "if_match_version_policy": "delivery-claim-token",
+            "permission": "integration.delivery.manage",
+            "pii_classification": "operational",
+            "policy_rule": "integration-operations",
+            "rate_limit_class": "privileged-command",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "required-before-activation",
+            "request_schema": "none",
+            "resource_owner": "integration-delivery",
+            "response_schema": "app.domains.integrations.schemas.IntegrationOperationRead",
+            "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/outbox/park-unconfigured": {
+      "post": {
+        "operationId": "park_unconfigured_outbox_api_v1_integrations_outbox_park_unconfigured_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrationOperationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Park Unconfigured Outbox",
+        "tags": [
+          "integrations"
+        ],
+        "x-breero-policy": {
+          "POST": {
+            "audience": "finance-admin",
+            "authentication": "bearer",
+            "capability_gate": "always; enqueue only; worker enforces delivery capability",
+            "deprecation_status": "active",
+            "emitted_effect": "delivery-retry",
+            "idempotency_key_policy": "command-id-required-before-activation",
+            "if_match_version_policy": "delivery-claim-token",
+            "permission": "integration.delivery.manage",
+            "pii_classification": "operational",
+            "policy_rule": "integration-operations",
+            "rate_limit_class": "privileged-command",
+            "record_policy": "roles:finance|admin",
+            "request_hash_policy": "required-before-activation",
+            "request_schema": "none",
+            "resource_owner": "integration-delivery",
+            "response_schema": "app.domains.integrations.schemas.IntegrationOperationRead",
             "tenant_scope": "tenant-and-legal-entity"
           }
         }
@@ -17200,6 +19466,738 @@
             "resource_owner": "marketplace-operations",
             "response_schema": "none",
             "tenant_scope": "tenant-and-legal-entity"
+          }
+        }
+      }
+    },
+    "/api/v1/portal/admin/audit": {
+      "get": {
+        "operationId": "admin_audit_api_v1_portal_admin_audit_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditEventList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Admin Audit",
+        "tags": [
+          "portal-read-models"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "admin",
+            "authentication": "bearer",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "admin.audit.read",
+            "pii_classification": "internal",
+            "policy_rule": "portal-admin-audit-read",
+            "rate_limit_class": "standard",
+            "record_policy": "authorized-audit-events",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "audit",
+            "response_schema": "app.domains.portal.schemas.AuditEventList",
+            "tenant_scope": "authorized-admin-scope"
+          }
+        }
+      }
+    },
+    "/api/v1/portal/admin/overview": {
+      "get": {
+        "description": "Require access to every section before reading the cross-domain overview.",
+        "operationId": "admin_overview_api_v1_portal_admin_overview_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminOverview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Insufficient permissions for the complete admin overview."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Admin Overview",
+        "tags": [
+          "portal-read-models"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "admin",
+            "authentication": "bearer",
+            "capability_gate": "all-required-permissions; no write capability implied",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "admin.capabilities.read & admin.audit.read & admin.access.manage & admin.integrations.read & ops.dispatch.read & ops.bookings.read & ops.providers.read & ops.customers.read & finance.ledger.read & finance.payouts.read",
+            "pii_classification": "internal",
+            "policy_rule": "portal-admin-overview-read",
+            "rate_limit_class": "standard",
+            "record_policy": "complete-cross-domain-admin-read-only-view",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "admin-portal",
+            "response_schema": "app.domains.portal.schemas.AdminOverview",
+            "tenant_scope": "authorized-admin-scope"
+          }
+        }
+      }
+    },
+    "/api/v1/portal/capabilities": {
+      "get": {
+        "operationId": "portal_capabilities_api_v1_portal_capabilities_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EffectiveCapabilities"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Portal Capabilities",
+        "tags": [
+          "portal-read-models"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "authenticated-portal-user",
+            "authentication": "bearer",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "authenticated-session",
+            "pii_classification": "internal",
+            "policy_rule": "portal-capabilities-read",
+            "rate_limit_class": "standard",
+            "record_policy": "current-runtime-capability-view",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "portal",
+            "response_schema": "app.domains.portal.schemas.EffectiveCapabilities",
+            "tenant_scope": "effective-session-context"
+          }
+        }
+      }
+    },
+    "/api/v1/portal/operations/overview": {
+      "get": {
+        "operationId": "operations_overview_api_v1_portal_operations_overview_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationsOverview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Operations Overview",
+        "tags": [
+          "portal-read-models"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "operations",
+            "authentication": "bearer",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "ops.dispatch.read",
+            "pii_classification": "internal",
+            "policy_rule": "portal-operations-overview-read",
+            "rate_limit_class": "standard",
+            "record_policy": "authorized-operations-summary",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "operations-portal",
+            "response_schema": "app.domains.portal.schemas.OperationsOverview",
+            "tenant_scope": "authorized-operations-scope"
+          }
+        }
+      }
+    },
+    "/api/v1/portal/provider/credentials": {
+      "get": {
+        "operationId": "provider_credentials_api_v1_portal_provider_credentials_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderCredentialList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Provider Credentials",
+        "tags": [
+          "portal-read-models"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "provider",
+            "authentication": "bearer",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "provider.credentials.read",
+            "pii_classification": "internal",
+            "policy_rule": "portal-provider-credentials-read",
+            "rate_limit_class": "standard",
+            "record_policy": "current-provider-credential-metadata-only",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "provider-portal",
+            "response_schema": "app.domains.portal.schemas.ProviderCredentialList",
+            "tenant_scope": "provider-membership"
+          }
+        }
+      }
+    },
+    "/api/v1/portal/provider/earnings": {
+      "get": {
+        "operationId": "provider_earnings_api_v1_portal_provider_earnings_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/EarningStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderEarningList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Provider Earnings",
+        "tags": [
+          "portal-read-models"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "provider",
+            "authentication": "bearer",
+            "capability_gate": "read-only-while-payments-disabled",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "provider.earnings.read",
+            "pii_classification": "internal",
+            "policy_rule": "portal-provider-earnings-read",
+            "rate_limit_class": "standard",
+            "record_policy": "current-provider-earnings-only",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "provider-finance-read-model",
+            "response_schema": "app.domains.portal.schemas.ProviderEarningList",
+            "tenant_scope": "provider-membership"
+          }
+        }
+      }
+    },
+    "/api/v1/portal/provider/jobs": {
+      "get": {
+        "operationId": "provider_jobs_api_v1_portal_provider_jobs_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/JobStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderJobList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Provider Jobs",
+        "tags": [
+          "portal-read-models"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "provider",
+            "authentication": "bearer",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "provider.jobs.read",
+            "pii_classification": "internal",
+            "policy_rule": "portal-provider-jobs-read",
+            "rate_limit_class": "standard",
+            "record_policy": "current-provider-jobs-only",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "provider-portal",
+            "response_schema": "app.domains.portal.schemas.ProviderJobList",
+            "tenant_scope": "provider-membership"
+          }
+        }
+      }
+    },
+    "/api/v1/portal/provider/overview": {
+      "get": {
+        "operationId": "provider_overview_api_v1_portal_provider_overview_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderOverview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Provider Overview",
+        "tags": [
+          "portal-read-models"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "provider",
+            "authentication": "bearer",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "provider.profile.read",
+            "pii_classification": "internal",
+            "policy_rule": "portal-provider-overview-read",
+            "rate_limit_class": "standard",
+            "record_policy": "current-provider-organization-only",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "provider-portal",
+            "response_schema": "app.domains.portal.schemas.ProviderOverview",
+            "tenant_scope": "provider-membership"
+          }
+        }
+      }
+    },
+    "/api/v1/portal/provider/payout-batches": {
+      "get": {
+        "operationId": "provider_payout_batches_api_v1_portal_provider_payout_batches_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PayoutStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderPayoutBatchList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Provider Payout Batches",
+        "tags": [
+          "portal-read-models"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "provider",
+            "authentication": "bearer",
+            "capability_gate": "read-only-while-payouts-disabled",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "provider.payouts.read",
+            "pii_classification": "internal",
+            "policy_rule": "portal-provider-payout-batches-read",
+            "rate_limit_class": "standard",
+            "record_policy": "current-provider-payout-batches-only",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "provider-finance-read-model",
+            "response_schema": "app.domains.portal.schemas.ProviderPayoutBatchList",
+            "tenant_scope": "provider-membership"
+          }
+        }
+      }
+    },
+    "/api/v1/portal/provider/workers": {
+      "get": {
+        "operationId": "provider_workers_api_v1_portal_provider_workers_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderWorkerList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Provider Workers",
+        "tags": [
+          "portal-read-models"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "provider",
+            "authentication": "bearer",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "provider.workers.read",
+            "pii_classification": "internal",
+            "policy_rule": "portal-provider-workers-read",
+            "rate_limit_class": "standard",
+            "record_policy": "current-provider-workers-only",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "provider-portal",
+            "response_schema": "app.domains.portal.schemas.ProviderWorkerList",
+            "tenant_scope": "provider-membership"
           }
         }
       }
@@ -20424,5 +23422,5 @@
       }
     }
   },
-  "x-breero-endpoint-registry-digest": "sha256:f4a67549cacb38aacf8e739c97239f0a06694750ba595bdeec51c11fa0502472"
+  "x-breero-endpoint-registry-digest": "sha256:5b26895362e03e4af9dac3f141cb5d1d204f63972845222b8c2915e48174e929"
 }

@@ -47,7 +47,7 @@ const required = {
   "/api/v1/admin/feature-flags": ["get"],
   "/api/v1/admin/audit-events": ["get"],
   "/api/v2/capabilities": ["get"],
-  "/api/v1/auth/context": ["get"],
+  "/api/v1/auth/access/me": ["get"],
   "/api/v1/auth/access/catalog": ["get"],
   "/api/v1/auth/access/users/{user_id}": ["get", "put"],
   "/api/v1/availability/search": ["post"],
