@@ -62,16 +62,10 @@ for (const width of [375, 430, 768, 1024, 1280, 1440])
     ).toBe(true);
 
     await page.goto("/booking?service=cleaning");
-    await page.waitForURL("**/request-service");
-    await expect(
-      page.getByRole("heading", { name: /tell us what your home needs/i }),
-    ).toBeVisible();
-    await expect(page.getByRole("button", { name: "Request service" })).toBeEnabled();
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
-      ),
-    ).toBe(true);
+    await expect(page).toHaveURL(/\/booking\?service=cleaning$/);
+    await expect(page.getByRole("heading", { name: /choose a time that works at your home/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Check availability" })).toBeEnabled();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   });
 
 test("request-service submission remains pending manual dispatch", async ({ page }) => {

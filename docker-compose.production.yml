@@ -23,6 +23,7 @@ x-app: &app
     - breero_jwt_access_secret
     - breero_jwt_refresh_secret
     - breero_geoapify_api_key
+    - breero_keycloak_client_secret
   networks:
     - breero_private
   pids_limit: 256
@@ -55,6 +56,7 @@ services:
       - breero_jwt_access_secret
       - breero_jwt_refresh_secret
       - breero_geoapify_api_key
+      - breero_keycloak_client_secret
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2)"]
       interval: 15s
@@ -173,3 +175,5 @@ secrets:
     file: ${POSTGRES_PASSWORD_REFERENCE:?Set POSTGRES_PASSWORD_REFERENCE}
   breero_redis_acl:
     file: ${REDIS_ACL_FILE_REFERENCE:?Set REDIS_ACL_FILE_REFERENCE}
+  breero_keycloak_client_secret:
+    file: ${KEYCLOAK_CLIENT_SECRET_REFERENCE:?Set KEYCLOAK_CLIENT_SECRET_REFERENCE}

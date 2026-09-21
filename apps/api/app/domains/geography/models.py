@@ -64,12 +64,12 @@ class ServiceZoneOffering(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 class ServiceZonePostalCode(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     """Normalized postal coverage owned by a BREERO service zone."""
 
-    __tablename__ = "service_zone_postal_codes"
+    __tablename__ = "service_area_postal_codes"
     __table_args__ = (
         UniqueConstraint(
             "service_area_id",
             "postal_code",
-            name="uq_service_zone_postal_codes_area_postal",
+            name="uq_service_area_postal_codes_area_postal",
         ),
         CheckConstraint(
             "postal_code ~ '^[0-9]{5}(-[0-9]{4})?$'",

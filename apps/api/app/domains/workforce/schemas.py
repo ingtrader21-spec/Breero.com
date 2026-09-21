@@ -38,6 +38,10 @@ class VendorRead(BaseModel):
     phone: str
     owner_user_id: uuid.UUID | None
     status: VendorStatus
+    onboarding_status: str
+    compliance_status: str
+    provider_type: str
+    timezone_id: str | None
     capabilities: list
     service_radius_meters: int
 

@@ -50,8 +50,8 @@ MONEYBEE_RELEASE_VALIDATOR_SECURITY_SHA256 = (
     "8d8f21260babfae5eaedbdd46472b1ec"
 )
 BREERO_RELEASE_VALIDATOR_SECURITY_SHA256 = (
-    "5c59405cd687c7febcf823b61d2f29a5"
-    "f6b8af6bd9080e0fa6d72eb275a06d1c"
+    "a3bc1cbb3d34db4b079d1bd698a7daf8"
+    "4438795e4047cd7c87b70f261278ffb1"
 )
 EXPECTED_RELEASE_VALIDATOR_SECURITY_SHA256 = {
     "appolon1908-hue/Infustruction-repo": STANDARD_RELEASE_VALIDATOR_SECURITY_SHA256,
@@ -611,8 +611,8 @@ APPROVED_COMPLEX_SCRIPT_SHA256: dict[str, dict[str, str]] = {
         ),
     },
     "ingtrader21-spec/Breero.com": {
-        "apps/api/scripts/check_schema_drift.py": "746760dea22319cd64c486a08b82ebbccee1dc256566fa6b24cee7f02ff68b47",
-        "apps/api/scripts/generate_openapi.py": "7e1ad9606a113b556752222b2782da01b66651b2f8107d3108014b9d45f29a66",
+        "apps/api/scripts/check_schema_drift.py": "2d4f1783c134af3d68c1bae459c42f6d46ce67ae7468e7ed0da64f6feffa9967",
+        "apps/api/scripts/generate_openapi.py": "46ed75f51bfacfd5eb7f7f225fa68042d40e6f61c489dad559ada8268b48ab0f",
         "scripts/ci/test-classify-quality-scope.sh": "0365cd71d85e00facf1a64c2f11734e413430af75e4cf39e0e52971d13d5c473",
         "scripts/ci/test-validate-breero-scope.sh": "ea29de36868e28ff82e3ec151f896aed388d2421f5907151c4c13480dae20bf8",
         "scripts/ci/validate-breero-scope.sh": "f8ffb8a3953c56d7d6722938825bfb33fced802ba162f4cefd3d12be8ffb9a1e",
@@ -761,8 +761,8 @@ APPROVED_JOB_EXECUTABLE_CONFIGURATION_SHA256: dict[str, dict[str, str]] = {
     },
     "ingtrader21-spec/Breero.com": {
         ".github/workflows/backend-production.yml": (
-            "45b2918627995cb3491f55b3a3b537e"
-            "4a34598d7b32877879b9e2c912c266591"
+            "22ebd9d26c48220d4c5eb62b54ee75f0"
+            "2a22e6cef69e1c74e149a6b31b2ed284"
         ),
     },
 }
