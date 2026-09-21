@@ -6,6 +6,7 @@ import pytest
 from geoalchemy2.elements import WKTElement
 
 from app.db.session import SessionLocal
+from app.domains.booking.capacity_models import ServiceZone
 from app.domains.booking.models import (
     Address,
     Booking,
@@ -25,6 +26,8 @@ async def test_expiry_worker_transitions_expired_holds_and_is_idempotent() -> No
     window_start = now + timedelta(days=2)
 
     async with SessionLocal() as session:
+        # Register the migration-018 service-zone table that Address.service_zone_id references.
+        assert ServiceZone.__table__.name == "service_zones"
         entity = LegalEntity(code=f"EXP-{marker[:8]}", name="Expiry Test", currency="USD")
         service = Service(
             slug=f"expiry-worker-{marker}",

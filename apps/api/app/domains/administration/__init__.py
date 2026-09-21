@@ -1,0 +1,1 @@
+"""BREERO administration domain."""

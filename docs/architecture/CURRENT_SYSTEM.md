@@ -1,125 +1,90 @@
 # Current BREERO system
 
-Source baseline: protected `main` at `c8b5d31df80cd715ae189db9e16d6ff082c0d51f`, captured 2026-09-13. Executable accepted code takes precedence over prior plans and unmerged branches. This inventory advances Milestone 0; it does not certify any feature or production environment.
+Generated from executable source inventory at `ee79c3cb0bd667c3456dd20521563017b7d2d246`. This is source truth only; deployed database revision, external services, and production activation require separate runtime certification.
 
-## Required initial record
+## Canonical source record
 
-| Field | Observed state |
+| Field | Source evidence |
 |---|---|
-| REPOSITORY | `appolon1908-hue/Breero.com` |
-| DEFAULT_BRANCH | `main` |
-| CURRENT_MAIN_SHA | `c8b5d31df80cd715ae189db9e16d6ff082c0d51f` |
-| CURRENT_ALEMBIC_HEAD | `022_provider_services_skills`, one source head; deployed database revision unverified |
-| CURRENT_OPENAPI_DIGEST | `93748567a1121ee3d8312d08e5d19ea4a81b14e0184e03d0f0eeaba957384ba4`; SHA-256 of checked-in bytes |
-| CURRENT_FRONTEND_CONTRACT_STATE | Default runtime OpenAPI equals checked-in artifact; partial frontend checker passes 30 required paths; shared types/client remain handwritten; portal fetches bypass them |
-| OPEN_PULL_REQUESTS | 42; full branch/base list below and in [GitHub snapshot](GITHUB_BASELINE.json) |
-| OPEN_P0_ISSUES | #120, #119, #61, #53, #52, #51, #50, #49 |
-| OPEN_P1_ISSUES | #83, #81, #78, #77, #76, #75, #74, #73, #19, #18, #17 |
-| CURRENT_CAPABILITY_DEFAULTS | [Capability registry](CAPABILITY_REGISTRY.md); source defaults only; legacy delivery and payout task gaps are explicit |
-| CURRENT_PRODUCTION_TOPOLOGY | Competing root and deploy/production Compose definitions; private data-plane definitions; actual host state unverified |
-| CURRENT_STAGING_TOPOLOGY | Separate named networks/volumes in deploy/staging; actual isolation, sandbox bindings and certification unverified |
-| CURRENT_KEYCLOAK_CONFIGURATION | Canonical issuer in production example; optional backend validation and web PKCE implementation; no live realm/client export inspected |
-| CURRENT_KLYROW_INTEGRATION | No named Klyrow adapter/callback contract; legacy direct email exists |
-| CURRENT_TELNEXA_INTEGRATION | SMS interface, fake/unconfigured gateways and templates; no implemented MT/DLR/MO integration |
-| CURRENT_MIDDLEWARE_INTEGRATION | HMAC-V2 plus TLS client authentication, four allowlisted event types, disabled by default |
-| CURRENT_ODOO_INTEGRATION | Startup rejects direct Odoo enablement/credentials in every environment; legacy adapter retained; mounted internal routes read/retry the BREERO outbox |
-| CURRENT_OBSERVABILITY_STATE | Accepted Prometheus metrics, structured logs, optional OTel instrumentation and collector overlays; runtime pipeline and business coverage unverified |
+| REPOSITORY | `ingtrader21-spec/Breero.com` |
+| SOURCE_SHA | `ee79c3cb0bd667c3456dd20521563017b7d2d246` |
+| ALEMBIC_HEADS | `031_provider_catalog` |
+| ALEMBIC_REVISIONS | 32 |
+| OPENAPI_ARTIFACT | `apps/api/openapi.json` / `d7fd1a8b77323eca8d98183d43bc704b02fedccd72729562063576ec1cdec4e7` |
+| BACKEND_DOMAINS | 17 |
+| FRONTEND_ROUTES | 91 |
+| WORKER_TASKS | 4 |
+| DEPLOYMENT_FILES | 11 |
+| LIVE_PRODUCTION_CERTIFICATION | NOT ESTABLISHED BY THIS INVENTORY |
 
-Priority lists above use explicit `[P0]`/`[P1]` issue titles. Unlabelled mission issues are not silently assigned a priority. GitHub state is a timestamped snapshot, not a permanent assertion that those PRs/issues remain open.
+Stale PR/issue counts are intentionally not copied into this source document. GitHub state must be verified live when a release or mission decision depends on it.
 
-## Inventory method and boundaries
+## Runtime/API profiles
 
-[Source inventory](SOURCE_INVENTORY.json) contains every Python module under `apps/api/app`, model/table and enum declarations, migration graph, frontend page/handler, adapter, worker task, deployment-file digest, feature default, and API operation. [Inventory generator](../../scripts/architecture/inventory.py) reads source and imports runtime routes in clean test subprocesses with empty working directories. It does not start request handlers, workers, application lifespan, migrations, providers or exporters. Two profiles enumerate default routes and all currently conditionally mounted route families; this is not a capability activation.
+| Profile | OpenAPI paths | OpenAPI operations | Checked artifact match | Duplicate registrations |
+|---|---:|---:|---|---:|
+| canonical_contract | 149 | 182 | TRUE | 0 |
+| default | 140 | 172 | FALSE | 0 |
+| implemented_routes | 159 | 191 | FALSE | 0 |
 
-The required directories exist except `infrastructure`, which is absent. There are four Next.js applications (`web`, `partner`, `ops`, `admin`) and one FastAPI application, plus shared `ui`, `types`, `api-client`, and `portal` packages. There is no separate worker frontend application. The architecture remains a FastAPI modular monolith with async SQLAlchemy, Psycopg, PostgreSQL/PostGIS, Alembic, Redis and Celery.
+The `canonical_contract` profile is the checked-in OpenAPI authority. The default profile is the fail-closed route surface; implemented/dark profiles are evidence of code presence, not authorization to activate capabilities.
 
-Classification: `COMPLETE` requires the mission's feature acceptance evidence; `PARTIAL` means executable foundations with unmet requirements; `STUB` means placeholder/interface only; `DARK` identifies an implemented path guarded from activation; `DEPRECATED` means retained legacy behavior; `NOT_IMPLEMENTED` means no executable domain found. A disabled flag alone does not establish that all underlying work is dark. No complete marketplace feature or live certification is asserted here.
+## Route ambiguity evidence
 
-## Backend domain inventory
+Profile-contract variants: **0**. Duplicate registrations remain explicit evidence for the API-authority mission; they are not silently collapsed into a claim of unique ownership.
 
-| Directory under apps/api/app/domains | State | Executable foundation and remaining scope |
+## Backend domains
+
+| Directory under apps/api/app/domains | Source state |
+|---|---|
+| `administration` | SOURCE_PRESENT |
+| `auth` | SOURCE_PRESENT |
+| `booking` | SOURCE_PRESENT |
+| `booking_intents` | SOURCE_PRESENT |
+| `capabilities` | SOURCE_PRESENT |
+| `catalog` | SOURCE_PRESENT |
+| `common` | SOURCE_PRESENT |
+| `compliance` | SOURCE_PRESENT |
+| `dispatch` | SOURCE_PRESENT |
+| `finance` | SOURCE_PRESENT |
+| `geography` | SOURCE_PRESENT |
+| `jobs` | SOURCE_PRESENT |
+| `payments` | SOURCE_PRESENT |
+| `professional_leads` | SOURCE_PRESENT |
+| `provider_catalog` | SOURCE_PRESENT |
+| `public_submissions` | SOURCE_PRESENT |
+| `workforce` | SOURCE_PRESENT |
+
+Functional completeness is intentionally not inferred from directory presence. Domain acceptance remains governed by the M00–M30 mission board.
+
+## Worker tasks
+
+| Source | Function | Configuration |
 |---|---|---|
-| `auth` | PARTIAL | Users, sessions, external identity links, tenants, memberships and access assignments; optional Keycloak; full server principal, machine boundary and required negative matrix not certified |
-| `booking` | PARTIAL | Booking records, state transitions, availability and locking; request-first manual-scheduling behavior exists; complete capacity policy, evidence and performance certification remain |
-| `booking_intents` | PARTIAL | Draft/update/abandon/submit with ownership and optimistic versioning; submit delegates to BookingService; not the separate ProjectRequest lifecycle |
-| `capabilities` | PARTIAL | V1/V2 public projections of effective flags; mission naming and universal delivery/task enforcement incomplete |
-| `catalog` | PARTIAL | Active service/detail/questions, administrative service writes; full product-mode and service qualification closure not certified |
-| `common` | PARTIAL | Command context, state helpers, audit, immutable event value object, transactional outbox, claims, leases, retries and replay; uniform adoption and durable inbox missing |
-| `compliance` | PARTIAL | Privacy requests, consent events, suppressions and preferences; no completed retention/export/deletion/legal-hold pipeline; provider credentials live in workforce |
-| `dispatch` | PARTIAL | Worker candidates, dispatch offers, assignments and decisions; not separate MatchingRun/Opportunity/LeadConnection objects |
-| `finance` | PARTIAL | Earnings, ledger, payouts and batch state; scheduled release/batch work is not protected by payout flag; balance reconstruction and settlement certification remain |
-| `geography` | PARTIAL | Postal and zone models, PostGIS queries, address/timezone/coverage APIs; public geocoding routes default dark; full address-failure and DST/performance certification remain |
-| `jobs` | PARTIAL | Jobs, job events and work requests; customer work-request decisions plus worker/operations commands; full immutable quote/evidence/change-order loop absent |
-| `payments` | PARTIAL | Stripe intent, verified webhook/refund foundations; public payment routes dark; settlement, dispute and timeout certification remain |
-| `professional_leads` | PARTIAL | ProfessionalLead, purchase and dispute models; paid routes dark; neither an Opportunity nor an authorized LeadConnection replacement |
-| `provider_catalog` | PARTIAL | Provider services/skills and approval records, permissions, ownership and version checks; qualification-to-matching integration remains |
-| `public_submissions` | PARTIAL | Durable service/contact/provider-interest submissions and downstream state; no separate ProjectRequest qualification state machine |
-| `workforce` | PARTIAL | Vendors, workers, working rules, credentials, applications and onboarding; complete membership/compliance/capacity acceptance remains |
+| [apps/api/app/workers/tasks.py](../../apps/api/app/workers/tasks.py) | `expire_bookings` | `{"name": "app.workers.tasks.expire_bookings"}` |
+| [apps/api/app/workers/tasks.py](../../apps/api/app/workers/tasks.py) | `publish_outbox` | `{"autoretry_for": "DYNAMIC", "max_retries": 5, "name": "app.workers.tasks.publish_outbox", "retry_backoff": true}` |
+| [apps/api/app/workers/tasks.py](../../apps/api/app/workers/tasks.py) | `release_earnings` | `{"name": "app.workers.tasks.release_earnings"}` |
+| [apps/api/app/workers/tasks.py](../../apps/api/app/workers/tasks.py) | `generate_weekly_payout_candidates` | `{"name": "app.workers.tasks.generate_weekly_payout_candidates"}` |
 
-Required concepts outside these directories:
+## Deployment definitions
 
-| Capability | State | Evidence/gap |
-|---|---|---|
-| ProjectRequest qualification | NOT_IMPLEMENTED | PublicSubmission and BookingIntent exist with different semantics |
-| Explainable MatchingRun | NOT_IMPLEMENTED | Existing dispatch candidate selection is a foundation |
-| Opportunity and LeadConnection | NOT_IMPLEMENTED | Must remain distinct from DispatchOffer and paid ProfessionalLead |
-| Authorized conversations | NOT_IMPLEMENTED | Messaging flag/projection only |
-| Immutable quote versions and full change orders | PARTIAL | Customer quote views use work requests; no complete immutable quote-version domain |
-| Verified reviews/reputation | NOT_IMPLEMENTED | Review flag/projection only |
-| Support/trust cases | PARTIAL | LeadDispute is a limited paid-lead slice; general case/evidence/visibility/escalation domain absent |
-| Analytics/Superset | NOT_IMPLEMENTED | No reporting store or certified ingestion pipeline |
-| Advisory AI | NOT_IMPLEMENTED | No advisory AI domain found |
-| Secure document pipeline | NOT_IMPLEMENTED | Credential/evidence references do not establish malware scanning or signed-download authority |
-
-## Workers and stores
-
-| Celery task | Beat interval | Behavior and remaining requirement |
-|---|---:|---|
-| `app.workers.tasks.publish_outbox` | 10 s | Claims/leases/retry exist; only public-submission CRM events are parked/reactivated by Middleware switch; notification and unknown-event semantics need repair |
-| `app.workers.tasks.expire_bookings` | 60 s | Locks and expires eligible booking holds; existing integration test; full mission capacity lifecycle remains |
-| `app.workers.tasks.release_earnings` | 3600 s | Scheduled unconditionally; mutates earning eligibility without checking PAYOUT_ENABLED |
-| `app.workers.tasks.generate_weekly_payout_candidates` | 604800 s | Scheduled unconditionally; create_batch changes earnings to BATCHED without checking PAYOUT_ENABLED |
-
-[Worker configuration](../../apps/api/app/workers/celery_app.py) sends heartbeat/task events and writes a shared Redis worker timestamp. [Tasks](../../apps/api/app/workers/tasks.py) use `asyncio.run` over the shared session factory; PR #105 proposes loop isolation. Heartbeat is aggregate worker liveness, not proof that each worker or beat is healthy. No scheduler heartbeat exists in this baseline.
-
-| Store | Current purpose | Boundary |
-|---|---|---|
-| PostgreSQL/PostGIS | All marketplace records, audit, outbox, spatial data | Transactional authority; source migration head is not deployed revision |
-| Redis | Rate limiting, Celery broker/results and worker heartbeat | Operational state; no dedicated approved business-event broker established |
-| Odoo database | External CRM projection/add-on models | No BREERO-owned database deployment; Middleware owns production writes |
-| OpenBao | External secrets authority with local file consumer contract | Workload identity/rotation runtime unverified |
-| Object/reporting/inbox stores | No authoritative implementation found | Central documents, analytics and durable inbox remain required |
-
-## Production and staging topology
-
-| Definition | Source evidence | Gap |
-|---|---|---|
-| `docker-compose.yml` | Development builds; publishes API/Postgres/Redis ports; runs migration inside API startup | Development only; cannot serve as production authority |
-| `docker-compose.production.yml` | API, worker, scheduler, migration job, PostGIS, Redis; read-only services, limits, log rotation, private network and external Caddy network | Competes with deploy/production stack; API image variable requests digest but does not validate it here |
-| `deploy/production/docker-compose.backend.yml` | API, worker, migration job, private PostGIS/Redis, separate edge/private networks, injected secrets | No scheduler service; worker health disabled; lacks root stack limits and API Compose healthcheck |
-| `deploy/staging/docker-compose.backend.yml` | Separate environment references, names, networks and volumes | No scheduler service; worker health disabled; deployed isolation/sandboxes unverified |
-| `deploy/frontend`, `deploy/portals` | Public app and portal container definitions | End-to-end routing/auth/release certification unverified |
-| `deploy/observability` | API metrics scrape, Alloy and OTLP collector overlay | Configuration is not proof of live Prometheus/Loki/Tempo ingestion |
-
-All deployment definition digests are in SOURCE_INVENTORY.json. Production/staging data services have no published host ports in their reviewed definitions; actual host bindings, disk capacity, backups, restore rehearsal and Caddy/Kong/WAF routing were not inspected or asserted. Reconcile authority through PR #101 before release. Source ports in the development stack must not be mistaken for production evidence.
-
-Accepted `.github/workflows/release-images.yml` builds only exact current main candidates, emits digests and enables SBOM/provenance/attestation. Release intent and orchestrator contract workflows exist. No candidate was built or deployed for this inventory. Full config/capability/migration/rollback manifests and restored-database rehearsal require release evidence, not assumptions based on workflow names.
-
-## Identity, integration and observability
-
-[Ownership](SYSTEM_OWNERSHIP.md), [integration](INTEGRATION_REGISTRY.md), [capabilities](CAPABILITY_REGISTRY.md), [API](API_REGISTRY.md) and [data handling](DATA_CLASSIFICATION.md) records describe the verified source boundaries. Current telemetry code is executable, not a placeholder: six custom metric families, safe route labels, structured logs with trace/span context, optional OTel FastAPI/SQLAlchemy/Redis/Celery instrumentation, outbox gauges and shared worker heartbeat exist. Tracing defaults off. No independent scheduler metric, full business metric matrix, certified alerts/dashboards, full Odoo/Klyrow/Telnexa trace or Superset pipeline is established here.
-
-## Execution dependency and acceptance boundary
-
-Milestone 0 acceptance is pending independent review of PR #128 at its final head and passing required checks. Branch rules require one approving review, approval of the last push, resolved threads, up-to-date required `quality` and `orchestrator-contract` checks, and squash merge. Do not claim acceptance before merge.
-
-After acceptance, review P0 work in existing branches first: configuration validation (#99), readiness/dependency repair (#126; reconcile overlapping #124/#100), Compose authority (#101), identity authority (#102/#104/#108), worker lifecycle (#105/#107), public submissions (#55/#54) and API registry (#62/#63). Re-evaluate their current heads and dependency bases before adopting changes. PR #123 is a competing runtime reconciliation proposal, not accepted architecture. Add a focused release safety workstream for ungated email, unknown-event delivery, stale outbox finalization, finance task guards and scheduler heartbeat where existing PRs do not cover them.
-
-Marketplace domain phases follow accepted identity/API/release foundations. Finance, live communication, messaging/reviews and automated assignment remain separate activation decisions. No deployment, external transport call, capability change, migration or Odoo write was performed by this baseline.
+| Path | SHA-256 |
+|---|---|
+| [deploy/frontend/docker-compose.frontend.yml](../../deploy/frontend/docker-compose.frontend.yml) | `3e11d5d8a3a7b39a8250d4fc690326243e64fe7e33602603d946324137ab1f6d` |
+| [deploy/observability/docker-compose.observability.yml](../../deploy/observability/docker-compose.observability.yml) | `4548a59202bb998c16cec41df30a230c88398dd7ebe166cfd974579fb04c73db` |
+| [deploy/observability/otel-collector-breero.yaml](../../deploy/observability/otel-collector-breero.yaml) | `7636e550bdfa654b31c256970c957909fc51efb0113c5cd78cc7b7cd11527b7c` |
+| [deploy/observability/prometheus-breero.yml](../../deploy/observability/prometheus-breero.yml) | `ed251579d8b2886f24a0fee47c982a6ad9be83ccc7d18fbf4e3b2bb2e939858b` |
+| [deploy/portals/docker-compose.portals.yml](../../deploy/portals/docker-compose.portals.yml) | `d5d9b86a4d3144869ccf07a952541bd8b2fad3e0ffd972e8e321e109e5416af6` |
+| [deploy/production/docker-compose.backend.yml](../../deploy/production/docker-compose.backend.yml) | `6cfceb34ef0772c856b9bea8da9fb7bc63e664e89693db668bf3b5420b9d99ac` |
+| [deploy/staging/docker-compose.backend.yml](../../deploy/staging/docker-compose.backend.yml) | `150da1d0fd965bcea84a5bd8ce894b478f811a0d092c7100e075e78bc5bf52fd` |
+| [deploy/staging/docker-compose.middleware.yml](../../deploy/staging/docker-compose.middleware.yml) | `33f2371b8f76171b22e293dd110b919b04044eb272968356c5bfaee12644cf60` |
+| [docker-compose.middleware.yml](../../docker-compose.middleware.yml) | `4fbb1ff7e95f0be2efff51fe0787424a43a1e9c6701e99a66c293297aa69aefb` |
+| [docker-compose.production.yml](../../docker-compose.production.yml) | `be0cbbfc4e5217e007d358a15f67d7ba4e38d44783c139b98a3a0eb763c6378d` |
+| [docker-compose.yml](../../docker-compose.yml) | `b04c45a9227e012944df693326daaf498e5754aa81402cecdc8578b04e2a34e8` |
 
 ## All frontend routes
 
-These are filesystem route entries, not acceptance claims about loading/error/accessibility or real-data completeness. Dynamic segments use Next.js notation. Portal apps each have one page and one health handler; customer/worker sections inside shared portal code are not separate Next.js routes.
+Filesystem route presence is source evidence, not proof of authentication, accessibility, real-data completeness, or deployed reachability.
 
 | App | Kind | Route | Source |
 |---|---|---|---|
@@ -129,6 +94,7 @@ These are filesystem route entries, not acceptance claims about loading/error/ac
 | web | page | `/reset-password` | [apps/web/app/(auth)/reset-password/page.tsx](../../apps/web/app/(auth)/reset-password/page.tsx) |
 | web | page | `/verify-email` | [apps/web/app/(auth)/verify-email/page.tsx](../../apps/web/app/(auth)/verify-email/page.tsx) |
 | web | page | `/about` | [apps/web/app/about/page.tsx](../../apps/web/app/about/page.tsx) |
+| web | page | `/access-denied` | [apps/web/app/access-denied/page.tsx](../../apps/web/app/access-denied/page.tsx) |
 | web | page | `/accessibility` | [apps/web/app/accessibility/page.tsx](../../apps/web/app/accessibility/page.tsx) |
 | web | page | `/account/addresses` | [apps/web/app/account/addresses/page.tsx](../../apps/web/app/account/addresses/page.tsx) |
 | web | page | `/account/bookings/[id]` | [apps/web/app/account/bookings/[id]/page.tsx](../../apps/web/app/account/bookings/[id]/page.tsx) |
@@ -148,6 +114,7 @@ These are filesystem route entries, not acceptance claims about loading/error/ac
 | web | page | `/account/session-expired` | [apps/web/app/account/session-expired/page.tsx](../../apps/web/app/account/session-expired/page.tsx) |
 | web | page | `/account/unauthorized` | [apps/web/app/account/unauthorized/page.tsx](../../apps/web/app/account/unauthorized/page.tsx) |
 | web | page | `/account/verify` | [apps/web/app/account/verify/page.tsx](../../apps/web/app/account/verify/page.tsx) |
+| web | page | `/admin` | [apps/web/app/admin/page.tsx](../../apps/web/app/admin/page.tsx) |
 | web | handler | `/api/addresses/validate` | [apps/web/app/api/addresses/validate/route.ts](../../apps/web/app/api/addresses/validate/route.ts) |
 | web | handler | `/api/capabilities` | [apps/web/app/api/capabilities/route.ts](../../apps/web/app/api/capabilities/route.ts) |
 | web | handler | `/api/communications/preferences` | [apps/web/app/api/communications/preferences/route.ts](../../apps/web/app/api/communications/preferences/route.ts) |
@@ -155,6 +122,7 @@ These are filesystem route entries, not acceptance claims about loading/error/ac
 | web | handler | `/api/public-submissions/[kind]` | [apps/web/app/api/public-submissions/[kind]/route.ts](../../apps/web/app/api/public-submissions/[kind]/route.ts) |
 | web | handler | `/api/services` | [apps/web/app/api/services/route.ts](../../apps/web/app/api/services/route.ts) |
 | web | page | `/availability` | [apps/web/app/availability/page.tsx](../../apps/web/app/availability/page.tsx) |
+| web | page | `/become-a-provider` | [apps/web/app/become-a-provider/page.tsx](../../apps/web/app/become-a-provider/page.tsx) |
 | web | page | `/blog` | [apps/web/app/blog/page.tsx](../../apps/web/app/blog/page.tsx) |
 | web | page | `/book` | [apps/web/app/book/page.tsx](../../apps/web/app/book/page.tsx) |
 | web | page | `/booking` | [apps/web/app/booking/page.tsx](../../apps/web/app/booking/page.tsx) |
@@ -167,6 +135,7 @@ These are filesystem route entries, not acceptance claims about loading/error/ac
 | web | page | `/cookies` | [apps/web/app/cookies/page.tsx](../../apps/web/app/cookies/page.tsx) |
 | web | page | `/emergency` | [apps/web/app/emergency/page.tsx](../../apps/web/app/emergency/page.tsx) |
 | web | page | `/faq` | [apps/web/app/faq/page.tsx](../../apps/web/app/faq/page.tsx) |
+| web | page | `/finance` | [apps/web/app/finance/page.tsx](../../apps/web/app/finance/page.tsx) |
 | web | handler | `/health` | [apps/web/app/health/route.ts](../../apps/web/app/health/route.ts) |
 | web | page | `/help` | [apps/web/app/help/page.tsx](../../apps/web/app/help/page.tsx) |
 | web | page | `/home-care` | [apps/web/app/home-care/page.tsx](../../apps/web/app/home-care/page.tsx) |
@@ -175,6 +144,8 @@ These are filesystem route entries, not acceptance claims about loading/error/ac
 | web | page | `/lead-terms` | [apps/web/app/lead-terms/page.tsx](../../apps/web/app/lead-terms/page.tsx) |
 | web | page | `/locations/[slug]` | [apps/web/app/locations/[slug]/page.tsx](../../apps/web/app/locations/[slug]/page.tsx) |
 | web | page | `/locations` | [apps/web/app/locations/page.tsx](../../apps/web/app/locations/page.tsx) |
+| web | page | `/marketing` | [apps/web/app/marketing/page.tsx](../../apps/web/app/marketing/page.tsx) |
+| web | page | `/ops` | [apps/web/app/ops/page.tsx](../../apps/web/app/ops/page.tsx) |
 | web | page | `/` | [apps/web/app/page.tsx](../../apps/web/app/page.tsx) |
 | web | page | `/partners` | [apps/web/app/partners/page.tsx](../../apps/web/app/partners/page.tsx) |
 | web | page | `/press` | [apps/web/app/press/page.tsx](../../apps/web/app/press/page.tsx) |
@@ -182,82 +153,29 @@ These are filesystem route entries, not acceptance claims about loading/error/ac
 | web | page | `/privacy` | [apps/web/app/privacy/page.tsx](../../apps/web/app/privacy/page.tsx) |
 | web | page | `/privacy-choices` | [apps/web/app/privacy-choices/page.tsx](../../apps/web/app/privacy-choices/page.tsx) |
 | web | page | `/professional-lead-policy` | [apps/web/app/professional-lead-policy/page.tsx](../../apps/web/app/professional-lead-policy/page.tsx) |
+| web | page | `/provider` | [apps/web/app/provider/page.tsx](../../apps/web/app/provider/page.tsx) |
 | web | page | `/provider-terms` | [apps/web/app/provider-terms/page.tsx](../../apps/web/app/provider-terms/page.tsx) |
+| web | page | `/quality` | [apps/web/app/quality/page.tsx](../../apps/web/app/quality/page.tsx) |
 | web | page | `/refund-cancellation` | [apps/web/app/refund-cancellation/page.tsx](../../apps/web/app/refund-cancellation/page.tsx) |
 | web | page | `/refund-policy` | [apps/web/app/refund-policy/page.tsx](../../apps/web/app/refund-policy/page.tsx) |
 | web | page | `/request-service` | [apps/web/app/request-service/page.tsx](../../apps/web/app/request-service/page.tsx) |
 | web | page | `/reviews` | [apps/web/app/reviews/page.tsx](../../apps/web/app/reviews/page.tsx) |
+| web | page | `/sales` | [apps/web/app/sales/page.tsx](../../apps/web/app/sales/page.tsx) |
 | web | page | `/service-fulfillment` | [apps/web/app/service-fulfillment/page.tsx](../../apps/web/app/service-fulfillment/page.tsx) |
 | web | page | `/service-fulfillment-policy` | [apps/web/app/service-fulfillment-policy/page.tsx](../../apps/web/app/service-fulfillment-policy/page.tsx) |
 | web | page | `/service-guarantee` | [apps/web/app/service-guarantee/page.tsx](../../apps/web/app/service-guarantee/page.tsx) |
 | web | page | `/services/[slug]` | [apps/web/app/services/[slug]/page.tsx](../../apps/web/app/services/[slug]/page.tsx) |
 | web | page | `/services` | [apps/web/app/services/page.tsx](../../apps/web/app/services/page.tsx) |
 | web | page | `/sms-terms` | [apps/web/app/sms-terms/page.tsx](../../apps/web/app/sms-terms/page.tsx) |
+| web | page | `/support` | [apps/web/app/support/page.tsx](../../apps/web/app/support/page.tsx) |
 | web | page | `/terms` | [apps/web/app/terms/page.tsx](../../apps/web/app/terms/page.tsx) |
 | web | page | `/trust` | [apps/web/app/trust/page.tsx](../../apps/web/app/trust/page.tsx) |
+| web | page | `/trust-safety` | [apps/web/app/trust-safety/page.tsx](../../apps/web/app/trust-safety/page.tsx) |
 | web | page | `/why-breero` | [apps/web/app/why-breero/page.tsx](../../apps/web/app/why-breero/page.tsx) |
+| web | page | `/worker` | [apps/web/app/worker/page.tsx](../../apps/web/app/worker/page.tsx) |
 | partner | handler | `/health` | [apps/partner/app/health/route.ts](../../apps/partner/app/health/route.ts) |
 | partner | page | `/` | [apps/partner/app/page.tsx](../../apps/partner/app/page.tsx) |
 | ops | handler | `/health` | [apps/ops/app/health/route.ts](../../apps/ops/app/health/route.ts) |
 | ops | page | `/` | [apps/ops/app/page.tsx](../../apps/ops/app/page.tsx) |
 | admin | handler | `/health` | [apps/admin/app/health/route.ts](../../apps/admin/app/health/route.ts) |
 | admin | page | `/` | [apps/admin/app/page.tsx](../../apps/admin/app/page.tsx) |
-
-## Open PR snapshot
-
-| PR | Branch | Base | Workstream |
-|---|---|---|---|
-| [#128](https://github.com/appolon1908-hue/Breero.com/pull/128) | `architecture/current-state-inventory` | `main` | docs(architecture): establish current-system baseline |
-| [#126](https://github.com/appolon1908-hue/Breero.com/pull/126) | `fix/api-cleanup-validation` | `main` | fix(api): bound readiness and repair dependency audit blockers |
-| [#124](https://github.com/appolon1908-hue/Breero.com/pull/124) | `fix/documented-ready-endpoint-20260910` | `main` | fix(api): restore documented /ready endpoint |
-| [#123](https://github.com/appolon1908-hue/Breero.com/pull/123) | `reconcile/live-runtime-v2-20260909` | `main` | reconcile: promote live Breero runtime into canonical repository |
-| [#121](https://github.com/appolon1908-hue/Breero.com/pull/121) | `ops/manual-production-orchestrator-20260903` | `main` | release: add exact-head manual production intent contract |
-| [#118](https://github.com/appolon1908-hue/Breero.com/pull/118) | `codex/codestra-orbit-v2-breero-com` | `main` | chore(orbit): register all Breero applications under one shell |
-| [#117](https://github.com/appolon1908-hue/Breero.com/pull/117) | `feature/horizon-portfolio-shell-v1` | `main` | feat(ui): adopt Horizon portfolio shell |
-| [#116](https://github.com/appolon1908-hue/Breero.com/pull/116) | `fe/ops-portal-production` | `fe/portal-runtime-foundation` | feat(ops): replace shell with governed operations workspace |
-| [#115](https://github.com/appolon1908-hue/Breero.com/pull/115) | `fe/generated-openapi-contract` | `be/portal-read-models` | build(types): generate frontend contracts from canonical OpenAPI |
-| [#114](https://github.com/appolon1908-hue/Breero.com/pull/114) | `ops/portal-production-release` | `fe/portal-runtime-foundation` | ops(portals): immutable release, certification, and rollback layer |
-| [#113](https://github.com/appolon1908-hue/Breero.com/pull/113) | `fe/admin-portal-production` | `fe/portal-runtime-foundation` | feat(admin): production governance, finance, and platform control plane |
-| [#112](https://github.com/appolon1908-hue/Breero.com/pull/112) | `fe/partner-portal-production` | `fe/portal-runtime-foundation` | feat(partner): production provider workspace for partners.breero.com |
-| [#110](https://github.com/appolon1908-hue/Breero.com/pull/110) | `fe/portal-runtime-foundation` | `main` | feat(portals): secure Keycloak BFF runtime for partner, ops, and admin |
-| [#109](https://github.com/appolon1908-hue/Breero.com/pull/109) | `be/portal-read-models` | `main` | feat(portals): scoped provider, operations, and admin read models |
-| [#108](https://github.com/appolon1908-hue/Breero.com/pull/108) | `be/auth-rbac-request-context` | `be/auth-crypto-jwks-argon2` | fix(auth): resolve effective RBAC context once per request |
-| [#107](https://github.com/appolon1908-hue/Breero.com/pull/107) | `be/runtime-resource-lifecycle` | `be/auth-crypto-jwks-argon2` | fix(runtime): own database and Redis pools through application lifespan |
-| [#105](https://github.com/appolon1908-hue/Breero.com/pull/105) | `be/worker-async-engine-isolation` | `main` | fix(worker): isolate async database connections across Celery event loops |
-| [#104](https://github.com/appolon1908-hue/Breero.com/pull/104) | `be/auth-crypto-jwks-argon2` | `main` | fix(auth): remove blocking password and JWKS work from request loop |
-| [#102](https://github.com/appolon1908-hue/Breero.com/pull/102) | `security/keycloak-registration-recovery-20260829` | `main` | security(auth): lock Breero registration and recovery to Keycloak |
-| [#101](https://github.com/appolon1908-hue/Breero.com/pull/101) | `infra/consolidate-production-compose` | `main` | infra(deploy): consolidate the two divergent production compose stacks |
-| [#100](https://github.com/appolon1908-hue/Breero.com/pull/100) | `fix/dependabot-critical-vitest-postcss` | `main` | fix(deps): resolve all 9 open Dependabot alerts (8 critical, 1 medium) |
-| [#99](https://github.com/appolon1908-hue/Breero.com/pull/99) | `fix/app-env-strict-validation-v2` | `main` | fix(config): reject any APP_ENV value outside a known, fixed set |
-| [#89](https://github.com/appolon1908-hue/Breero.com/pull/89) | `docs/api-audit-repo-memory` | `main` | docs(api): add repository memory and prioritized API audit |
-| [#72](https://github.com/appolon1908-hue/Breero.com/pull/72) | `integration/n8n-marketplace-automation-v2-20260827` | `main` | docs(integration): define governed marketplace automation |
-| [#71](https://github.com/appolon1908-hue/Breero.com/pull/71) | `fe/tenant-email-compose-e2e` | `be/tenant-email-provisioning-outbox` | feat(email-ui): add tenant email provisioning and compose workspace |
-| [#70](https://github.com/appolon1908-hue/Breero.com/pull/70) | `be/tenant-email-provisioning-outbox` | `main` | feat(email): add tenant provisioning, compose and durable outbox |
-| [#69](https://github.com/appolon1908-hue/Breero.com/pull/69) | `fe/portal-login-department-dashboards` | `main` | feat(portal): complete role-aware dashboard interactions and access administration |
-| [#67](https://github.com/appolon1908-hue/Breero.com/pull/67) | `fe/enterprise-design-governance` | `main` | feat(ui): enforce complete BREERO enterprise marketplace design system |
-| [#65](https://github.com/appolon1908-hue/Breero.com/pull/65) | `ci/secure-deployment-preflight` | `main` | ci(deploy): add read-only secure deployment preflight |
-| [#63](https://github.com/appolon1908-hue/Breero.com/pull/63) | `refactor/integration-adapter-boundaries` | `refactor/api-router-registry` | refactor(integrations): centralize provider-neutral adapter contracts |
-| [#62](https://github.com/appolon1908-hue/Breero.com/pull/62) | `refactor/api-router-registry` | `main` | refactor(api): add fail-closed runtime endpoint policy registry |
-| [#60](https://github.com/appolon1908-hue/Breero.com/pull/60) | `refactor/backend-configuration` | `main` | refactor(config): split settings validation into explicit modules |
-| [#59](https://github.com/appolon1908-hue/Breero.com/pull/59) | `refactor/jobs-api-boundaries` | `main` | refactor(api): split jobs and work requests into clean modules |
-| [#58](https://github.com/appolon1908-hue/Breero.com/pull/58) | `refactor/operations-api-boundaries` | `main` | refactor(api): split operations routes into clean resource modules |
-| [#55](https://github.com/appolon1908-hue/Breero.com/pull/55) | `be/public-submissions-hardening` | `main` | fix(api): harden public submissions, consent and idempotency |
-| [#54](https://github.com/appolon1908-hue/Breero.com/pull/54) | `fe/public-forms-cta-hardening` | `be/public-submissions-hardening` | feat(forms): harden public submissions and request-first CTAs |
-| [#47](https://github.com/appolon1908-hue/Breero.com/pull/47) | `planning/breero-feature-api-forms-docker-program` | `main` | docs(codex): define complete branch-safe BREERO marketplace program |
-| [#46](https://github.com/appolon1908-hue/Breero.com/pull/46) | `ci/docker-production-identity-hardening` | `main` | fix(docker): enforce canonical Keycloak issuer for frontend production |
-| [#42](https://github.com/appolon1908-hue/Breero.com/pull/42) | `bootstrap/frontend-production-foundation` | `main` | docs(frontend): define target-state Marketplace V2 routes and safety |
-| [#41](https://github.com/appolon1908-hue/Breero.com/pull/41) | `bootstrap/backend-production-foundation` | `main` | fix(tooling): make BREERO backend bootstrap fail closed and tested |
-| [#40](https://github.com/appolon1908-hue/Breero.com/pull/40) | `docs/odoo-campaign-crm-authority` | `main` | docs(odoo): define Odoo 19 campaign CRM authority and safety gates |
-| [#39](https://github.com/appolon1908-hue/Breero.com/pull/39) | `docs/marketplace-v2-p0-and-core-authority` | `main` | docs(marketplace-v2): harden production implementation authority |
-
-## Reproduce
-
-From the repository root, using Python 3.12 with `apps/api` development dependencies installed:
-
-```sh
-python scripts/architecture/inventory.py --check
-python -m unittest discover -s scripts/architecture -p 'test_*.py' -v
-node scripts/check-frontend-openapi.mjs
-```
-
-To refresh after an accepted source change, run `python scripts/architecture/inventory.py --source-sha <accepted-main-sha>` and review/update the six narrative registries and GitHub snapshot together. The six inventory acceptance tests ran locally. An initial additional CI workflow passed those tests, but the required repository orchestrator policy rejected the new workflow as unapproved executable configuration. That optional workflow was removed; existing required CI and governance were preserved. Register the inventory test workflow through the approved CI/platform process in a separate workstream. This explicit checkpoint is not the later Milestone 3 permanent API policy/typed-client gate. Source collection does not automatically certify narrative claims or fetch GitHub. The baseline SHA identifies the inspected accepted source; the inventory PR itself changes only docs/tooling. Dependency versions are not locked by this inventory; a changed runtime contract must be investigated rather than silently accepted.

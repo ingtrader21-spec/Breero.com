@@ -1,15 +1,15 @@
 """provider registration and onboarding application lifecycle
 
-Revision ID: 019_provider_onboarding
-Revises: 018_auth_identity_tenancy_rbac
+Revision ID: 028_provider_onboarding
+Revises: 027_access_identity_tenancy_rbac
 """
 
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-revision = "019_provider_onboarding"
-down_revision = "018_auth_identity_tenancy_rbac"
+revision = "028_provider_onboarding"
+down_revision = "027_access_identity_tenancy_rbac"
 branch_labels = None
 depends_on = None
 
