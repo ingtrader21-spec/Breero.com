@@ -1,16 +1,16 @@
 # Current BREERO system
 
-Generated from executable source inventory at `50407f46777e44fb0efbd6af0c7b70466a43a93d`. This is source truth only; deployed database revision, external services, and production activation require separate runtime certification.
+Generated from executable source inventory at `ee79c3cb0bd667c3456dd20521563017b7d2d246`. This is source truth only; deployed database revision, external services, and production activation require separate runtime certification.
 
 ## Canonical source record
 
 | Field | Source evidence |
 |---|---|
 | REPOSITORY | `ingtrader21-spec/Breero.com` |
-| SOURCE_SHA | `50407f46777e44fb0efbd6af0c7b70466a43a93d` |
+| SOURCE_SHA | `ee79c3cb0bd667c3456dd20521563017b7d2d246` |
 | ALEMBIC_HEADS | `031_provider_catalog` |
 | ALEMBIC_REVISIONS | 32 |
-| OPENAPI_ARTIFACT | `apps/api/openapi.json` / `7c2ea4ffaa0b79705f8c0298eca24526268c8db86906491a5214384a0e7f05bf` |
+| OPENAPI_ARTIFACT | `apps/api/openapi.json` / `d7fd1a8b77323eca8d98183d43bc704b02fedccd72729562063576ec1cdec4e7` |
 | BACKEND_DOMAINS | 17 |
 | FRONTEND_ROUTES | 91 |
 | WORKER_TASKS | 4 |
@@ -23,48 +23,15 @@ Stale PR/issue counts are intentionally not copied into this source document. Gi
 
 | Profile | OpenAPI paths | OpenAPI operations | Checked artifact match | Duplicate registrations |
 |---|---:|---:|---|---:|
-| canonical_contract | 154 | 188 | TRUE | 8 |
-| default | 145 | 178 | FALSE | 5 |
-| implemented_routes | 167 | 200 | FALSE | 5 |
+| canonical_contract | 149 | 182 | TRUE | 0 |
+| default | 140 | 172 | FALSE | 0 |
+| implemented_routes | 159 | 191 | FALSE | 0 |
 
 The `canonical_contract` profile is the checked-in OpenAPI authority. The default profile is the fail-closed route surface; implemented/dark profiles are evidence of code presence, not authorization to activate capabilities.
 
 ## Route ambiguity evidence
 
-Profile-contract variants: **3**. Duplicate registrations remain explicit evidence for the API-authority mission; they are not silently collapsed into a claim of unique ownership.
-
-### canonical_contract
-
-| Method | Path | Registrations |
-|---|---|---|
-| GET | `/api/v1/admin/provider-applications` | apps/api/app/api/v1/provider_onboarding.py::list_provider_applications; apps/api/app/api/v1/admin.py::provider_applications |
-| GET | `/api/v1/provider/profile` | apps/api/app/api/v1/provider_onboarding.py::provider_profile; apps/api/app/api/v1/provider.py::profile |
-| GET | `/api/v1/provider/services` | apps/api/app/api/v1/provider_catalog.py::list_provider_services; apps/api/app/api/v1/provider.py::services |
-| POST | `/api/v1/admin/users` | apps/api/app/api/v1/admin_users.py::provision_internal_user; apps/api/app/api/v1/admin.py::create_admin_user |
-| POST | `/api/v1/booking/address/validate` | apps/api/app/api/v1/booking_geography.py::validate_booking_address; apps/api/app/api/v1/public_booking.py::validate_address |
-| POST | `/api/v1/booking/service-area/check` | apps/api/app/api/v1/booking_geography.py::check_booking_service_area; apps/api/app/api/v1/public_booking.py::check_service_area |
-| POST | `/api/v1/booking/timezone/resolve` | apps/api/app/api/v1/booking_geography.py::resolve_booking_timezone; apps/api/app/api/v1/public_booking.py::resolve_timezone |
-| POST | `/api/v1/provider/services` | apps/api/app/api/v1/provider_catalog.py::add_provider_service; apps/api/app/api/v1/provider.py::add_service |
-
-### default
-
-| Method | Path | Registrations |
-|---|---|---|
-| GET | `/api/v1/admin/provider-applications` | apps/api/app/api/v1/provider_onboarding.py::list_provider_applications; apps/api/app/api/v1/admin.py::provider_applications |
-| GET | `/api/v1/provider/profile` | apps/api/app/api/v1/provider_onboarding.py::provider_profile; apps/api/app/api/v1/provider.py::profile |
-| GET | `/api/v1/provider/services` | apps/api/app/api/v1/provider_catalog.py::list_provider_services; apps/api/app/api/v1/provider.py::services |
-| POST | `/api/v1/admin/users` | apps/api/app/api/v1/admin_users.py::provision_internal_user; apps/api/app/api/v1/admin.py::create_admin_user |
-| POST | `/api/v1/provider/services` | apps/api/app/api/v1/provider_catalog.py::add_provider_service; apps/api/app/api/v1/provider.py::add_service |
-
-### implemented_routes
-
-| Method | Path | Registrations |
-|---|---|---|
-| GET | `/api/v1/admin/provider-applications` | apps/api/app/api/v1/provider_onboarding.py::list_provider_applications; apps/api/app/api/v1/admin.py::provider_applications |
-| GET | `/api/v1/provider/profile` | apps/api/app/api/v1/provider_onboarding.py::provider_profile; apps/api/app/api/v1/provider.py::profile |
-| GET | `/api/v1/provider/services` | apps/api/app/api/v1/provider_catalog.py::list_provider_services; apps/api/app/api/v1/provider.py::services |
-| POST | `/api/v1/admin/users` | apps/api/app/api/v1/admin_users.py::provision_internal_user; apps/api/app/api/v1/admin.py::create_admin_user |
-| POST | `/api/v1/provider/services` | apps/api/app/api/v1/provider_catalog.py::add_provider_service; apps/api/app/api/v1/provider.py::add_service |
+Profile-contract variants: **0**. Duplicate registrations remain explicit evidence for the API-authority mission; they are not silently collapsed into a claim of unique ownership.
 
 ## Backend domains
 

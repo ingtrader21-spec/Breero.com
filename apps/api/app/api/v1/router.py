@@ -9,7 +9,6 @@ from app.api.v1 import (
     admin_users,
     auth,
     availability,
-    booking_geography,
     booking_intents,
     bookings,
     capabilities,
@@ -57,7 +56,6 @@ api_router.include_router(customers.router, prefix="/client", tags=["client"])
 api_router.include_router(compliance.router, tags=["compliance"])
 if settings.geocoding_enabled:
     api_router.include_router(addresses.router, prefix="/addresses", tags=["addresses"])
-    api_router.include_router(booking_geography.router, prefix="/booking", tags=["booking-geography"])
 if settings.scheduling_enabled:
     api_router.include_router(availability.router, prefix="/availability", tags=["availability"])
     api_router.include_router(bookings.router, prefix="/bookings", tags=["bookings"])

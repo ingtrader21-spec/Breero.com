@@ -1,8 +1,8 @@
 {
-  "captured_at": "2026-09-21T02:42:00Z",
+  "captured_at": "2026-09-21T11:28:00Z",
   "repository": "ingtrader21-spec/Breero.com",
   "default_branch": "main",
-  "main_sha": "50407f46777e44fb0efbd6af0c7b70466a43a93d",
+  "main_sha": "89882e835906386f1d897d05228cd8f6bbb8f027",
   "rulesets": [
     {
       "id": 22208362,
@@ -94,14 +94,14 @@
   ],
   "open_pull_requests": [
     {
-      "number": 41,
-      "title": "fix(tooling): make BREERO backend bootstrap fail closed and tested",
-      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/41"
-    },
-    {
       "number": 62,
       "title": "refactor(api): add fail-closed runtime endpoint policy registry",
       "url": "https://github.com/ingtrader21-spec/Breero.com/pull/62"
+    },
+    {
+      "number": 41,
+      "title": "fix(tooling): make BREERO backend bootstrap fail closed and tested",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/41"
     },
     {
       "number": 109,

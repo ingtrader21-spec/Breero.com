@@ -2190,17 +2190,68 @@
       "capability": "UNREGISTERED",
       "deprecation_state": "UNREGISTERED",
       "domain": "app.api.v1.provider_onboarding",
-      "duplicate_registration_count": 2,
-      "error_contract": {},
+      "duplicate_registration_count": 1,
+      "error_contract": {
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
       "event_effect": "UNREGISTERED",
       "handler": "list_provider_applications",
       "idempotency_requirement": "UNREGISTERED",
       "included_in_openapi": true,
       "method": "GET",
-      "operation_id": "provider_applications_api_v1_admin_provider_applications_get",
+      "operation_id": "list_provider_applications_api_v1_admin_provider_applications_get",
       "optimistic_version_policy": "UNREGISTERED",
       "owner": "UNREGISTERED",
-      "parameters": [],
+      "parameters": [
+        {
+          "in": "query",
+          "name": "status",
+          "required": false,
+          "schema": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProviderApplicationStatus"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        {
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "default": 50,
+            "maximum": 200,
+            "minimum": 1,
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        {
+          "in": "query",
+          "name": "offset",
+          "required": false,
+          "schema": {
+            "default": 0,
+            "minimum": 0,
+            "title": "Offset",
+            "type": "integer"
+          }
+        }
+      ],
       "path": "/api/v1/admin/provider-applications",
       "permission": "UNREGISTERED",
       "rate_limit_class": "UNREGISTERED",
@@ -2213,15 +2264,21 @@
           "content": {
             "application/json": {
               "schema": {
-                "items": {
-                  "$ref": "#/components/schemas/VendorRead"
-                },
-                "title": "Response Provider Applications Api V1 Admin Provider Applications Get",
-                "type": "array"
+                "$ref": "#/components/schemas/ProviderApplicationList"
               }
             }
           },
           "description": "Successful Response"
+        },
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
         }
       },
       "runtime_operation_id": "list_provider_applications_api_v1_admin_provider_applications_get",
@@ -2399,7 +2456,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/app__domains__workforce__schemas__ProviderApplicationDecision"
+              "$ref": "#/components/schemas/ProviderApplicationDecision"
             }
           }
         },
@@ -2505,7 +2562,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/app__domains__workforce__schemas__ProviderApplicationDecision"
+              "$ref": "#/components/schemas/ProviderApplicationDecision"
             }
           }
         },
@@ -2611,7 +2668,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/app__domains__workforce__schemas__ProviderApplicationDecision"
+              "$ref": "#/components/schemas/ProviderApplicationDecision"
             }
           }
         },
@@ -2641,428 +2698,6 @@
       },
       "runtime_operation_id": "request_provider_information_api_v1_admin_provider_applications__application_id__request_information_post",
       "source": "apps/api/app/api/v1/provider_onboarding.py",
-      "tenant_scope": "UNREGISTERED",
-      "version": "v1"
-    },
-    {
-      "PII_classification": "UNREGISTERED",
-      "audience": "UNREGISTERED",
-      "authentication": {
-        "dependencies": [
-          {
-            "allowed_roles": [
-              "admin",
-              "finance",
-              "operations",
-              "ops_manager",
-              "superadmin"
-            ],
-            "callable": "app.domains.auth.dependencies.require_roles.<locals>.dependency"
-          },
-          {
-            "callable": "app.domains.auth.dependencies.current_user"
-          },
-          {
-            "callable": "fastapi.security.http.HTTPBearer"
-          },
-          {
-            "callable": "app.db.session.get_db"
-          }
-        ],
-        "openapi_security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
-      },
-      "capability": "UNREGISTERED",
-      "deprecation_state": "UNREGISTERED",
-      "domain": "app.api.v1.admin",
-      "duplicate_registration_count": 1,
-      "error_contract": {
-        "422": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HTTPValidationError"
-              }
-            }
-          },
-          "description": "Validation Error"
-        }
-      },
-      "event_effect": "UNREGISTERED",
-      "handler": "provider_application",
-      "idempotency_requirement": "UNREGISTERED",
-      "included_in_openapi": true,
-      "method": "GET",
-      "operation_id": "provider_application_api_v1_admin_provider_applications__provider_id__get",
-      "optimistic_version_policy": "UNREGISTERED",
-      "owner": "UNREGISTERED",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "provider_id",
-          "required": true,
-          "schema": {
-            "format": "uuid",
-            "title": "Provider Id",
-            "type": "string"
-          }
-        }
-      ],
-      "path": "/api/v1/admin/provider-applications/{provider_id}",
-      "permission": "UNREGISTERED",
-      "rate_limit_class": "UNREGISTERED",
-      "record_policy": "UNREGISTERED",
-      "replacement_endpoint": "UNREGISTERED",
-      "request_hash_policy": "UNREGISTERED",
-      "request_schema": {},
-      "response_schema": {
-        "200": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VendorRead"
-              }
-            }
-          },
-          "description": "Successful Response"
-        },
-        "422": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HTTPValidationError"
-              }
-            }
-          },
-          "description": "Validation Error"
-        }
-      },
-      "runtime_operation_id": "provider_application_api_v1_admin_provider_applications__provider_id__get",
-      "source": "apps/api/app/api/v1/admin.py",
-      "tenant_scope": "UNREGISTERED",
-      "version": "v1"
-    },
-    {
-      "PII_classification": "UNREGISTERED",
-      "audience": "UNREGISTERED",
-      "authentication": {
-        "dependencies": [
-          {
-            "allowed_roles": [
-              "admin",
-              "superadmin"
-            ],
-            "callable": "app.domains.auth.dependencies.require_roles.<locals>.dependency"
-          },
-          {
-            "callable": "app.domains.auth.dependencies.current_user"
-          },
-          {
-            "callable": "fastapi.security.http.HTTPBearer"
-          },
-          {
-            "callable": "app.db.session.get_db"
-          }
-        ],
-        "openapi_security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
-      },
-      "capability": "UNREGISTERED",
-      "deprecation_state": "UNREGISTERED",
-      "domain": "app.api.v1.admin",
-      "duplicate_registration_count": 1,
-      "error_contract": {
-        "422": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HTTPValidationError"
-              }
-            }
-          },
-          "description": "Validation Error"
-        }
-      },
-      "event_effect": "UNREGISTERED",
-      "handler": "approve_provider",
-      "idempotency_requirement": "UNREGISTERED",
-      "included_in_openapi": true,
-      "method": "POST",
-      "operation_id": "approve_provider_api_v1_admin_provider_applications__provider_id__approve_post",
-      "optimistic_version_policy": "UNREGISTERED",
-      "owner": "UNREGISTERED",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "provider_id",
-          "required": true,
-          "schema": {
-            "format": "uuid",
-            "title": "Provider Id",
-            "type": "string"
-          }
-        }
-      ],
-      "path": "/api/v1/admin/provider-applications/{provider_id}/approve",
-      "permission": "UNREGISTERED",
-      "rate_limit_class": "UNREGISTERED",
-      "record_policy": "UNREGISTERED",
-      "replacement_endpoint": "UNREGISTERED",
-      "request_hash_policy": "UNREGISTERED",
-      "request_schema": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/app__domains__administration__schemas__ProviderApplicationDecision"
-            }
-          }
-        },
-        "required": true
-      },
-      "response_schema": {
-        "200": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VendorRead"
-              }
-            }
-          },
-          "description": "Successful Response"
-        },
-        "422": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HTTPValidationError"
-              }
-            }
-          },
-          "description": "Validation Error"
-        }
-      },
-      "runtime_operation_id": "approve_provider_api_v1_admin_provider_applications__provider_id__approve_post",
-      "source": "apps/api/app/api/v1/admin.py",
-      "tenant_scope": "UNREGISTERED",
-      "version": "v1"
-    },
-    {
-      "PII_classification": "UNREGISTERED",
-      "audience": "UNREGISTERED",
-      "authentication": {
-        "dependencies": [
-          {
-            "allowed_roles": [
-              "admin",
-              "superadmin"
-            ],
-            "callable": "app.domains.auth.dependencies.require_roles.<locals>.dependency"
-          },
-          {
-            "callable": "app.domains.auth.dependencies.current_user"
-          },
-          {
-            "callable": "fastapi.security.http.HTTPBearer"
-          },
-          {
-            "callable": "app.db.session.get_db"
-          }
-        ],
-        "openapi_security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
-      },
-      "capability": "UNREGISTERED",
-      "deprecation_state": "UNREGISTERED",
-      "domain": "app.api.v1.admin",
-      "duplicate_registration_count": 1,
-      "error_contract": {
-        "422": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HTTPValidationError"
-              }
-            }
-          },
-          "description": "Validation Error"
-        }
-      },
-      "event_effect": "UNREGISTERED",
-      "handler": "reject_provider",
-      "idempotency_requirement": "UNREGISTERED",
-      "included_in_openapi": true,
-      "method": "POST",
-      "operation_id": "reject_provider_api_v1_admin_provider_applications__provider_id__reject_post",
-      "optimistic_version_policy": "UNREGISTERED",
-      "owner": "UNREGISTERED",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "provider_id",
-          "required": true,
-          "schema": {
-            "format": "uuid",
-            "title": "Provider Id",
-            "type": "string"
-          }
-        }
-      ],
-      "path": "/api/v1/admin/provider-applications/{provider_id}/reject",
-      "permission": "UNREGISTERED",
-      "rate_limit_class": "UNREGISTERED",
-      "record_policy": "UNREGISTERED",
-      "replacement_endpoint": "UNREGISTERED",
-      "request_hash_policy": "UNREGISTERED",
-      "request_schema": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/app__domains__administration__schemas__ProviderApplicationDecision"
-            }
-          }
-        },
-        "required": true
-      },
-      "response_schema": {
-        "200": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VendorRead"
-              }
-            }
-          },
-          "description": "Successful Response"
-        },
-        "422": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HTTPValidationError"
-              }
-            }
-          },
-          "description": "Validation Error"
-        }
-      },
-      "runtime_operation_id": "reject_provider_api_v1_admin_provider_applications__provider_id__reject_post",
-      "source": "apps/api/app/api/v1/admin.py",
-      "tenant_scope": "UNREGISTERED",
-      "version": "v1"
-    },
-    {
-      "PII_classification": "UNREGISTERED",
-      "audience": "UNREGISTERED",
-      "authentication": {
-        "dependencies": [
-          {
-            "allowed_roles": [
-              "admin",
-              "superadmin"
-            ],
-            "callable": "app.domains.auth.dependencies.require_roles.<locals>.dependency"
-          },
-          {
-            "callable": "app.domains.auth.dependencies.current_user"
-          },
-          {
-            "callable": "fastapi.security.http.HTTPBearer"
-          },
-          {
-            "callable": "app.db.session.get_db"
-          }
-        ],
-        "openapi_security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
-      },
-      "capability": "UNREGISTERED",
-      "deprecation_state": "UNREGISTERED",
-      "domain": "app.api.v1.admin",
-      "duplicate_registration_count": 1,
-      "error_contract": {
-        "422": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HTTPValidationError"
-              }
-            }
-          },
-          "description": "Validation Error"
-        }
-      },
-      "event_effect": "UNREGISTERED",
-      "handler": "request_provider_information",
-      "idempotency_requirement": "UNREGISTERED",
-      "included_in_openapi": true,
-      "method": "POST",
-      "operation_id": "request_provider_information_api_v1_admin_provider_applications__provider_id__request_information_post",
-      "optimistic_version_policy": "UNREGISTERED",
-      "owner": "UNREGISTERED",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "provider_id",
-          "required": true,
-          "schema": {
-            "format": "uuid",
-            "title": "Provider Id",
-            "type": "string"
-          }
-        }
-      ],
-      "path": "/api/v1/admin/provider-applications/{provider_id}/request-information",
-      "permission": "UNREGISTERED",
-      "rate_limit_class": "UNREGISTERED",
-      "record_policy": "UNREGISTERED",
-      "replacement_endpoint": "UNREGISTERED",
-      "request_hash_policy": "UNREGISTERED",
-      "request_schema": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/app__domains__administration__schemas__ProviderApplicationDecision"
-            }
-          }
-        },
-        "required": true
-      },
-      "response_schema": {
-        "200": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/VendorRead"
-              }
-            }
-          },
-          "description": "Successful Response"
-        },
-        "422": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HTTPValidationError"
-              }
-            }
-          },
-          "description": "Validation Error"
-        }
-      },
-      "runtime_operation_id": "request_provider_information_api_v1_admin_provider_applications__provider_id__request_information_post",
-      "source": "apps/api/app/api/v1/admin.py",
       "tenant_scope": "UNREGISTERED",
       "version": "v1"
     },
@@ -3985,7 +3620,7 @@
       "capability": "UNREGISTERED",
       "deprecation_state": "UNREGISTERED",
       "domain": "app.api.v1.admin_users",
-      "duplicate_registration_count": 2,
+      "duplicate_registration_count": 1,
       "error_contract": {
         "422": {
           "content": {
@@ -4003,7 +3638,7 @@
       "idempotency_requirement": "UNREGISTERED",
       "included_in_openapi": true,
       "method": "POST",
-      "operation_id": "create_admin_user_api_v1_admin_users_post",
+      "operation_id": "provision_internal_user_api_v1_admin_users_post",
       "optimistic_version_policy": "UNREGISTERED",
       "owner": "UNREGISTERED",
       "parameters": [],
@@ -4017,7 +3652,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/AdminUserCreate"
+              "$ref": "#/components/schemas/InternalUserProvisionRequest"
             }
           }
         },
@@ -4028,7 +3663,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AdminUserRead"
+                "$ref": "#/components/schemas/InternalUserProvisionResponse"
               }
             }
           },
@@ -6384,9 +6019,6 @@
             "callable": "app.db.session.get_db"
           },
           {
-            "callable": "app.api.v1.booking_geography.get_geography_provider"
-          },
-          {
             "callable": "app.core.rate_limit.rate_limit.<locals>.enforce"
           }
         ],
@@ -6394,8 +6026,8 @@
       },
       "capability": "UNREGISTERED",
       "deprecation_state": "UNREGISTERED",
-      "domain": "app.api.v1.booking_geography",
-      "duplicate_registration_count": 2,
+      "domain": "app.api.v1.public_booking",
+      "duplicate_registration_count": 1,
       "error_contract": {
         "422": {
           "content": {
@@ -6409,7 +6041,7 @@
         }
       },
       "event_effect": "UNREGISTERED",
-      "handler": "validate_booking_address",
+      "handler": "validate_address",
       "idempotency_requirement": "UNREGISTERED",
       "included_in_openapi": true,
       "method": "POST",
@@ -6455,8 +6087,8 @@
           "description": "Validation Error"
         }
       },
-      "runtime_operation_id": "validate_booking_address_api_v1_booking_address_validate_post",
-      "source": "apps/api/app/api/v1/booking_geography.py",
+      "runtime_operation_id": "validate_address_api_v1_booking_address_validate_post",
+      "source": "apps/api/app/api/v1/public_booking.py",
       "tenant_scope": "UNREGISTERED",
       "version": "v1"
     },
@@ -7569,8 +7201,8 @@
       },
       "capability": "UNREGISTERED",
       "deprecation_state": "UNREGISTERED",
-      "domain": "app.api.v1.booking_geography",
-      "duplicate_registration_count": 2,
+      "domain": "app.api.v1.public_booking",
+      "duplicate_registration_count": 1,
       "error_contract": {
         "422": {
           "content": {
@@ -7584,7 +7216,7 @@
         }
       },
       "event_effect": "UNREGISTERED",
-      "handler": "check_booking_service_area",
+      "handler": "check_service_area",
       "idempotency_requirement": "UNREGISTERED",
       "included_in_openapi": true,
       "method": "POST",
@@ -7630,8 +7262,8 @@
           "description": "Validation Error"
         }
       },
-      "runtime_operation_id": "check_booking_service_area_api_v1_booking_service_area_check_post",
-      "source": "apps/api/app/api/v1/booking_geography.py",
+      "runtime_operation_id": "check_service_area_api_v1_booking_service_area_check_post",
+      "source": "apps/api/app/api/v1/public_booking.py",
       "tenant_scope": "UNREGISTERED",
       "version": "v1"
     },
@@ -7644,9 +7276,6 @@
             "callable": "app.db.session.get_db"
           },
           {
-            "callable": "app.api.v1.booking_geography.get_geography_provider"
-          },
-          {
             "callable": "app.core.rate_limit.rate_limit.<locals>.enforce"
           }
         ],
@@ -7654,8 +7283,8 @@
       },
       "capability": "UNREGISTERED",
       "deprecation_state": "UNREGISTERED",
-      "domain": "app.api.v1.booking_geography",
-      "duplicate_registration_count": 2,
+      "domain": "app.api.v1.public_booking",
+      "duplicate_registration_count": 1,
       "error_contract": {
         "422": {
           "content": {
@@ -7669,7 +7298,7 @@
         }
       },
       "event_effect": "UNREGISTERED",
-      "handler": "resolve_booking_timezone",
+      "handler": "resolve_timezone",
       "idempotency_requirement": "UNREGISTERED",
       "included_in_openapi": true,
       "method": "POST",
@@ -7715,8 +7344,8 @@
           "description": "Validation Error"
         }
       },
-      "runtime_operation_id": "resolve_booking_timezone_api_v1_booking_timezone_resolve_post",
-      "source": "apps/api/app/api/v1/booking_geography.py",
+      "runtime_operation_id": "resolve_timezone_api_v1_booking_timezone_resolve_post",
+      "source": "apps/api/app/api/v1/public_booking.py",
       "tenant_scope": "UNREGISTERED",
       "version": "v1"
     },
@@ -16239,14 +15868,14 @@
       "capability": "UNREGISTERED",
       "deprecation_state": "UNREGISTERED",
       "domain": "app.api.v1.provider_onboarding",
-      "duplicate_registration_count": 2,
+      "duplicate_registration_count": 1,
       "error_contract": {},
       "event_effect": "UNREGISTERED",
       "handler": "provider_profile",
       "idempotency_requirement": "UNREGISTERED",
       "included_in_openapi": true,
       "method": "GET",
-      "operation_id": "profile_api_v1_provider_profile_get",
+      "operation_id": "provider_profile_api_v1_provider_profile_get",
       "optimistic_version_policy": "UNREGISTERED",
       "owner": "UNREGISTERED",
       "parameters": [],
@@ -16760,17 +16389,39 @@
       "capability": "UNREGISTERED",
       "deprecation_state": "UNREGISTERED",
       "domain": "app.api.v1.provider_catalog",
-      "duplicate_registration_count": 2,
-      "error_contract": {},
+      "duplicate_registration_count": 1,
+      "error_contract": {
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
       "event_effect": "UNREGISTERED",
       "handler": "list_provider_services",
       "idempotency_requirement": "UNREGISTERED",
       "included_in_openapi": true,
       "method": "GET",
-      "operation_id": "services_api_v1_provider_services_get",
+      "operation_id": "list_provider_services_api_v1_provider_services_get",
       "optimistic_version_policy": "UNREGISTERED",
       "owner": "UNREGISTERED",
-      "parameters": [],
+      "parameters": [
+        {
+          "in": "query",
+          "name": "include_inactive",
+          "required": false,
+          "schema": {
+            "default": false,
+            "title": "Include Inactive",
+            "type": "boolean"
+          }
+        }
+      ],
       "path": "/api/v1/provider/services",
       "permission": "UNREGISTERED",
       "rate_limit_class": "UNREGISTERED",
@@ -16783,15 +16434,21 @@
           "content": {
             "application/json": {
               "schema": {
-                "items": {
-                  "$ref": "#/components/schemas/app__domains__workforce__provider_schemas__ProviderServiceRead"
-                },
-                "title": "Response Services Api V1 Provider Services Get",
-                "type": "array"
+                "$ref": "#/components/schemas/ProviderServiceList"
               }
             }
           },
           "description": "Successful Response"
+        },
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
         }
       },
       "runtime_operation_id": "list_provider_services_api_v1_provider_services_get",
@@ -16829,7 +16486,7 @@
       "capability": "UNREGISTERED",
       "deprecation_state": "UNREGISTERED",
       "domain": "app.api.v1.provider_catalog",
-      "duplicate_registration_count": 2,
+      "duplicate_registration_count": 1,
       "error_contract": {
         "422": {
           "content": {
@@ -16847,7 +16504,7 @@
       "idempotency_requirement": "UNREGISTERED",
       "included_in_openapi": true,
       "method": "POST",
-      "operation_id": "add_service_api_v1_provider_services_post",
+      "operation_id": "add_provider_service_api_v1_provider_services_post",
       "optimistic_version_policy": "UNREGISTERED",
       "owner": "UNREGISTERED",
       "parameters": [],
@@ -16861,7 +16518,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ProviderServiceWrite"
+              "$ref": "#/components/schemas/ProviderServiceCreate"
             }
           }
         },
@@ -16872,7 +16529,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/app__domains__workforce__provider_schemas__ProviderServiceRead"
+                "$ref": "#/components/schemas/ProviderServiceRead"
               }
             }
           },
@@ -16891,202 +16548,6 @@
       },
       "runtime_operation_id": "add_provider_service_api_v1_provider_services_post",
       "source": "apps/api/app/api/v1/provider_catalog.py",
-      "tenant_scope": "UNREGISTERED",
-      "version": "v1"
-    },
-    {
-      "PII_classification": "UNREGISTERED",
-      "audience": "UNREGISTERED",
-      "authentication": {
-        "dependencies": [
-          {
-            "callable": "app.db.session.get_db"
-          },
-          {
-            "allowed_roles": [
-              "vendor_admin"
-            ],
-            "callable": "app.domains.auth.dependencies.require_roles.<locals>.dependency"
-          },
-          {
-            "callable": "app.domains.auth.dependencies.current_user"
-          },
-          {
-            "callable": "fastapi.security.http.HTTPBearer"
-          }
-        ],
-        "openapi_security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
-      },
-      "capability": "UNREGISTERED",
-      "deprecation_state": "UNREGISTERED",
-      "domain": "app.api.v1.provider",
-      "duplicate_registration_count": 1,
-      "error_contract": {
-        "422": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HTTPValidationError"
-              }
-            }
-          },
-          "description": "Validation Error"
-        }
-      },
-      "event_effect": "UNREGISTERED",
-      "handler": "remove_service",
-      "idempotency_requirement": "UNREGISTERED",
-      "included_in_openapi": true,
-      "method": "DELETE",
-      "operation_id": "remove_service_api_v1_provider_services__item_id__delete",
-      "optimistic_version_policy": "UNREGISTERED",
-      "owner": "UNREGISTERED",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "item_id",
-          "required": true,
-          "schema": {
-            "format": "uuid",
-            "title": "Item Id",
-            "type": "string"
-          }
-        }
-      ],
-      "path": "/api/v1/provider/services/{item_id}",
-      "permission": "UNREGISTERED",
-      "rate_limit_class": "UNREGISTERED",
-      "record_policy": "UNREGISTERED",
-      "replacement_endpoint": "UNREGISTERED",
-      "request_hash_policy": "UNREGISTERED",
-      "request_schema": {},
-      "response_schema": {
-        "204": {
-          "description": "Successful Response"
-        },
-        "422": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HTTPValidationError"
-              }
-            }
-          },
-          "description": "Validation Error"
-        }
-      },
-      "runtime_operation_id": "remove_service_api_v1_provider_services__item_id__delete",
-      "source": "apps/api/app/api/v1/provider.py",
-      "tenant_scope": "UNREGISTERED",
-      "version": "v1"
-    },
-    {
-      "PII_classification": "UNREGISTERED",
-      "audience": "UNREGISTERED",
-      "authentication": {
-        "dependencies": [
-          {
-            "callable": "app.db.session.get_db"
-          },
-          {
-            "allowed_roles": [
-              "vendor_admin"
-            ],
-            "callable": "app.domains.auth.dependencies.require_roles.<locals>.dependency"
-          },
-          {
-            "callable": "app.domains.auth.dependencies.current_user"
-          },
-          {
-            "callable": "fastapi.security.http.HTTPBearer"
-          }
-        ],
-        "openapi_security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
-      },
-      "capability": "UNREGISTERED",
-      "deprecation_state": "UNREGISTERED",
-      "domain": "app.api.v1.provider",
-      "duplicate_registration_count": 1,
-      "error_contract": {
-        "422": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HTTPValidationError"
-              }
-            }
-          },
-          "description": "Validation Error"
-        }
-      },
-      "event_effect": "UNREGISTERED",
-      "handler": "change_service",
-      "idempotency_requirement": "UNREGISTERED",
-      "included_in_openapi": true,
-      "method": "PATCH",
-      "operation_id": "change_service_api_v1_provider_services__item_id__patch",
-      "optimistic_version_policy": "UNREGISTERED",
-      "owner": "UNREGISTERED",
-      "parameters": [
-        {
-          "in": "path",
-          "name": "item_id",
-          "required": true,
-          "schema": {
-            "format": "uuid",
-            "title": "Item Id",
-            "type": "string"
-          }
-        }
-      ],
-      "path": "/api/v1/provider/services/{item_id}",
-      "permission": "UNREGISTERED",
-      "rate_limit_class": "UNREGISTERED",
-      "record_policy": "UNREGISTERED",
-      "replacement_endpoint": "UNREGISTERED",
-      "request_hash_policy": "UNREGISTERED",
-      "request_schema": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ProviderServicePatch"
-            }
-          }
-        },
-        "required": true
-      },
-      "response_schema": {
-        "200": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/app__domains__workforce__provider_schemas__ProviderServiceRead"
-              }
-            }
-          },
-          "description": "Successful Response"
-        },
-        "422": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HTTPValidationError"
-              }
-            }
-          },
-          "description": "Validation Error"
-        }
-      },
-      "runtime_operation_id": "change_service_api_v1_provider_services__item_id__patch",
-      "source": "apps/api/app/api/v1/provider.py",
       "tenant_scope": "UNREGISTERED",
       "version": "v1"
     },
@@ -17296,7 +16757,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/app__domains__provider_catalog__schemas__ProviderServiceRead"
+                "$ref": "#/components/schemas/ProviderServiceRead"
               }
             }
           },
@@ -19348,6 +18809,24 @@
       "sha256": "9fb26357ab009f4e19202210ac10a1d7b263500254d15ad4b245e0448d3eeefa"
     },
     {
+      "classes": [
+        {
+          "bases": [],
+          "enum_values": {},
+          "name": "EndpointPolicyRule",
+          "table": null
+        },
+        {
+          "bases": [],
+          "enum_values": {},
+          "name": "EndpointPolicy",
+          "table": null
+        }
+      ],
+      "path": "apps/api/app/api/policy_registry.py",
+      "sha256": "f934e3c6a40f883bd9a095142f78d564a89b2e6b393b249e10a58752991de76d"
+    },
+    {
       "classes": [],
       "path": "apps/api/app/api/v1/__init__.py",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -19365,7 +18844,7 @@
     {
       "classes": [],
       "path": "apps/api/app/api/v1/admin.py",
-      "sha256": "20a4960e6fa6e80be69dcd8475828c2e0f009b3e2b2d77afb49219cfb505f8f3"
+      "sha256": "bbb7c43a5177037be81d82ff2019e529d02bd5326bcf8316c1bbd0ba5a572035"
     },
     {
       "classes": [],
@@ -19607,7 +19086,7 @@
     {
       "classes": [],
       "path": "apps/api/app/api/v1/provider.py",
-      "sha256": "9db26150a9b4749639a2d07f4ef5b0c0cf10dabc73e973d7f60750f0b26bf0bb"
+      "sha256": "a8641a8d676a3ca212e94e07456bca1f5acb50b382a6dccfc791ebda480c83ad"
     },
     {
       "classes": [],
@@ -19637,7 +19116,7 @@
     {
       "classes": [],
       "path": "apps/api/app/api/v1/router.py",
-      "sha256": "cf8ecb596950f33b87827f5a3ba06f220a632636afc81eb14bf570126bd4a9da"
+      "sha256": "b3ac21230ce212bae8b5bfca1c500ad8716662e62c58a84d0f198b16cdb288c2"
     },
     {
       "classes": [],
@@ -23427,6 +22906,94 @@
       "classes": [
         {
           "bases": [
+            "RuntimeError"
+          ],
+          "enum_values": {},
+          "name": "IntegrationNotConfigured",
+          "table": null
+        },
+        {
+          "bases": [],
+          "enum_values": {},
+          "name": "GeocodedAddress",
+          "table": null
+        },
+        {
+          "bases": [
+            "Protocol"
+          ],
+          "enum_values": {},
+          "name": "GeocodingGateway",
+          "table": null
+        },
+        {
+          "bases": [
+            "Protocol"
+          ],
+          "enum_values": {},
+          "name": "PaymentProvider",
+          "table": null
+        },
+        {
+          "bases": [
+            "Protocol"
+          ],
+          "enum_values": {},
+          "name": "EmailGateway",
+          "table": null
+        },
+        {
+          "bases": [
+            "Protocol"
+          ],
+          "enum_values": {},
+          "name": "SmsGateway",
+          "table": null
+        },
+        {
+          "bases": [],
+          "enum_values": {},
+          "name": "TransferResult",
+          "table": null
+        },
+        {
+          "bases": [
+            "Protocol"
+          ],
+          "enum_values": {},
+          "name": "PayoutGateway",
+          "table": null
+        },
+        {
+          "bases": [
+            "RuntimeError"
+          ],
+          "enum_values": {},
+          "name": "EventDeliveryError",
+          "table": null
+        },
+        {
+          "bases": [],
+          "enum_values": {},
+          "name": "EventDeliveryResult",
+          "table": null
+        },
+        {
+          "bases": [
+            "Protocol"
+          ],
+          "enum_values": {},
+          "name": "CrmEventDeliveryGateway",
+          "table": null
+        }
+      ],
+      "path": "apps/api/app/integrations/contracts.py",
+      "sha256": "e4bc1153e2cb9c7200bc437f89bb4389a79a175bd48ca23142078d3a59c7cfee"
+    },
+    {
+      "classes": [
+        {
+          "bases": [
             "IntegrationNotConfigured"
           ],
           "enum_values": {},
@@ -23437,14 +23004,6 @@
           "bases": [],
           "enum_values": {},
           "name": "RenderedEmail",
-          "table": null
-        },
-        {
-          "bases": [
-            "Protocol"
-          ],
-          "enum_values": {},
-          "name": "EmailGateway",
           "table": null
         },
         {
@@ -23475,16 +23034,15 @@
         }
       ],
       "path": "apps/api/app/integrations/email.py",
-      "sha256": "c42510b2e2e5f7fcd31fbd77caafe5cf1f4d240013fa73dd433648f0486447cd"
+      "sha256": "7a2d106903668e2fb23a16189973e06f2228267ce8de4de1b535a5192a96352a"
+    },
+    {
+      "classes": [],
+      "path": "apps/api/app/integrations/event_envelope.py",
+      "sha256": "1e88d37ce7d2170736357e9c704e7a41291f78449566d723bc85cd4f2ddafc30"
     },
     {
       "classes": [
-        {
-          "bases": [],
-          "enum_values": {},
-          "name": "GeocodedAddress",
-          "table": null
-        },
         {
           "bases": [],
           "enum_values": {},
@@ -23499,7 +23057,7 @@
         }
       ],
       "path": "apps/api/app/integrations/geocoding.py",
-      "sha256": "d233de17766a3289fe626fe35602995797b5511141806ef905cbff87167f8582"
+      "sha256": "c993875ecd07dd2e3c509acafcc3c1ee9478c0dcf6df2ba50182cdd5001c85fd"
     },
     {
       "classes": [
@@ -23511,7 +23069,7 @@
         }
       ],
       "path": "apps/api/app/integrations/middleware.py",
-      "sha256": "25f70aa7f83dbb890e2e5bf95d628a8de873a723e1e5a8ad3c1d01181bd08bfa"
+      "sha256": "3f576d0d691fab2644b5e53cad4f90b8d4bb36de176d8405d0464351fb466c54"
     },
     {
       "classes": [
@@ -23578,20 +23136,6 @@
           "table": null
         },
         {
-          "bases": [
-            "RuntimeError"
-          ],
-          "enum_values": {},
-          "name": "OdooDeliveryError",
-          "table": null
-        },
-        {
-          "bases": [],
-          "enum_values": {},
-          "name": "OdooResult",
-          "table": null
-        },
-        {
           "bases": [],
           "enum_values": {},
           "name": "OdooAdapter",
@@ -23599,32 +23143,10 @@
         }
       ],
       "path": "apps/api/app/integrations/odoo.py",
-      "sha256": "d05c9cff81a009c0f81ee18c7f13303e50b9eb1270b25425ca1d7a64d15a4de6"
+      "sha256": "21410c86ab073052680cb8d94fa3714da70ef6b268336c0b383ab1c033ad8592"
     },
     {
       "classes": [
-        {
-          "bases": [
-            "RuntimeError"
-          ],
-          "enum_values": {},
-          "name": "IntegrationNotConfigured",
-          "table": null
-        },
-        {
-          "bases": [],
-          "enum_values": {},
-          "name": "TransferResult",
-          "table": null
-        },
-        {
-          "bases": [
-            "Protocol"
-          ],
-          "enum_values": {},
-          "name": "PayoutGateway",
-          "table": null
-        },
         {
           "bases": [],
           "enum_values": {},
@@ -23639,18 +23161,10 @@
         }
       ],
       "path": "apps/api/app/integrations/payouts.py",
-      "sha256": "9793b34fd1b84d1755e5d5d3d7707311c1c3768fd9a6781e681b79d1df3af443"
+      "sha256": "1e9bcc5a93c2964ddd1781d39620f874a2397f8b27d5052b8004e66f903502de"
     },
     {
       "classes": [
-        {
-          "bases": [
-            "Protocol"
-          ],
-          "enum_values": {},
-          "name": "SmsGateway",
-          "table": null
-        },
         {
           "bases": [],
           "enum_values": {},
@@ -23665,18 +23179,10 @@
         }
       ],
       "path": "apps/api/app/integrations/sms.py",
-      "sha256": "501a3fde48e1af9df546d7f237dc4294091a740f09444eb0f43f68e789e6928c"
+      "sha256": "98fff0ac475301b0d42d24e772c9e8c9fe4fd35b579bdc662942391f3b1e1fc3"
     },
     {
       "classes": [
-        {
-          "bases": [
-            "Protocol"
-          ],
-          "enum_values": {},
-          "name": "PaymentProvider",
-          "table": null
-        },
         {
           "bases": [],
           "enum_values": {},
@@ -23685,12 +23191,12 @@
         }
       ],
       "path": "apps/api/app/integrations/stripe.py",
-      "sha256": "ee3b85e8c3d1beabdd4b204ee8a7662d96e4bb26afbc440201300aed7d722d37"
+      "sha256": "72063778e869aeda79910f28a7c78bbb6857d5a85797dc508e57bbbb7fe5de9d"
     },
     {
       "classes": [],
       "path": "apps/api/app/main.py",
-      "sha256": "b5797ddf397f2331a1893fbb1f72009320afe1546ad36e63850e305833467cf0"
+      "sha256": "82bd3031b67572f69c452b766bb53cca86e5f8cd99212561fc2888070b2908c9"
     },
     {
       "classes": [
@@ -23780,7 +23286,7 @@
       "sha256": "b05316a83e1b7c4389b5a684e2f4c13c84b124f2297672b6715e81162b7d8e4b"
     }
   ],
-  "baseline_main_sha": "50407f46777e44fb0efbd6af0c7b70466a43a93d",
+  "baseline_main_sha": "ee79c3cb0bd667c3456dd20521563017b7d2d246",
   "contract_sources": [
     {
       "path": "packages/api-client/src/client.test.ts",
@@ -24804,532 +24310,9 @@
   ],
   "openapi_artifact": {
     "path": "apps/api/openapi.json",
-    "sha256": "7c2ea4ffaa0b79705f8c0298eca24526268c8db86906491a5214384a0e7f05bf"
+    "sha256": "d7fd1a8b77323eca8d98183d43bc704b02fedccd72729562063576ec1cdec4e7"
   },
-  "profile_contract_variants": [
-    {
-      "authoritative": {
-        "PII_classification": "UNREGISTERED",
-        "audience": "UNREGISTERED",
-        "authentication": {
-          "dependencies": [
-            {
-              "callable": "app.db.session.get_db"
-            },
-            {
-              "callable": "app.api.v1.booking_geography.get_geography_provider"
-            },
-            {
-              "callable": "app.core.rate_limit.rate_limit.<locals>.enforce"
-            }
-          ],
-          "openapi_security": []
-        },
-        "capability": "UNREGISTERED",
-        "deprecation_state": "UNREGISTERED",
-        "domain": "app.api.v1.booking_geography",
-        "duplicate_registration_count": 2,
-        "error_contract": {
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "event_effect": "UNREGISTERED",
-        "handler": "validate_booking_address",
-        "idempotency_requirement": "UNREGISTERED",
-        "included_in_openapi": true,
-        "method": "POST",
-        "operation_id": "validate_address_api_v1_booking_address_validate_post",
-        "optimistic_version_policy": "UNREGISTERED",
-        "owner": "UNREGISTERED",
-        "parameters": [],
-        "path": "/api/v1/booking/address/validate",
-        "permission": "UNREGISTERED",
-        "rate_limit_class": "UNREGISTERED",
-        "record_policy": "UNREGISTERED",
-        "replacement_endpoint": "UNREGISTERED",
-        "request_hash_policy": "UNREGISTERED",
-        "request_schema": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PublicAddressInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "response_schema": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse_AddressValidationResponse_"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "runtime_operation_id": "validate_booking_address_api_v1_booking_address_validate_post",
-        "source": "apps/api/app/api/v1/booking_geography.py",
-        "tenant_scope": "UNREGISTERED",
-        "version": "v1"
-      },
-      "authoritative_profile": "canonical_contract",
-      "method": "POST",
-      "path": "/api/v1/booking/address/validate",
-      "variant": {
-        "PII_classification": "UNREGISTERED",
-        "audience": "UNREGISTERED",
-        "authentication": {
-          "dependencies": [
-            {
-              "callable": "app.db.session.get_db"
-            },
-            {
-              "callable": "app.api.v1.booking_geography.get_geography_provider"
-            },
-            {
-              "callable": "app.core.rate_limit.rate_limit.<locals>.enforce"
-            }
-          ],
-          "openapi_security": []
-        },
-        "capability": "UNREGISTERED",
-        "deprecation_state": "UNREGISTERED",
-        "domain": "app.api.v1.booking_geography",
-        "duplicate_registration_count": 1,
-        "error_contract": {
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "event_effect": "UNREGISTERED",
-        "handler": "validate_booking_address",
-        "idempotency_requirement": "UNREGISTERED",
-        "included_in_openapi": true,
-        "method": "POST",
-        "operation_id": "validate_booking_address_api_v1_booking_address_validate_post",
-        "optimistic_version_policy": "UNREGISTERED",
-        "owner": "UNREGISTERED",
-        "parameters": [],
-        "path": "/api/v1/booking/address/validate",
-        "permission": "UNREGISTERED",
-        "rate_limit_class": "UNREGISTERED",
-        "record_policy": "UNREGISTERED",
-        "replacement_endpoint": "UNREGISTERED",
-        "request_hash_policy": "UNREGISTERED",
-        "request_schema": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddressValidationRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "response_schema": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AddressValidationResult"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "runtime_operation_id": "validate_booking_address_api_v1_booking_address_validate_post",
-        "source": "apps/api/app/api/v1/booking_geography.py",
-        "tenant_scope": "UNREGISTERED",
-        "version": "v1"
-      },
-      "variant_profile": "implemented_routes"
-    },
-    {
-      "authoritative": {
-        "PII_classification": "UNREGISTERED",
-        "audience": "UNREGISTERED",
-        "authentication": {
-          "dependencies": [
-            {
-              "callable": "app.db.session.get_db"
-            },
-            {
-              "callable": "app.core.rate_limit.rate_limit.<locals>.enforce"
-            }
-          ],
-          "openapi_security": []
-        },
-        "capability": "UNREGISTERED",
-        "deprecation_state": "UNREGISTERED",
-        "domain": "app.api.v1.booking_geography",
-        "duplicate_registration_count": 2,
-        "error_contract": {
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "event_effect": "UNREGISTERED",
-        "handler": "check_booking_service_area",
-        "idempotency_requirement": "UNREGISTERED",
-        "included_in_openapi": true,
-        "method": "POST",
-        "operation_id": "check_service_area_api_v1_booking_service_area_check_post",
-        "optimistic_version_policy": "UNREGISTERED",
-        "owner": "UNREGISTERED",
-        "parameters": [],
-        "path": "/api/v1/booking/service-area/check",
-        "permission": "UNREGISTERED",
-        "rate_limit_class": "UNREGISTERED",
-        "record_policy": "UNREGISTERED",
-        "replacement_endpoint": "UNREGISTERED",
-        "request_hash_policy": "UNREGISTERED",
-        "request_schema": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PublicAddressInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "response_schema": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse_AddressValidationResponse_"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "runtime_operation_id": "check_booking_service_area_api_v1_booking_service_area_check_post",
-        "source": "apps/api/app/api/v1/booking_geography.py",
-        "tenant_scope": "UNREGISTERED",
-        "version": "v1"
-      },
-      "authoritative_profile": "canonical_contract",
-      "method": "POST",
-      "path": "/api/v1/booking/service-area/check",
-      "variant": {
-        "PII_classification": "UNREGISTERED",
-        "audience": "UNREGISTERED",
-        "authentication": {
-          "dependencies": [
-            {
-              "callable": "app.db.session.get_db"
-            },
-            {
-              "callable": "app.core.rate_limit.rate_limit.<locals>.enforce"
-            }
-          ],
-          "openapi_security": []
-        },
-        "capability": "UNREGISTERED",
-        "deprecation_state": "UNREGISTERED",
-        "domain": "app.api.v1.booking_geography",
-        "duplicate_registration_count": 1,
-        "error_contract": {
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "event_effect": "UNREGISTERED",
-        "handler": "check_booking_service_area",
-        "idempotency_requirement": "UNREGISTERED",
-        "included_in_openapi": true,
-        "method": "POST",
-        "operation_id": "check_booking_service_area_api_v1_booking_service_area_check_post",
-        "optimistic_version_policy": "UNREGISTERED",
-        "owner": "UNREGISTERED",
-        "parameters": [],
-        "path": "/api/v1/booking/service-area/check",
-        "permission": "UNREGISTERED",
-        "rate_limit_class": "UNREGISTERED",
-        "record_policy": "UNREGISTERED",
-        "replacement_endpoint": "UNREGISTERED",
-        "request_hash_policy": "UNREGISTERED",
-        "request_schema": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ServiceAreaCheckRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "response_schema": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ServiceAreaCheckResult"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "runtime_operation_id": "check_booking_service_area_api_v1_booking_service_area_check_post",
-        "source": "apps/api/app/api/v1/booking_geography.py",
-        "tenant_scope": "UNREGISTERED",
-        "version": "v1"
-      },
-      "variant_profile": "implemented_routes"
-    },
-    {
-      "authoritative": {
-        "PII_classification": "UNREGISTERED",
-        "audience": "UNREGISTERED",
-        "authentication": {
-          "dependencies": [
-            {
-              "callable": "app.db.session.get_db"
-            },
-            {
-              "callable": "app.api.v1.booking_geography.get_geography_provider"
-            },
-            {
-              "callable": "app.core.rate_limit.rate_limit.<locals>.enforce"
-            }
-          ],
-          "openapi_security": []
-        },
-        "capability": "UNREGISTERED",
-        "deprecation_state": "UNREGISTERED",
-        "domain": "app.api.v1.booking_geography",
-        "duplicate_registration_count": 2,
-        "error_contract": {
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "event_effect": "UNREGISTERED",
-        "handler": "resolve_booking_timezone",
-        "idempotency_requirement": "UNREGISTERED",
-        "included_in_openapi": true,
-        "method": "POST",
-        "operation_id": "resolve_timezone_api_v1_booking_timezone_resolve_post",
-        "optimistic_version_policy": "UNREGISTERED",
-        "owner": "UNREGISTERED",
-        "parameters": [],
-        "path": "/api/v1/booking/timezone/resolve",
-        "permission": "UNREGISTERED",
-        "rate_limit_class": "UNREGISTERED",
-        "record_policy": "UNREGISTERED",
-        "replacement_endpoint": "UNREGISTERED",
-        "request_hash_policy": "UNREGISTERED",
-        "request_schema": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PublicAddressInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "response_schema": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse_dict_"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "runtime_operation_id": "resolve_booking_timezone_api_v1_booking_timezone_resolve_post",
-        "source": "apps/api/app/api/v1/booking_geography.py",
-        "tenant_scope": "UNREGISTERED",
-        "version": "v1"
-      },
-      "authoritative_profile": "canonical_contract",
-      "method": "POST",
-      "path": "/api/v1/booking/timezone/resolve",
-      "variant": {
-        "PII_classification": "UNREGISTERED",
-        "audience": "UNREGISTERED",
-        "authentication": {
-          "dependencies": [
-            {
-              "callable": "app.db.session.get_db"
-            },
-            {
-              "callable": "app.api.v1.booking_geography.get_geography_provider"
-            },
-            {
-              "callable": "app.core.rate_limit.rate_limit.<locals>.enforce"
-            }
-          ],
-          "openapi_security": []
-        },
-        "capability": "UNREGISTERED",
-        "deprecation_state": "UNREGISTERED",
-        "domain": "app.api.v1.booking_geography",
-        "duplicate_registration_count": 1,
-        "error_contract": {
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "event_effect": "UNREGISTERED",
-        "handler": "resolve_booking_timezone",
-        "idempotency_requirement": "UNREGISTERED",
-        "included_in_openapi": true,
-        "method": "POST",
-        "operation_id": "resolve_booking_timezone_api_v1_booking_timezone_resolve_post",
-        "optimistic_version_policy": "UNREGISTERED",
-        "owner": "UNREGISTERED",
-        "parameters": [],
-        "path": "/api/v1/booking/timezone/resolve",
-        "permission": "UNREGISTERED",
-        "rate_limit_class": "UNREGISTERED",
-        "record_policy": "UNREGISTERED",
-        "replacement_endpoint": "UNREGISTERED",
-        "request_hash_policy": "UNREGISTERED",
-        "request_schema": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TimezoneResolveRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "response_schema": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TimezoneResolveResult"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "runtime_operation_id": "resolve_booking_timezone_api_v1_booking_timezone_resolve_post",
-        "source": "apps/api/app/api/v1/booking_geography.py",
-        "tenant_scope": "UNREGISTERED",
-        "version": "v1"
-      },
-      "variant_profile": "implemented_routes"
-    }
-  ],
+  "profile_contract_variants": [],
   "required_directories": {
     "apps/admin": true,
     "apps/api": true,
@@ -25402,13 +24385,6 @@
       "source": "apps/api/app/api/v1/addresses.py"
     },
     {
-      "handler": "create_admin_user",
-      "local_path": "/users",
-      "method": "POST",
-      "router": "router",
-      "source": "apps/api/app/api/v1/admin.py"
-    },
-    {
       "handler": "providers",
       "local_path": "/providers",
       "method": "GET",
@@ -25419,41 +24395,6 @@
       "handler": "provider",
       "local_path": "/providers/{provider_id}",
       "method": "GET",
-      "router": "router",
-      "source": "apps/api/app/api/v1/admin.py"
-    },
-    {
-      "handler": "provider_applications",
-      "local_path": "/provider-applications",
-      "method": "GET",
-      "router": "router",
-      "source": "apps/api/app/api/v1/admin.py"
-    },
-    {
-      "handler": "provider_application",
-      "local_path": "/provider-applications/{provider_id}",
-      "method": "GET",
-      "router": "router",
-      "source": "apps/api/app/api/v1/admin.py"
-    },
-    {
-      "handler": "approve_provider",
-      "local_path": "/provider-applications/{provider_id}/approve",
-      "method": "POST",
-      "router": "router",
-      "source": "apps/api/app/api/v1/admin.py"
-    },
-    {
-      "handler": "reject_provider",
-      "local_path": "/provider-applications/{provider_id}/reject",
-      "method": "POST",
-      "router": "router",
-      "source": "apps/api/app/api/v1/admin.py"
-    },
-    {
-      "handler": "request_provider_information",
-      "local_path": "/provider-applications/{provider_id}/request-information",
-      "method": "POST",
       "router": "router",
       "source": "apps/api/app/api/v1/admin.py"
     },
@@ -26263,13 +25204,6 @@
       "source": "apps/api/app/api/v1/payments.py"
     },
     {
-      "handler": "profile",
-      "local_path": "/profile",
-      "method": "GET",
-      "router": "router",
-      "source": "apps/api/app/api/v1/provider.py"
-    },
-    {
       "handler": "jobs",
       "local_path": "/jobs",
       "method": "GET",
@@ -26280,34 +25214,6 @@
       "handler": "job",
       "local_path": "/jobs/{job_id}",
       "method": "GET",
-      "router": "router",
-      "source": "apps/api/app/api/v1/provider.py"
-    },
-    {
-      "handler": "services",
-      "local_path": "/services",
-      "method": "GET",
-      "router": "router",
-      "source": "apps/api/app/api/v1/provider.py"
-    },
-    {
-      "handler": "add_service",
-      "local_path": "/services",
-      "method": "POST",
-      "router": "router",
-      "source": "apps/api/app/api/v1/provider.py"
-    },
-    {
-      "handler": "remove_service",
-      "local_path": "/services/{item_id}",
-      "method": "DELETE",
-      "router": "router",
-      "source": "apps/api/app/api/v1/provider.py"
-    },
-    {
-      "handler": "change_service",
-      "local_path": "/services/{item_id}",
-      "method": "PATCH",
       "router": "router",
       "source": "apps/api/app/api/v1/provider.py"
     },
@@ -26748,137 +25654,8 @@
   ],
   "runtime_profiles": {
     "canonical_contract": {
-      "contract_sha256": "34c7f6eebfc8f1c7f4f584e0c0d767f9ae0d7d541ca1be6cfa900a09af5973f0",
-      "duplicate_route_registrations": [
-        {
-          "method": "GET",
-          "path": "/api/v1/admin/provider-applications",
-          "registrations": [
-            {
-              "handler": "list_provider_applications",
-              "runtime_operation_id": "list_provider_applications_api_v1_admin_provider_applications_get",
-              "source": "apps/api/app/api/v1/provider_onboarding.py"
-            },
-            {
-              "handler": "provider_applications",
-              "runtime_operation_id": "provider_applications_api_v1_admin_provider_applications_get",
-              "source": "apps/api/app/api/v1/admin.py"
-            }
-          ]
-        },
-        {
-          "method": "GET",
-          "path": "/api/v1/provider/profile",
-          "registrations": [
-            {
-              "handler": "provider_profile",
-              "runtime_operation_id": "provider_profile_api_v1_provider_profile_get",
-              "source": "apps/api/app/api/v1/provider_onboarding.py"
-            },
-            {
-              "handler": "profile",
-              "runtime_operation_id": "profile_api_v1_provider_profile_get",
-              "source": "apps/api/app/api/v1/provider.py"
-            }
-          ]
-        },
-        {
-          "method": "GET",
-          "path": "/api/v1/provider/services",
-          "registrations": [
-            {
-              "handler": "list_provider_services",
-              "runtime_operation_id": "list_provider_services_api_v1_provider_services_get",
-              "source": "apps/api/app/api/v1/provider_catalog.py"
-            },
-            {
-              "handler": "services",
-              "runtime_operation_id": "services_api_v1_provider_services_get",
-              "source": "apps/api/app/api/v1/provider.py"
-            }
-          ]
-        },
-        {
-          "method": "POST",
-          "path": "/api/v1/admin/users",
-          "registrations": [
-            {
-              "handler": "provision_internal_user",
-              "runtime_operation_id": "provision_internal_user_api_v1_admin_users_post",
-              "source": "apps/api/app/api/v1/admin_users.py"
-            },
-            {
-              "handler": "create_admin_user",
-              "runtime_operation_id": "create_admin_user_api_v1_admin_users_post",
-              "source": "apps/api/app/api/v1/admin.py"
-            }
-          ]
-        },
-        {
-          "method": "POST",
-          "path": "/api/v1/booking/address/validate",
-          "registrations": [
-            {
-              "handler": "validate_booking_address",
-              "runtime_operation_id": "validate_booking_address_api_v1_booking_address_validate_post",
-              "source": "apps/api/app/api/v1/booking_geography.py"
-            },
-            {
-              "handler": "validate_address",
-              "runtime_operation_id": "validate_address_api_v1_booking_address_validate_post",
-              "source": "apps/api/app/api/v1/public_booking.py"
-            }
-          ]
-        },
-        {
-          "method": "POST",
-          "path": "/api/v1/booking/service-area/check",
-          "registrations": [
-            {
-              "handler": "check_booking_service_area",
-              "runtime_operation_id": "check_booking_service_area_api_v1_booking_service_area_check_post",
-              "source": "apps/api/app/api/v1/booking_geography.py"
-            },
-            {
-              "handler": "check_service_area",
-              "runtime_operation_id": "check_service_area_api_v1_booking_service_area_check_post",
-              "source": "apps/api/app/api/v1/public_booking.py"
-            }
-          ]
-        },
-        {
-          "method": "POST",
-          "path": "/api/v1/booking/timezone/resolve",
-          "registrations": [
-            {
-              "handler": "resolve_booking_timezone",
-              "runtime_operation_id": "resolve_booking_timezone_api_v1_booking_timezone_resolve_post",
-              "source": "apps/api/app/api/v1/booking_geography.py"
-            },
-            {
-              "handler": "resolve_timezone",
-              "runtime_operation_id": "resolve_timezone_api_v1_booking_timezone_resolve_post",
-              "source": "apps/api/app/api/v1/public_booking.py"
-            }
-          ]
-        },
-        {
-          "method": "POST",
-          "path": "/api/v1/provider/services",
-          "registrations": [
-            {
-              "handler": "add_provider_service",
-              "runtime_operation_id": "add_provider_service_api_v1_provider_services_post",
-              "source": "apps/api/app/api/v1/provider_catalog.py"
-            },
-            {
-              "handler": "add_service",
-              "runtime_operation_id": "add_service_api_v1_provider_services_post",
-              "source": "apps/api/app/api/v1/provider.py"
-            }
-          ]
-        }
-      ],
+      "contract_sha256": "a2847e6e1c3c2e9b4eba7ed88e86cdc64437712d2b162483b9bf003521357b36",
+      "duplicate_route_registrations": [],
       "framework_routes": [
         {
           "methods": [
@@ -26910,7 +25687,7 @@
         }
       ],
       "openapi_matches_artifact": true,
-      "openapi_operations": 188,
+      "openapi_operations": 182,
       "operations": [
         "DELETE /api/v1/admin/postal-codes/{postal_code_id}",
         "DELETE /api/v1/admin/service-zones/{service_area_id}",
@@ -26920,7 +25697,6 @@
         "DELETE /api/v1/customer/addresses/{address_id}",
         "DELETE /api/v1/provider/availability/exceptions/{item_id}",
         "DELETE /api/v1/provider/service-areas/{item_id}",
-        "DELETE /api/v1/provider/services/{item_id}",
         "DELETE /api/v1/provider/services/{provider_service_id}",
         "DELETE /api/v1/provider/skills/{provider_skill_id}",
         "GET /api/v1/admin/audit-events",
@@ -26934,7 +25710,6 @@
         "GET /api/v1/admin/postal-codes/imports/{import_id}",
         "GET /api/v1/admin/provider-applications",
         "GET /api/v1/admin/provider-applications/{application_id}",
-        "GET /api/v1/admin/provider-applications/{provider_id}",
         "GET /api/v1/admin/providers",
         "GET /api/v1/admin/providers/{provider_id}",
         "GET /api/v1/admin/service-zones",
@@ -27013,7 +25788,6 @@
         "PATCH /api/v1/provider/onboarding",
         "PATCH /api/v1/provider/profile",
         "PATCH /api/v1/provider/service-areas/{item_id}",
-        "PATCH /api/v1/provider/services/{item_id}",
         "PATCH /api/v1/provider/services/{provider_service_id}",
         "POST /api/v1/addresses/validate",
         "POST /api/v1/admin/bookings/{booking_id}/assign",
@@ -27024,9 +25798,6 @@
         "POST /api/v1/admin/provider-applications/{application_id}/approve",
         "POST /api/v1/admin/provider-applications/{application_id}/reject",
         "POST /api/v1/admin/provider-applications/{application_id}/request-information",
-        "POST /api/v1/admin/provider-applications/{provider_id}/approve",
-        "POST /api/v1/admin/provider-applications/{provider_id}/reject",
-        "POST /api/v1/admin/provider-applications/{provider_id}/request-information",
         "POST /api/v1/admin/service-zones",
         "POST /api/v1/admin/users",
         "POST /api/v1/auth/browser/login",
@@ -27102,92 +25873,11 @@
         "PUT /api/v1/operations/workers/{worker_id}/booking-coverage",
         "PUT /api/v1/provider/availability"
       ],
-      "paths": 154
+      "paths": 149
     },
     "default": {
-      "contract_sha256": "fe01f54c5443f023bdfdb8e16d94c822ee17d0b391d63c99ef18d6bc02232d4b",
-      "duplicate_route_registrations": [
-        {
-          "method": "GET",
-          "path": "/api/v1/admin/provider-applications",
-          "registrations": [
-            {
-              "handler": "list_provider_applications",
-              "runtime_operation_id": "list_provider_applications_api_v1_admin_provider_applications_get",
-              "source": "apps/api/app/api/v1/provider_onboarding.py"
-            },
-            {
-              "handler": "provider_applications",
-              "runtime_operation_id": "provider_applications_api_v1_admin_provider_applications_get",
-              "source": "apps/api/app/api/v1/admin.py"
-            }
-          ]
-        },
-        {
-          "method": "GET",
-          "path": "/api/v1/provider/profile",
-          "registrations": [
-            {
-              "handler": "provider_profile",
-              "runtime_operation_id": "provider_profile_api_v1_provider_profile_get",
-              "source": "apps/api/app/api/v1/provider_onboarding.py"
-            },
-            {
-              "handler": "profile",
-              "runtime_operation_id": "profile_api_v1_provider_profile_get",
-              "source": "apps/api/app/api/v1/provider.py"
-            }
-          ]
-        },
-        {
-          "method": "GET",
-          "path": "/api/v1/provider/services",
-          "registrations": [
-            {
-              "handler": "list_provider_services",
-              "runtime_operation_id": "list_provider_services_api_v1_provider_services_get",
-              "source": "apps/api/app/api/v1/provider_catalog.py"
-            },
-            {
-              "handler": "services",
-              "runtime_operation_id": "services_api_v1_provider_services_get",
-              "source": "apps/api/app/api/v1/provider.py"
-            }
-          ]
-        },
-        {
-          "method": "POST",
-          "path": "/api/v1/admin/users",
-          "registrations": [
-            {
-              "handler": "provision_internal_user",
-              "runtime_operation_id": "provision_internal_user_api_v1_admin_users_post",
-              "source": "apps/api/app/api/v1/admin_users.py"
-            },
-            {
-              "handler": "create_admin_user",
-              "runtime_operation_id": "create_admin_user_api_v1_admin_users_post",
-              "source": "apps/api/app/api/v1/admin.py"
-            }
-          ]
-        },
-        {
-          "method": "POST",
-          "path": "/api/v1/provider/services",
-          "registrations": [
-            {
-              "handler": "add_provider_service",
-              "runtime_operation_id": "add_provider_service_api_v1_provider_services_post",
-              "source": "apps/api/app/api/v1/provider_catalog.py"
-            },
-            {
-              "handler": "add_service",
-              "runtime_operation_id": "add_service_api_v1_provider_services_post",
-              "source": "apps/api/app/api/v1/provider.py"
-            }
-          ]
-        }
-      ],
+      "contract_sha256": "ad87544ff91aa590c0507ca41a18a53d813cf1d39209c63413a0cd7b75206d42",
+      "duplicate_route_registrations": [],
       "framework_routes": [
         {
           "methods": [
@@ -27219,7 +25909,7 @@
         }
       ],
       "openapi_matches_artifact": false,
-      "openapi_operations": 178,
+      "openapi_operations": 172,
       "operations": [
         "DELETE /api/v1/admin/postal-codes/{postal_code_id}",
         "DELETE /api/v1/admin/service-zones/{service_area_id}",
@@ -27228,7 +25918,6 @@
         "DELETE /api/v1/customer/addresses/{address_id}",
         "DELETE /api/v1/provider/availability/exceptions/{item_id}",
         "DELETE /api/v1/provider/service-areas/{item_id}",
-        "DELETE /api/v1/provider/services/{item_id}",
         "DELETE /api/v1/provider/services/{provider_service_id}",
         "DELETE /api/v1/provider/skills/{provider_skill_id}",
         "GET /api/v1/admin/audit-events",
@@ -27242,7 +25931,6 @@
         "GET /api/v1/admin/postal-codes/imports/{import_id}",
         "GET /api/v1/admin/provider-applications",
         "GET /api/v1/admin/provider-applications/{application_id}",
-        "GET /api/v1/admin/provider-applications/{provider_id}",
         "GET /api/v1/admin/providers",
         "GET /api/v1/admin/providers/{provider_id}",
         "GET /api/v1/admin/service-zones",
@@ -27319,7 +26007,6 @@
         "PATCH /api/v1/provider/onboarding",
         "PATCH /api/v1/provider/profile",
         "PATCH /api/v1/provider/service-areas/{item_id}",
-        "PATCH /api/v1/provider/services/{item_id}",
         "PATCH /api/v1/provider/services/{provider_service_id}",
         "POST /api/v1/admin/bookings/{booking_id}/assign",
         "POST /api/v1/admin/bookings/{booking_id}/reassign",
@@ -27329,9 +26016,6 @@
         "POST /api/v1/admin/provider-applications/{application_id}/approve",
         "POST /api/v1/admin/provider-applications/{application_id}/reject",
         "POST /api/v1/admin/provider-applications/{application_id}/request-information",
-        "POST /api/v1/admin/provider-applications/{provider_id}/approve",
-        "POST /api/v1/admin/provider-applications/{provider_id}/reject",
-        "POST /api/v1/admin/provider-applications/{provider_id}/request-information",
         "POST /api/v1/admin/service-zones",
         "POST /api/v1/admin/users",
         "POST /api/v1/auth/browser/login",
@@ -27401,92 +26085,11 @@
         "PUT /api/v1/operations/workers/{worker_id}/booking-coverage",
         "PUT /api/v1/provider/availability"
       ],
-      "paths": 145
+      "paths": 140
     },
     "implemented_routes": {
-      "contract_sha256": "6aa284bb777122c2aae82e19c79e2d0c8aaeac51b577a7e8c5e7d018e3aa1d08",
-      "duplicate_route_registrations": [
-        {
-          "method": "GET",
-          "path": "/api/v1/admin/provider-applications",
-          "registrations": [
-            {
-              "handler": "list_provider_applications",
-              "runtime_operation_id": "list_provider_applications_api_v1_admin_provider_applications_get",
-              "source": "apps/api/app/api/v1/provider_onboarding.py"
-            },
-            {
-              "handler": "provider_applications",
-              "runtime_operation_id": "provider_applications_api_v1_admin_provider_applications_get",
-              "source": "apps/api/app/api/v1/admin.py"
-            }
-          ]
-        },
-        {
-          "method": "GET",
-          "path": "/api/v1/provider/profile",
-          "registrations": [
-            {
-              "handler": "provider_profile",
-              "runtime_operation_id": "provider_profile_api_v1_provider_profile_get",
-              "source": "apps/api/app/api/v1/provider_onboarding.py"
-            },
-            {
-              "handler": "profile",
-              "runtime_operation_id": "profile_api_v1_provider_profile_get",
-              "source": "apps/api/app/api/v1/provider.py"
-            }
-          ]
-        },
-        {
-          "method": "GET",
-          "path": "/api/v1/provider/services",
-          "registrations": [
-            {
-              "handler": "list_provider_services",
-              "runtime_operation_id": "list_provider_services_api_v1_provider_services_get",
-              "source": "apps/api/app/api/v1/provider_catalog.py"
-            },
-            {
-              "handler": "services",
-              "runtime_operation_id": "services_api_v1_provider_services_get",
-              "source": "apps/api/app/api/v1/provider.py"
-            }
-          ]
-        },
-        {
-          "method": "POST",
-          "path": "/api/v1/admin/users",
-          "registrations": [
-            {
-              "handler": "provision_internal_user",
-              "runtime_operation_id": "provision_internal_user_api_v1_admin_users_post",
-              "source": "apps/api/app/api/v1/admin_users.py"
-            },
-            {
-              "handler": "create_admin_user",
-              "runtime_operation_id": "create_admin_user_api_v1_admin_users_post",
-              "source": "apps/api/app/api/v1/admin.py"
-            }
-          ]
-        },
-        {
-          "method": "POST",
-          "path": "/api/v1/provider/services",
-          "registrations": [
-            {
-              "handler": "add_provider_service",
-              "runtime_operation_id": "add_provider_service_api_v1_provider_services_post",
-              "source": "apps/api/app/api/v1/provider_catalog.py"
-            },
-            {
-              "handler": "add_service",
-              "runtime_operation_id": "add_service_api_v1_provider_services_post",
-              "source": "apps/api/app/api/v1/provider.py"
-            }
-          ]
-        }
-      ],
+      "contract_sha256": "d9c0dd305056d7ff9841edd5d1e9c77c6254cabd818225ae1f6e09f34edc5d5a",
+      "duplicate_route_registrations": [],
       "framework_routes": [
         {
           "methods": [
@@ -27518,7 +26121,7 @@
         }
       ],
       "openapi_matches_artifact": false,
-      "openapi_operations": 200,
+      "openapi_operations": 191,
       "operations": [
         "DELETE /api/v1/admin/postal-codes/{postal_code_id}",
         "DELETE /api/v1/admin/service-zones/{service_area_id}",
@@ -27527,7 +26130,6 @@
         "DELETE /api/v1/customer/addresses/{address_id}",
         "DELETE /api/v1/provider/availability/exceptions/{item_id}",
         "DELETE /api/v1/provider/service-areas/{item_id}",
-        "DELETE /api/v1/provider/services/{item_id}",
         "DELETE /api/v1/provider/services/{provider_service_id}",
         "DELETE /api/v1/provider/skills/{provider_skill_id}",
         "GET /api/v1/admin/audit-events",
@@ -27541,7 +26143,6 @@
         "GET /api/v1/admin/postal-codes/imports/{import_id}",
         "GET /api/v1/admin/provider-applications",
         "GET /api/v1/admin/provider-applications/{application_id}",
-        "GET /api/v1/admin/provider-applications/{provider_id}",
         "GET /api/v1/admin/providers",
         "GET /api/v1/admin/providers/{provider_id}",
         "GET /api/v1/admin/service-zones",
@@ -27625,7 +26226,6 @@
         "PATCH /api/v1/provider/onboarding",
         "PATCH /api/v1/provider/profile",
         "PATCH /api/v1/provider/service-areas/{item_id}",
-        "PATCH /api/v1/provider/services/{item_id}",
         "PATCH /api/v1/provider/services/{provider_service_id}",
         "POST /api/v1/addresses/validate",
         "POST /api/v1/admin/bookings/{booking_id}/assign",
@@ -27636,9 +26236,6 @@
         "POST /api/v1/admin/provider-applications/{application_id}/approve",
         "POST /api/v1/admin/provider-applications/{application_id}/reject",
         "POST /api/v1/admin/provider-applications/{application_id}/request-information",
-        "POST /api/v1/admin/provider-applications/{provider_id}/approve",
-        "POST /api/v1/admin/provider-applications/{provider_id}/reject",
-        "POST /api/v1/admin/provider-applications/{provider_id}/request-information",
         "POST /api/v1/admin/service-zones",
         "POST /api/v1/admin/users",
         "POST /api/v1/auth/browser/login",
@@ -27664,11 +26261,8 @@
         "POST /api/v1/auth/register/client",
         "POST /api/v1/auth/register/provider",
         "POST /api/v1/availability/search",
-        "POST /api/v1/booking/address/validate",
         "POST /api/v1/booking/intents",
         "POST /api/v1/booking/intents/{intent_id}/submit",
-        "POST /api/v1/booking/service-area/check",
-        "POST /api/v1/booking/timezone/resolve",
         "POST /api/v1/bookings",
         "POST /api/v1/client/addresses",
         "POST /api/v1/client/bookings/{booking_id}/cancel",
@@ -27722,7 +26316,7 @@
         "PUT /api/v1/operations/workers/{worker_id}/booking-coverage",
         "PUT /api/v1/provider/availability"
       ],
-      "paths": 167
+      "paths": 159
     }
   },
   "schema_version": 1,

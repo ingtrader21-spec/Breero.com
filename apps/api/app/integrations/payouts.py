@@ -1,28 +1,9 @@
-from dataclasses import dataclass
-from typing import Protocol
-
 from app.config import settings
-
-
-class IntegrationNotConfigured(RuntimeError):
-    code = "integration_not_configured"
-
-
-@dataclass(frozen=True)
-class TransferResult:
-    transfer_id: str
-    status: str
-    provider_reference: str | None = None
-
-
-class PayoutGateway(Protocol):
-    async def create_transfer(
-        self, *, amount_minor: int, currency: str, destination: str, idempotency_key: str
-    ) -> TransferResult: ...
-
-    async def get_transfer(self, transfer_id: str) -> TransferResult: ...
-
-    async def cancel_transfer(self, transfer_id: str) -> TransferResult: ...
+from app.integrations.contracts import (
+    IntegrationNotConfigured,
+    PayoutGateway,
+    TransferResult,
+)
 
 
 class FakePayoutGateway:
@@ -30,7 +11,12 @@ class FakePayoutGateway:
         self.transfers: dict[str, TransferResult] = {}
 
     async def create_transfer(
-        self, *, amount_minor: int, currency: str, destination: str, idempotency_key: str
+        self,
+        *,
+        amount_minor: int,
+        currency: str,
+        destination: str,
+        idempotency_key: str,
     ) -> TransferResult:
         if idempotency_key not in self.transfers:
             self.transfers[idempotency_key] = TransferResult(
@@ -47,7 +33,14 @@ class FakePayoutGateway:
 
 
 class UnconfiguredPayoutGateway:
-    async def create_transfer(self, **_: object) -> TransferResult:
+    async def create_transfer(
+        self,
+        *,
+        amount_minor: int,
+        currency: str,
+        destination: str,
+        idempotency_key: str,
+    ) -> TransferResult:
         raise IntegrationNotConfigured("Payout provider is not configured")
 
     async def get_transfer(self, transfer_id: str) -> TransferResult:
