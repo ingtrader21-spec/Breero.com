@@ -1,6 +1,6 @@
 # Data classification and handling baseline
 
-Regenerated for source baseline `ee79c3cb0bd667c3456dd20521563017b7d2d246`. This is handling
+Regenerated for source baseline `54c5b25d5332a2c5d6b4ca7300e7f7e30c1b3aa0`. This is handling
 policy and source-boundary evidence, not legal advice or production-retention certification.
 
 | Class | Examples | Required handling |
@@ -20,8 +20,8 @@ than mutation paths.
 
 ## Current implementation boundary
 
-The source inventory records 17 backend domain packages,
-4 worker tasks and 201 unique logical
+The source inventory records 18 backend domain packages,
+4 worker tasks and 212 unique logical
 API operations across the inventoried profiles. Those counts do not prove complete
 retention, export, deletion, legal hold, secure-document, messaging/support, or
 financial certification. Those remain owned by their M00–M30 gates.

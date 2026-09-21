@@ -1,6 +1,6 @@
 {
   "alembic_heads": [
-    "031_provider_catalog"
+    "032_tenant_email_provisioning"
   ],
   "alembic_revisions": [
     {
@@ -197,6 +197,12 @@
       "path": "apps/api/migrations/versions/031_provider_catalog_services_skills.py",
       "revision": "031_provider_catalog",
       "sha256": "5c8c67098e601eabe437af10b461095b7f5bd5e3fac683b580d7dae076828733"
+    },
+    {
+      "down_revision": "031_provider_catalog",
+      "path": "apps/api/migrations/versions/032_tenant_email_provisioning.py",
+      "revision": "032_tenant_email_provisioning",
+      "sha256": "1f68f0a458c3559ccc89ff94c296e80bfb1a7b03f3570b081d8f56adbf3795a6"
     }
   ],
   "api_operations": [
@@ -10502,6 +10508,929 @@
             "callable": "app.db.session.get_db"
           },
           {
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.current_user"
+          },
+          {
+            "callable": "fastapi.security.http.HTTPBearer"
+          }
+        ],
+        "openapi_security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "capability": "UNREGISTERED",
+      "deprecation_state": "UNREGISTERED",
+      "domain": "app.api.v1.email",
+      "duplicate_registration_count": 1,
+      "error_contract": {},
+      "event_effect": "UNREGISTERED",
+      "handler": "list_credentials",
+      "idempotency_requirement": "UNREGISTERED",
+      "included_in_openapi": true,
+      "method": "GET",
+      "operation_id": "list_credentials_api_v1_email_credentials_get",
+      "optimistic_version_policy": "UNREGISTERED",
+      "owner": "UNREGISTERED",
+      "parameters": [],
+      "path": "/api/v1/email/credentials",
+      "permission": "UNREGISTERED",
+      "rate_limit_class": "UNREGISTERED",
+      "record_policy": "UNREGISTERED",
+      "replacement_endpoint": "UNREGISTERED",
+      "request_hash_policy": "UNREGISTERED",
+      "request_schema": {},
+      "response_schema": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/EmailCredentialRead"
+                },
+                "title": "Response List Credentials Api V1 Email Credentials Get",
+                "type": "array"
+              }
+            }
+          },
+          "description": "Successful Response"
+        }
+      },
+      "runtime_operation_id": "list_credentials_api_v1_email_credentials_get",
+      "source": "apps/api/app/api/v1/email.py",
+      "tenant_scope": "UNREGISTERED",
+      "version": "v1"
+    },
+    {
+      "PII_classification": "UNREGISTERED",
+      "audience": "UNREGISTERED",
+      "authentication": {
+        "dependencies": [
+          {
+            "callable": "app.db.session.get_db"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.current_user"
+          },
+          {
+            "callable": "fastapi.security.http.HTTPBearer"
+          }
+        ],
+        "openapi_security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "capability": "UNREGISTERED",
+      "deprecation_state": "UNREGISTERED",
+      "domain": "app.api.v1.email",
+      "duplicate_registration_count": 1,
+      "error_contract": {
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "event_effect": "UNREGISTERED",
+      "handler": "create_credential",
+      "idempotency_requirement": "UNREGISTERED",
+      "included_in_openapi": true,
+      "method": "POST",
+      "operation_id": "create_credential_api_v1_email_credentials_post",
+      "optimistic_version_policy": "UNREGISTERED",
+      "owner": "UNREGISTERED",
+      "parameters": [],
+      "path": "/api/v1/email/credentials",
+      "permission": "UNREGISTERED",
+      "rate_limit_class": "UNREGISTERED",
+      "record_policy": "UNREGISTERED",
+      "replacement_endpoint": "UNREGISTERED",
+      "request_hash_policy": "UNREGISTERED",
+      "request_schema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EmailCredentialCreate"
+            }
+          }
+        },
+        "required": true
+      },
+      "response_schema": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailCredentialRead"
+              }
+            }
+          },
+          "description": "Successful Response"
+        },
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "runtime_operation_id": "create_credential_api_v1_email_credentials_post",
+      "source": "apps/api/app/api/v1/email.py",
+      "tenant_scope": "UNREGISTERED",
+      "version": "v1"
+    },
+    {
+      "PII_classification": "UNREGISTERED",
+      "audience": "UNREGISTERED",
+      "authentication": {
+        "dependencies": [
+          {
+            "callable": "app.db.session.get_db"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.current_user"
+          },
+          {
+            "callable": "fastapi.security.http.HTTPBearer"
+          }
+        ],
+        "openapi_security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "capability": "UNREGISTERED",
+      "deprecation_state": "UNREGISTERED",
+      "domain": "app.api.v1.email",
+      "duplicate_registration_count": 1,
+      "error_contract": {},
+      "event_effect": "UNREGISTERED",
+      "handler": "list_domains",
+      "idempotency_requirement": "UNREGISTERED",
+      "included_in_openapi": true,
+      "method": "GET",
+      "operation_id": "list_domains_api_v1_email_domains_get",
+      "optimistic_version_policy": "UNREGISTERED",
+      "owner": "UNREGISTERED",
+      "parameters": [],
+      "path": "/api/v1/email/domains",
+      "permission": "UNREGISTERED",
+      "rate_limit_class": "UNREGISTERED",
+      "record_policy": "UNREGISTERED",
+      "replacement_endpoint": "UNREGISTERED",
+      "request_hash_policy": "UNREGISTERED",
+      "request_schema": {},
+      "response_schema": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/EmailDomainRead"
+                },
+                "title": "Response List Domains Api V1 Email Domains Get",
+                "type": "array"
+              }
+            }
+          },
+          "description": "Successful Response"
+        }
+      },
+      "runtime_operation_id": "list_domains_api_v1_email_domains_get",
+      "source": "apps/api/app/api/v1/email.py",
+      "tenant_scope": "UNREGISTERED",
+      "version": "v1"
+    },
+    {
+      "PII_classification": "UNREGISTERED",
+      "audience": "UNREGISTERED",
+      "authentication": {
+        "dependencies": [
+          {
+            "callable": "app.db.session.get_db"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.current_user"
+          },
+          {
+            "callable": "fastapi.security.http.HTTPBearer"
+          }
+        ],
+        "openapi_security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "capability": "UNREGISTERED",
+      "deprecation_state": "UNREGISTERED",
+      "domain": "app.api.v1.email",
+      "duplicate_registration_count": 1,
+      "error_contract": {
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "event_effect": "UNREGISTERED",
+      "handler": "create_domain",
+      "idempotency_requirement": "UNREGISTERED",
+      "included_in_openapi": true,
+      "method": "POST",
+      "operation_id": "create_domain_api_v1_email_domains_post",
+      "optimistic_version_policy": "UNREGISTERED",
+      "owner": "UNREGISTERED",
+      "parameters": [],
+      "path": "/api/v1/email/domains",
+      "permission": "UNREGISTERED",
+      "rate_limit_class": "UNREGISTERED",
+      "record_policy": "UNREGISTERED",
+      "replacement_endpoint": "UNREGISTERED",
+      "request_hash_policy": "UNREGISTERED",
+      "request_schema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EmailDomainCreate"
+            }
+          }
+        },
+        "required": true
+      },
+      "response_schema": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailDomainRead"
+              }
+            }
+          },
+          "description": "Successful Response"
+        },
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "runtime_operation_id": "create_domain_api_v1_email_domains_post",
+      "source": "apps/api/app/api/v1/email.py",
+      "tenant_scope": "UNREGISTERED",
+      "version": "v1"
+    },
+    {
+      "PII_classification": "UNREGISTERED",
+      "audience": "UNREGISTERED",
+      "authentication": {
+        "dependencies": [
+          {
+            "callable": "app.db.session.get_db"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.current_user"
+          },
+          {
+            "callable": "fastapi.security.http.HTTPBearer"
+          }
+        ],
+        "openapi_security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "capability": "UNREGISTERED",
+      "deprecation_state": "UNREGISTERED",
+      "domain": "app.api.v1.email",
+      "duplicate_registration_count": 1,
+      "error_contract": {
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "event_effect": "UNREGISTERED",
+      "handler": "set_domain_verification",
+      "idempotency_requirement": "UNREGISTERED",
+      "included_in_openapi": true,
+      "method": "POST",
+      "operation_id": "set_domain_verification_api_v1_email_domains__domain_id__verification_post",
+      "optimistic_version_policy": "UNREGISTERED",
+      "owner": "UNREGISTERED",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "domain_id",
+          "required": true,
+          "schema": {
+            "format": "uuid",
+            "title": "Domain Id",
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "verified",
+          "required": true,
+          "schema": {
+            "title": "Verified",
+            "type": "boolean"
+          }
+        }
+      ],
+      "path": "/api/v1/email/domains/{domain_id}/verification",
+      "permission": "UNREGISTERED",
+      "rate_limit_class": "UNREGISTERED",
+      "record_policy": "UNREGISTERED",
+      "replacement_endpoint": "UNREGISTERED",
+      "request_hash_policy": "UNREGISTERED",
+      "request_schema": {},
+      "response_schema": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailDomainRead"
+              }
+            }
+          },
+          "description": "Successful Response"
+        },
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "runtime_operation_id": "set_domain_verification_api_v1_email_domains__domain_id__verification_post",
+      "source": "apps/api/app/api/v1/email.py",
+      "tenant_scope": "UNREGISTERED",
+      "version": "v1"
+    },
+    {
+      "PII_classification": "UNREGISTERED",
+      "audience": "UNREGISTERED",
+      "authentication": {
+        "dependencies": [
+          {
+            "callable": "app.db.session.get_db"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.current_user"
+          },
+          {
+            "callable": "fastapi.security.http.HTTPBearer"
+          }
+        ],
+        "openapi_security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "capability": "UNREGISTERED",
+      "deprecation_state": "UNREGISTERED",
+      "domain": "app.api.v1.email",
+      "duplicate_registration_count": 1,
+      "error_contract": {
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "event_effect": "UNREGISTERED",
+      "handler": "compose_message",
+      "idempotency_requirement": "UNREGISTERED",
+      "included_in_openapi": true,
+      "method": "POST",
+      "operation_id": "compose_message_api_v1_email_messages_post",
+      "optimistic_version_policy": "UNREGISTERED",
+      "owner": "UNREGISTERED",
+      "parameters": [],
+      "path": "/api/v1/email/messages",
+      "permission": "UNREGISTERED",
+      "rate_limit_class": "UNREGISTERED",
+      "record_policy": "UNREGISTERED",
+      "replacement_endpoint": "UNREGISTERED",
+      "request_hash_policy": "UNREGISTERED",
+      "request_schema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EmailComposeRequest"
+            }
+          }
+        },
+        "required": true
+      },
+      "response_schema": {
+        "202": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailMessageRead"
+              }
+            }
+          },
+          "description": "Successful Response"
+        },
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "runtime_operation_id": "compose_message_api_v1_email_messages_post",
+      "source": "apps/api/app/api/v1/email.py",
+      "tenant_scope": "UNREGISTERED",
+      "version": "v1"
+    },
+    {
+      "PII_classification": "UNREGISTERED",
+      "audience": "UNREGISTERED",
+      "authentication": {
+        "dependencies": [
+          {
+            "callable": "app.db.session.get_db"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.current_user"
+          },
+          {
+            "callable": "fastapi.security.http.HTTPBearer"
+          }
+        ],
+        "openapi_security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "capability": "UNREGISTERED",
+      "deprecation_state": "UNREGISTERED",
+      "domain": "app.api.v1.email",
+      "duplicate_registration_count": 1,
+      "error_contract": {
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "event_effect": "UNREGISTERED",
+      "handler": "get_message",
+      "idempotency_requirement": "UNREGISTERED",
+      "included_in_openapi": true,
+      "method": "GET",
+      "operation_id": "get_message_api_v1_email_messages__message_id__get",
+      "optimistic_version_policy": "UNREGISTERED",
+      "owner": "UNREGISTERED",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "message_id",
+          "required": true,
+          "schema": {
+            "format": "uuid",
+            "title": "Message Id",
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/api/v1/email/messages/{message_id}",
+      "permission": "UNREGISTERED",
+      "rate_limit_class": "UNREGISTERED",
+      "record_policy": "UNREGISTERED",
+      "replacement_endpoint": "UNREGISTERED",
+      "request_hash_policy": "UNREGISTERED",
+      "request_schema": {},
+      "response_schema": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailMessageRead"
+              }
+            }
+          },
+          "description": "Successful Response"
+        },
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "runtime_operation_id": "get_message_api_v1_email_messages__message_id__get",
+      "source": "apps/api/app/api/v1/email.py",
+      "tenant_scope": "UNREGISTERED",
+      "version": "v1"
+    },
+    {
+      "PII_classification": "UNREGISTERED",
+      "audience": "UNREGISTERED",
+      "authentication": {
+        "dependencies": [
+          {
+            "callable": "app.db.session.get_db"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.current_user"
+          },
+          {
+            "callable": "fastapi.security.http.HTTPBearer"
+          }
+        ],
+        "openapi_security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "capability": "UNREGISTERED",
+      "deprecation_state": "UNREGISTERED",
+      "domain": "app.api.v1.email",
+      "duplicate_registration_count": 1,
+      "error_contract": {},
+      "event_effect": "UNREGISTERED",
+      "handler": "list_outbox",
+      "idempotency_requirement": "UNREGISTERED",
+      "included_in_openapi": true,
+      "method": "GET",
+      "operation_id": "list_outbox_api_v1_email_outbox_get",
+      "optimistic_version_policy": "UNREGISTERED",
+      "owner": "UNREGISTERED",
+      "parameters": [],
+      "path": "/api/v1/email/outbox",
+      "permission": "UNREGISTERED",
+      "rate_limit_class": "UNREGISTERED",
+      "record_policy": "UNREGISTERED",
+      "replacement_endpoint": "UNREGISTERED",
+      "request_hash_policy": "UNREGISTERED",
+      "request_schema": {},
+      "response_schema": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/EmailOutboxRead"
+                },
+                "title": "Response List Outbox Api V1 Email Outbox Get",
+                "type": "array"
+              }
+            }
+          },
+          "description": "Successful Response"
+        }
+      },
+      "runtime_operation_id": "list_outbox_api_v1_email_outbox_get",
+      "source": "apps/api/app/api/v1/email.py",
+      "tenant_scope": "UNREGISTERED",
+      "version": "v1"
+    },
+    {
+      "PII_classification": "UNREGISTERED",
+      "audience": "UNREGISTERED",
+      "authentication": {
+        "dependencies": [
+          {
+            "callable": "app.db.session.get_db"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.current_user"
+          },
+          {
+            "callable": "fastapi.security.http.HTTPBearer"
+          }
+        ],
+        "openapi_security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "capability": "UNREGISTERED",
+      "deprecation_state": "UNREGISTERED",
+      "domain": "app.api.v1.email",
+      "duplicate_registration_count": 1,
+      "error_contract": {
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "event_effect": "UNREGISTERED",
+      "handler": "retry_outbox",
+      "idempotency_requirement": "UNREGISTERED",
+      "included_in_openapi": true,
+      "method": "POST",
+      "operation_id": "retry_outbox_api_v1_email_outbox__event_id__retry_post",
+      "optimistic_version_policy": "UNREGISTERED",
+      "owner": "UNREGISTERED",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "event_id",
+          "required": true,
+          "schema": {
+            "format": "uuid",
+            "title": "Event Id",
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/api/v1/email/outbox/{event_id}/retry",
+      "permission": "UNREGISTERED",
+      "rate_limit_class": "UNREGISTERED",
+      "record_policy": "UNREGISTERED",
+      "replacement_endpoint": "UNREGISTERED",
+      "request_hash_policy": "UNREGISTERED",
+      "request_schema": {},
+      "response_schema": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailOutboxRead"
+              }
+            }
+          },
+          "description": "Successful Response"
+        },
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "runtime_operation_id": "retry_outbox_api_v1_email_outbox__event_id__retry_post",
+      "source": "apps/api/app/api/v1/email.py",
+      "tenant_scope": "UNREGISTERED",
+      "version": "v1"
+    },
+    {
+      "PII_classification": "UNREGISTERED",
+      "audience": "UNREGISTERED",
+      "authentication": {
+        "dependencies": [
+          {
+            "callable": "app.db.session.get_db"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.current_user"
+          },
+          {
+            "callable": "fastapi.security.http.HTTPBearer"
+          }
+        ],
+        "openapi_security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "capability": "UNREGISTERED",
+      "deprecation_state": "UNREGISTERED",
+      "domain": "app.api.v1.email",
+      "duplicate_registration_count": 1,
+      "error_contract": {},
+      "event_effect": "UNREGISTERED",
+      "handler": "list_senders",
+      "idempotency_requirement": "UNREGISTERED",
+      "included_in_openapi": true,
+      "method": "GET",
+      "operation_id": "list_senders_api_v1_email_senders_get",
+      "optimistic_version_policy": "UNREGISTERED",
+      "owner": "UNREGISTERED",
+      "parameters": [],
+      "path": "/api/v1/email/senders",
+      "permission": "UNREGISTERED",
+      "rate_limit_class": "UNREGISTERED",
+      "record_policy": "UNREGISTERED",
+      "replacement_endpoint": "UNREGISTERED",
+      "request_hash_policy": "UNREGISTERED",
+      "request_schema": {},
+      "response_schema": {
+        "200": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/EmailSenderRead"
+                },
+                "title": "Response List Senders Api V1 Email Senders Get",
+                "type": "array"
+              }
+            }
+          },
+          "description": "Successful Response"
+        }
+      },
+      "runtime_operation_id": "list_senders_api_v1_email_senders_get",
+      "source": "apps/api/app/api/v1/email.py",
+      "tenant_scope": "UNREGISTERED",
+      "version": "v1"
+    },
+    {
+      "PII_classification": "UNREGISTERED",
+      "audience": "UNREGISTERED",
+      "authentication": {
+        "dependencies": [
+          {
+            "callable": "app.db.session.get_db"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
+          },
+          {
+            "callable": "app.domains.auth.dependencies.current_user"
+          },
+          {
+            "callable": "fastapi.security.http.HTTPBearer"
+          }
+        ],
+        "openapi_security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "capability": "UNREGISTERED",
+      "deprecation_state": "UNREGISTERED",
+      "domain": "app.api.v1.email",
+      "duplicate_registration_count": 1,
+      "error_contract": {
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "event_effect": "UNREGISTERED",
+      "handler": "create_sender",
+      "idempotency_requirement": "UNREGISTERED",
+      "included_in_openapi": true,
+      "method": "POST",
+      "operation_id": "create_sender_api_v1_email_senders_post",
+      "optimistic_version_policy": "UNREGISTERED",
+      "owner": "UNREGISTERED",
+      "parameters": [],
+      "path": "/api/v1/email/senders",
+      "permission": "UNREGISTERED",
+      "rate_limit_class": "UNREGISTERED",
+      "record_policy": "UNREGISTERED",
+      "replacement_endpoint": "UNREGISTERED",
+      "request_hash_policy": "UNREGISTERED",
+      "request_schema": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EmailSenderCreate"
+            }
+          }
+        },
+        "required": true
+      },
+      "response_schema": {
+        "201": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailSenderRead"
+              }
+            }
+          },
+          "description": "Successful Response"
+        },
+        "422": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HTTPValidationError"
+              }
+            }
+          },
+          "description": "Validation Error"
+        }
+      },
+      "runtime_operation_id": "create_sender_api_v1_email_senders_post",
+      "source": "apps/api/app/api/v1/email.py",
+      "tenant_scope": "UNREGISTERED",
+      "version": "v1"
+    },
+    {
+      "PII_classification": "UNREGISTERED",
+      "audience": "UNREGISTERED",
+      "authentication": {
+        "dependencies": [
+          {
+            "callable": "app.db.session.get_db"
+          },
+          {
             "allowed_roles": [
               "admin",
               "finance",
@@ -11138,12 +12067,7 @@
             "callable": "app.db.session.get_db"
           },
           {
-            "allowed_roles": [
-              "admin",
-              "finance",
-              "superadmin"
-            ],
-            "callable": "app.domains.auth.dependencies.require_roles.<locals>.dependency"
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
           },
           {
             "callable": "app.domains.auth.dependencies.current_user"
@@ -11235,12 +12159,7 @@
             "callable": "app.db.session.get_db"
           },
           {
-            "allowed_roles": [
-              "admin",
-              "finance",
-              "superadmin"
-            ],
-            "callable": "app.domains.auth.dependencies.require_roles.<locals>.dependency"
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
           },
           {
             "callable": "app.domains.auth.dependencies.current_user"
@@ -11297,12 +12216,7 @@
       "authentication": {
         "dependencies": [
           {
-            "allowed_roles": [
-              "admin",
-              "finance",
-              "superadmin"
-            ],
-            "callable": "app.domains.auth.dependencies.require_roles.<locals>.dependency"
+            "callable": "app.domains.auth.dependencies.require_any_permission.<locals>.dependency"
           },
           {
             "callable": "app.domains.auth.dependencies.current_user"
@@ -18790,6 +19704,7 @@
     "professional_leads",
     "provider_catalog",
     "public_submissions",
+    "tenant_email",
     "workforce"
   ],
   "backend_modules": [
@@ -18824,7 +19739,7 @@
         }
       ],
       "path": "apps/api/app/api/policy_registry.py",
-      "sha256": "f934e3c6a40f883bd9a095142f78d564a89b2e6b393b249e10a58752991de76d"
+      "sha256": "07d007035eb0ac3f4a062424c3c802bc570b44ffff625cd98a235d375939a0c9"
     },
     {
       "classes": [],
@@ -19005,13 +19920,18 @@
     },
     {
       "classes": [],
+      "path": "apps/api/app/api/v1/email.py",
+      "sha256": "df3f2ad1dc04eb064d1a4f13da28b1c4885aaea4c6e745e8e23a04dc3b9b0c52"
+    },
+    {
+      "classes": [],
       "path": "apps/api/app/api/v1/finance.py",
       "sha256": "0db12ab97e8eef9ef4e12fc60cc092c58240080bc5014553e0d76ad502a75dba"
     },
     {
       "classes": [],
       "path": "apps/api/app/api/v1/integrations.py",
-      "sha256": "c053f9fceadc632ab1180061f04da5f278dcb66aeabfee8a2048ecb2701c230d"
+      "sha256": "9a32c8639f810d8881aaa48718dfc7cccb74d83f1e60b7c6ea9d2f9d25002637"
     },
     {
       "classes": [],
@@ -19116,7 +20036,7 @@
     {
       "classes": [],
       "path": "apps/api/app/api/v1/router.py",
-      "sha256": "b3ac21230ce212bae8b5bfca1c500ad8716662e62c58a84d0f198b16cdb288c2"
+      "sha256": "eb0e651576b5838d011f88c563bbf30965da42040868e31072793d5621a172ef"
     },
     {
       "classes": [],
@@ -19359,7 +20279,7 @@
         }
       ],
       "path": "apps/api/app/domains/auth/access_service.py",
-      "sha256": "72330918eeb7e71ff20f6f145ee0c7c1c38e1fd61c8fb3afc159b694fa52fbb6"
+      "sha256": "7600416f24932aef35d6d7bfee11d50aaec167e60198e57d05790a45e36f7d03"
     },
     {
       "classes": [],
@@ -19369,7 +20289,7 @@
     {
       "classes": [],
       "path": "apps/api/app/domains/auth/dependencies.py",
-      "sha256": "59a9597b95095217e8fca350abe98d86e824c39cb9b01979315da3dc06bf5af7"
+      "sha256": "18d0fa904e7f45b69c434b6049495d15fc1fe3653263c832222c69a095aff1bb"
     },
     {
       "classes": [],
@@ -22457,6 +23377,215 @@
     },
     {
       "classes": [],
+      "path": "apps/api/app/domains/tenant_email/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "classes": [
+        {
+          "bases": [
+            "RuntimeError"
+          ],
+          "enum_values": {},
+          "name": "EmailDeliveryError",
+          "table": null
+        },
+        {
+          "bases": [
+            "EmailDeliveryError"
+          ],
+          "enum_values": {},
+          "name": "EmailDeliveryConfigurationError",
+          "table": null
+        },
+        {
+          "bases": [
+            "Protocol"
+          ],
+          "enum_values": {},
+          "name": "SecretResolver",
+          "table": null
+        },
+        {
+          "bases": [],
+          "enum_values": {},
+          "name": "FileSecretResolver",
+          "table": null
+        },
+        {
+          "bases": [
+            "Protocol"
+          ],
+          "enum_values": {},
+          "name": "TenantEmailGateway",
+          "table": null
+        },
+        {
+          "bases": [],
+          "enum_values": {},
+          "name": "SmtpTenantEmailGateway",
+          "table": null
+        },
+        {
+          "bases": [],
+          "enum_values": {},
+          "name": "FakeTenantEmailGateway",
+          "table": null
+        },
+        {
+          "bases": [],
+          "enum_values": {},
+          "name": "TenantEmailDeliveryService",
+          "table": null
+        },
+        {
+          "bases": [],
+          "enum_values": {},
+          "name": "DeliveryResult",
+          "table": null
+        }
+      ],
+      "path": "apps/api/app/domains/tenant_email/delivery.py",
+      "sha256": "d9631a335af614f304bf15ce9a88fc0e042a1d824a514ab62f9580c0857f84e9"
+    },
+    {
+      "classes": [
+        {
+          "bases": [
+            "Base"
+          ],
+          "enum_values": {},
+          "name": "EmailDomain",
+          "table": "email_domains"
+        },
+        {
+          "bases": [
+            "Base"
+          ],
+          "enum_values": {},
+          "name": "EmailSender",
+          "table": "email_senders"
+        },
+        {
+          "bases": [
+            "Base"
+          ],
+          "enum_values": {},
+          "name": "EmailCredential",
+          "table": "email_credentials"
+        },
+        {
+          "bases": [
+            "Base"
+          ],
+          "enum_values": {},
+          "name": "EmailMessage",
+          "table": "email_messages"
+        }
+      ],
+      "path": "apps/api/app/domains/tenant_email/models.py",
+      "sha256": "3624669f9b0704d391af158a18d2e813bc09a6728b5e54fecc67cdb198954261"
+    },
+    {
+      "classes": [
+        {
+          "bases": [
+            "BaseModel"
+          ],
+          "enum_values": {},
+          "name": "TenantScopedInput",
+          "table": null
+        },
+        {
+          "bases": [
+            "TenantScopedInput"
+          ],
+          "enum_values": {},
+          "name": "EmailDomainCreate",
+          "table": null
+        },
+        {
+          "bases": [
+            "BaseModel"
+          ],
+          "enum_values": {},
+          "name": "EmailDomainRead",
+          "table": null
+        },
+        {
+          "bases": [
+            "TenantScopedInput"
+          ],
+          "enum_values": {},
+          "name": "EmailSenderCreate",
+          "table": null
+        },
+        {
+          "bases": [
+            "BaseModel"
+          ],
+          "enum_values": {},
+          "name": "EmailSenderRead",
+          "table": null
+        },
+        {
+          "bases": [
+            "TenantScopedInput"
+          ],
+          "enum_values": {},
+          "name": "EmailCredentialCreate",
+          "table": null
+        },
+        {
+          "bases": [
+            "BaseModel"
+          ],
+          "enum_values": {},
+          "name": "EmailCredentialRead",
+          "table": null
+        },
+        {
+          "bases": [
+            "TenantScopedInput"
+          ],
+          "enum_values": {},
+          "name": "EmailComposeRequest",
+          "table": null
+        },
+        {
+          "bases": [
+            "BaseModel"
+          ],
+          "enum_values": {},
+          "name": "EmailMessageRead",
+          "table": null
+        },
+        {
+          "bases": [
+            "BaseModel"
+          ],
+          "enum_values": {},
+          "name": "EmailOutboxRead",
+          "table": null
+        }
+      ],
+      "path": "apps/api/app/domains/tenant_email/schemas.py",
+      "sha256": "7ce97ce42d27c1a1cb77009171b54728c88719ef593da21b4811901e6417fc27"
+    },
+    {
+      "classes": [
+        {
+          "bases": [],
+          "enum_values": {},
+          "name": "TenantEmailService",
+          "table": null
+        }
+      ],
+      "path": "apps/api/app/domains/tenant_email/service.py",
+      "sha256": "5758073604ed10b1b815470a05ad17fde4d3b302a81cc517a52a0a0a088058aa"
+    },
+    {
+      "classes": [],
       "path": "apps/api/app/domains/workforce/__init__.py",
       "sha256": "754d8fd2cd343881b9b655df23259846bb7218e6976d9a449799178b5bd0fe51"
     },
@@ -23196,7 +24325,7 @@
     {
       "classes": [],
       "path": "apps/api/app/main.py",
-      "sha256": "82bd3031b67572f69c452b766bb53cca86e5f8cd99212561fc2888070b2908c9"
+      "sha256": "404863ecb9e3effece409630b534dad9eac5f10ed2a61c6a336904c34f5b0c02"
     },
     {
       "classes": [
@@ -23283,10 +24412,10 @@
         }
       ],
       "path": "apps/api/app/workers/tasks.py",
-      "sha256": "b05316a83e1b7c4389b5a684e2f4c13c84b124f2297672b6715e81162b7d8e4b"
+      "sha256": "69b06c3254bc1a160640ffb990521ab1435a477f4af7b9f20085452a7df1c675"
     }
   ],
-  "baseline_main_sha": "ee79c3cb0bd667c3456dd20521563017b7d2d246",
+  "baseline_main_sha": "54c5b25d5332a2c5d6b4ca7300e7f7e30c1b3aa0",
   "contract_sources": [
     {
       "path": "packages/api-client/src/client.test.ts",
@@ -23294,7 +24423,7 @@
     },
     {
       "path": "packages/api-client/src/client.ts",
-      "sha256": "2385bf476756c3ca9a82ebab58c3e4a2dfab9ed76c7fd6398282be2ef55fa9c0"
+      "sha256": "137bbcb7e3752c9150742b7a55b24c1fce15dc8ef4d986013491aaaa598947f3"
     },
     {
       "path": "packages/api-client/src/config.ts",
@@ -23322,7 +24451,7 @@
     },
     {
       "path": "packages/api-client/src/mock.ts",
-      "sha256": "f5a05b6f8832d95f05dd6fd111e10739643a663f1b2a8bc47ec1ee9976b91e6d"
+      "sha256": "ef40d179489eb1b77137d83e9476ac7fff1524fa3e9c7cb87fe053e9494fb7cc"
     },
     {
       "path": "packages/api-client/src/transport.test.ts",
@@ -23346,7 +24475,7 @@
     },
     {
       "path": "packages/types/src/portal.ts",
-      "sha256": "bb7f3ba95ff1d36ff300464677fa3d0e7900f742c1a9dd9cf418c2c698d4f0dc"
+      "sha256": "1beda61b53a47b4af1a9e7dbffbd1022e786ea2f9ed2b7b4d36a5c040da59392"
     },
     {
       "path": "scripts/check-frontend-openapi.mjs",
@@ -23777,9 +24906,16 @@
     {
       "app": "web",
       "kind": "page",
+      "path": "apps/web/app/admin/email/page.tsx",
+      "route": "/admin/email",
+      "sha256": "edc4f5802b8c485bdf19ab7e5cec7d2be573d135f3a641a6acf9fb7760f610a3"
+    },
+    {
+      "app": "web",
+      "kind": "page",
       "path": "apps/web/app/admin/page.tsx",
       "route": "/admin",
-      "sha256": "bb0112d8b396b93234e2b5640ed241d6b0d7ec7c48877fa03c968a3575099633"
+      "sha256": "28375d1e00736d720ffe580adfa5e5217654c70c2c7e2061650ebb2951a36fd8"
     },
     {
       "app": "web",
@@ -24050,9 +25186,16 @@
     {
       "app": "web",
       "kind": "page",
+      "path": "apps/web/app/provider/email/page.tsx",
+      "route": "/provider/email",
+      "sha256": "0c1f561f81f4981f9f9e77a0b763333be5e35be285a1f07ed6e254ead15629ee"
+    },
+    {
+      "app": "web",
+      "kind": "page",
       "path": "apps/web/app/provider/page.tsx",
       "route": "/provider",
-      "sha256": "319ecbfc3c1894a8f1e6cd92a31774fb39d01bad2c6c9d01cd0fcddeac6a45cf"
+      "sha256": "2c9870f4b955ef03bc4064d1744e17fe482c698a100db6996cc4f94ea097421a"
     },
     {
       "app": "web",
@@ -24310,7 +25453,7 @@
   ],
   "openapi_artifact": {
     "path": "apps/api/openapi.json",
-    "sha256": "d7fd1a8b77323eca8d98183d43bc704b02fedccd72729562063576ec1cdec4e7"
+    "sha256": "0de5a21ac17aec2b143fa946f886012dca32d764b38812fd573a61125997553b"
   },
   "profile_contract_variants": [],
   "required_directories": {
@@ -24987,6 +26130,83 @@
       "source": "apps/api/app/api/v1/customer/quotes.py"
     },
     {
+      "handler": "list_domains",
+      "local_path": "/domains",
+      "method": "GET",
+      "router": "router",
+      "source": "apps/api/app/api/v1/email.py"
+    },
+    {
+      "handler": "create_domain",
+      "local_path": "/domains",
+      "method": "POST",
+      "router": "router",
+      "source": "apps/api/app/api/v1/email.py"
+    },
+    {
+      "handler": "set_domain_verification",
+      "local_path": "/domains/{domain_id}/verification",
+      "method": "POST",
+      "router": "router",
+      "source": "apps/api/app/api/v1/email.py"
+    },
+    {
+      "handler": "list_senders",
+      "local_path": "/senders",
+      "method": "GET",
+      "router": "router",
+      "source": "apps/api/app/api/v1/email.py"
+    },
+    {
+      "handler": "create_sender",
+      "local_path": "/senders",
+      "method": "POST",
+      "router": "router",
+      "source": "apps/api/app/api/v1/email.py"
+    },
+    {
+      "handler": "list_credentials",
+      "local_path": "/credentials",
+      "method": "GET",
+      "router": "router",
+      "source": "apps/api/app/api/v1/email.py"
+    },
+    {
+      "handler": "create_credential",
+      "local_path": "/credentials",
+      "method": "POST",
+      "router": "router",
+      "source": "apps/api/app/api/v1/email.py"
+    },
+    {
+      "handler": "compose_message",
+      "local_path": "/messages",
+      "method": "POST",
+      "router": "router",
+      "source": "apps/api/app/api/v1/email.py"
+    },
+    {
+      "handler": "get_message",
+      "local_path": "/messages/{message_id}",
+      "method": "GET",
+      "router": "router",
+      "source": "apps/api/app/api/v1/email.py"
+    },
+    {
+      "handler": "list_outbox",
+      "local_path": "/outbox",
+      "method": "GET",
+      "router": "router",
+      "source": "apps/api/app/api/v1/email.py"
+    },
+    {
+      "handler": "retry_outbox",
+      "local_path": "/outbox/{event_id}/retry",
+      "method": "POST",
+      "router": "router",
+      "source": "apps/api/app/api/v1/email.py"
+    },
+    {
       "handler": "create_compensation_plan",
       "local_path": "/compensation-plans",
       "method": "POST",
@@ -25654,7 +26874,7 @@
   ],
   "runtime_profiles": {
     "canonical_contract": {
-      "contract_sha256": "a2847e6e1c3c2e9b4eba7ed88e86cdc64437712d2b162483b9bf003521357b36",
+      "contract_sha256": "a58c69f4463d75125184c0bf8e7182f2cb65a95fbbce734b871f1f6566cc6147",
       "duplicate_route_registrations": [],
       "framework_routes": [
         {
@@ -25687,7 +26907,7 @@
         }
       ],
       "openapi_matches_artifact": true,
-      "openapi_operations": 182,
+      "openapi_operations": 193,
       "operations": [
         "DELETE /api/v1/admin/postal-codes/{postal_code_id}",
         "DELETE /api/v1/admin/service-zones/{service_area_id}",
@@ -25740,6 +26960,11 @@
         "GET /api/v1/customer/profile",
         "GET /api/v1/customer/quotes",
         "GET /api/v1/customer/quotes/{quote_id}",
+        "GET /api/v1/email/credentials",
+        "GET /api/v1/email/domains",
+        "GET /api/v1/email/messages/{message_id}",
+        "GET /api/v1/email/outbox",
+        "GET /api/v1/email/senders",
         "GET /api/v1/integrations/failures",
         "GET /api/v1/integrations/health",
         "GET /api/v1/jobs",
@@ -25843,6 +27068,12 @@
         "POST /api/v1/customer/bookings/{booking_id}/cancel",
         "POST /api/v1/customer/bookings/{booking_id}/reschedule",
         "POST /api/v1/customer/quotes/{quote_id}/decision",
+        "POST /api/v1/email/credentials",
+        "POST /api/v1/email/domains",
+        "POST /api/v1/email/domains/{domain_id}/verification",
+        "POST /api/v1/email/messages",
+        "POST /api/v1/email/outbox/{event_id}/retry",
+        "POST /api/v1/email/senders",
         "POST /api/v1/integrations/events/{event_id}/retry",
         "POST /api/v1/jobs/work-requests/{request_id}/decision",
         "POST /api/v1/jobs/work-requests/{request_id}/review",
@@ -25873,10 +27104,10 @@
         "PUT /api/v1/operations/workers/{worker_id}/booking-coverage",
         "PUT /api/v1/provider/availability"
       ],
-      "paths": 149
+      "paths": 157
     },
     "default": {
-      "contract_sha256": "ad87544ff91aa590c0507ca41a18a53d813cf1d39209c63413a0cd7b75206d42",
+      "contract_sha256": "10eedc8133515fda22eec426a71f86ed3e834f9a95c0875f331f94d042543e73",
       "duplicate_route_registrations": [],
       "framework_routes": [
         {
@@ -25909,7 +27140,7 @@
         }
       ],
       "openapi_matches_artifact": false,
-      "openapi_operations": 172,
+      "openapi_operations": 183,
       "operations": [
         "DELETE /api/v1/admin/postal-codes/{postal_code_id}",
         "DELETE /api/v1/admin/service-zones/{service_area_id}",
@@ -25959,6 +27190,11 @@
         "GET /api/v1/customer/profile",
         "GET /api/v1/customer/quotes",
         "GET /api/v1/customer/quotes/{quote_id}",
+        "GET /api/v1/email/credentials",
+        "GET /api/v1/email/domains",
+        "GET /api/v1/email/messages/{message_id}",
+        "GET /api/v1/email/outbox",
+        "GET /api/v1/email/senders",
         "GET /api/v1/integrations/failures",
         "GET /api/v1/integrations/health",
         "GET /api/v1/jobs",
@@ -26055,6 +27291,12 @@
         "POST /api/v1/customer/bookings/{booking_id}/cancel",
         "POST /api/v1/customer/bookings/{booking_id}/reschedule",
         "POST /api/v1/customer/quotes/{quote_id}/decision",
+        "POST /api/v1/email/credentials",
+        "POST /api/v1/email/domains",
+        "POST /api/v1/email/domains/{domain_id}/verification",
+        "POST /api/v1/email/messages",
+        "POST /api/v1/email/outbox/{event_id}/retry",
+        "POST /api/v1/email/senders",
         "POST /api/v1/integrations/events/{event_id}/retry",
         "POST /api/v1/jobs/work-requests/{request_id}/decision",
         "POST /api/v1/jobs/work-requests/{request_id}/review",
@@ -26085,10 +27327,10 @@
         "PUT /api/v1/operations/workers/{worker_id}/booking-coverage",
         "PUT /api/v1/provider/availability"
       ],
-      "paths": 140
+      "paths": 148
     },
     "implemented_routes": {
-      "contract_sha256": "d9c0dd305056d7ff9841edd5d1e9c77c6254cabd818225ae1f6e09f34edc5d5a",
+      "contract_sha256": "48aa62db64322de9116ccdcc6be5bc3fecfe468f16f2ca024983a445813dda1c",
       "duplicate_route_registrations": [],
       "framework_routes": [
         {
@@ -26121,7 +27363,7 @@
         }
       ],
       "openapi_matches_artifact": false,
-      "openapi_operations": 191,
+      "openapi_operations": 202,
       "operations": [
         "DELETE /api/v1/admin/postal-codes/{postal_code_id}",
         "DELETE /api/v1/admin/service-zones/{service_area_id}",
@@ -26173,6 +27415,11 @@
         "GET /api/v1/customer/profile",
         "GET /api/v1/customer/quotes",
         "GET /api/v1/customer/quotes/{quote_id}",
+        "GET /api/v1/email/credentials",
+        "GET /api/v1/email/domains",
+        "GET /api/v1/email/messages/{message_id}",
+        "GET /api/v1/email/outbox",
+        "GET /api/v1/email/senders",
         "GET /api/v1/finance/earnings",
         "GET /api/v1/integrations/failures",
         "GET /api/v1/integrations/health",
@@ -26275,6 +27522,12 @@
         "POST /api/v1/customer/bookings/{booking_id}/cancel",
         "POST /api/v1/customer/bookings/{booking_id}/reschedule",
         "POST /api/v1/customer/quotes/{quote_id}/decision",
+        "POST /api/v1/email/credentials",
+        "POST /api/v1/email/domains",
+        "POST /api/v1/email/domains/{domain_id}/verification",
+        "POST /api/v1/email/messages",
+        "POST /api/v1/email/outbox/{event_id}/retry",
+        "POST /api/v1/email/senders",
         "POST /api/v1/finance/compensation-plans",
         "POST /api/v1/finance/earnings/{earning_id}/adjustments",
         "POST /api/v1/finance/payout-batches",
@@ -26316,7 +27569,7 @@
         "PUT /api/v1/operations/workers/{worker_id}/booking-coverage",
         "PUT /api/v1/provider/availability"
       ],
-      "paths": 159
+      "paths": 167
     }
   },
   "schema_version": 1,
