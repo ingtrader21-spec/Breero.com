@@ -65,10 +65,13 @@ class AddressService:
             city=resolved.city,
             state_code=resolved.state_code,
             postal_code=resolved.postal_code,
+            postal_code_plus4=resolved.postal_code_plus4,
             country_code=resolved.country_code,
             service_area_id=area.id,
             geocoding_provider=resolved.provider,
             timezone_name=resolved.timezone_name,
+            timezone_source=resolved.provider,
+            address_validation_status="VALIDATED",
             location=WKTElement(f"POINT({resolved.longitude} {resolved.latitude})", srid=4326),
         )
         await self.repository.add_address(address)

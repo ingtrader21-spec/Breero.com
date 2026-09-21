@@ -3,13 +3,23 @@ import os
 import smtplib
 from dataclasses import dataclass
 from email.message import EmailMessage
-from typing import Any, Protocol
+from typing import Any
 
 import httpx
 import structlog
 
 from app.config import settings
-from app.integrations.payouts import IntegrationNotConfigured
+from app.integrations.contracts import EmailGateway, IntegrationNotConfigured
+
+__all__ = [
+    "ConsoleEmailGateway",
+    "EmailAdapter",
+    "EmailGateway",
+    "FakeEmailGateway",
+    "RenderedEmail",
+    "SmtpEmailGateway",
+    "render_email",
+]
 
 
 class EmailDeliveryDisabled(IntegrationNotConfigured):
@@ -30,10 +40,6 @@ def require_live_email_delivery() -> None:
 class RenderedEmail:
     subject: str
     text: str
-
-
-class EmailGateway(Protocol):
-    async def send(self, *, to: str, subject: str, text: str) -> str: ...
 
 
 class FakeEmailGateway:
@@ -60,7 +66,11 @@ class SmtpEmailGateway:
         if not settings.smtp_host or not settings.smtp_from_email:
             raise EmailDeliveryDisabled("Email provider is not configured")
         message = EmailMessage()
-        message["From"], message["To"], message["Subject"] = settings.smtp_from_email, to, subject
+        message["From"], message["To"], message["Subject"] = (
+            settings.smtp_from_email,
+            to,
+            subject,
+        )
         message.set_content(text)
 
         def deliver() -> None:

@@ -2,7 +2,6 @@ import { readFileSync } from "node:fs";
 
 const document = JSON.parse(readFileSync(new URL("../apps/api/openapi.json", import.meta.url), "utf8"));
 const required = {
-  "/api/v2/capabilities": ["get"],
   "/api/v1/public/capabilities": ["get"],
   "/api/v1/auth/login": ["post"],
   "/api/v1/auth/register": ["post"],
@@ -12,13 +11,12 @@ const required = {
   "/api/v1/auth/password/forgot": ["post"],
   "/api/v1/auth/password/reset": ["post"],
   "/api/v1/auth/email/verify": ["post"],
+  "/api/v1/auth/email/resend": ["post"],
+  "/api/v1/auth/phone/verify": ["post"],
   "/api/v1/services": ["get"],
   "/api/v1/services/{service_id}": ["get"],
   "/api/v1/services/{service_id}/questions": ["get"],
   "/api/v1/service-requests": ["post"],
-  "/api/v1/availability/search": ["post"],
-  "/api/v1/bookings": ["post"],
-  "/api/v1/bookings/{booking_id}/confirmation": ["get"],
   "/api/v1/contact": ["post"],
   "/api/v1/provider-interest": ["post"],
   "/api/v1/privacy-requests": ["post"],
@@ -29,13 +27,27 @@ const required = {
   "/api/v1/customer/bookings": ["get"],
   "/api/v1/customer/bookings/{booking_id}": ["get"],
   "/api/v1/customer/bookings/{booking_id}/cancel": ["post"],
+  "/api/v1/client/bookings/{booking_id}/reschedule": ["post"],
   "/api/v1/customer/quotes": ["get"],
   "/api/v1/customer/quotes/{quote_id}": ["get"],
   "/api/v1/customer/quotes/{quote_id}/decision": ["post"],
+  "/api/v1/booking/address/validate": ["post"],
+  "/api/v1/booking/service-area/check": ["post"],
+  "/api/v1/booking/timezone/resolve": ["post"],
+  "/api/v1/booking/availability": ["post"],
+  "/api/v1/booking/holds": ["post"],
+  "/api/v1/booking/holds/{hold_id}": ["get", "delete"],
+  "/api/v1/booking/requests": ["post"],
+  "/api/v1/provider/profile": ["get"],
+  "/api/v1/provider/jobs": ["get"],
+  "/api/v1/provider/availability": ["get", "put"],
+  "/api/v1/provider/capacity": ["get", "patch"],
+  "/api/v1/admin/bookings": ["get"],
+  "/api/v1/admin/provider-applications": ["get"],
+  "/api/v1/admin/feature-flags": ["get"],
+  "/api/v1/admin/audit-events": ["get"],
 };
 
-// PR #34 accepted these routes for quote-only, operator-confirmed scheduling.
-// Runtime capabilities remain fail-closed; route presence does not enable instant booking.
 const forbidden = {
   "/api/v1/bookings/{booking_id}/payment": ["post"],
   "/api/v1/payments/intents": ["post"],
@@ -56,7 +68,7 @@ for (const [path, methods] of Object.entries(forbidden)) {
   for (const method of methods) if (document.paths?.[path]?.[method]) exposed.push(`${method.toUpperCase()} ${path}`);
 }
 if (exposed.length) {
-  console.error(`Payment-disabled API contract exposes forbidden payment routes:\n${exposed.join("\n")}`);
+  console.error(`Request-only API contract exposes forbidden booking/payment routes:\n${exposed.join("\n")}`);
   process.exit(1);
 }
 
@@ -75,4 +87,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-console.log(`Payment-disabled manual-scheduling frontend API contract verified: ${Object.keys(required).length} required paths; zero payment mutation routes.`);
+console.log(`BREERO application API contract verified: ${Object.keys(required).length} required paths; payments remain disabled.`);
