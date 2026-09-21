@@ -1,19 +1,21 @@
 # Integration registry
 
-Generated source evidence at `50407f46777e44fb0efbd6af0c7b70466a43a93d`. File presence does not certify external provider connectivity or authorize live effects.
+Generated source evidence at `ee79c3cb0bd667c3456dd20521563017b7d2d246`. File presence does not certify external provider connectivity or authorize live effects.
 
 ## BREERO integration source modules
 
 | Module | SHA-256 |
 |---|---|
 | [apps/api/app/integrations/__init__.py](../../apps/api/app/integrations/__init__.py) | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
-| [apps/api/app/integrations/email.py](../../apps/api/app/integrations/email.py) | `c42510b2e2e5f7fcd31fbd77caafe5cf1f4d240013fa73dd433648f0486447cd` |
-| [apps/api/app/integrations/geocoding.py](../../apps/api/app/integrations/geocoding.py) | `d233de17766a3289fe626fe35602995797b5511141806ef905cbff87167f8582` |
-| [apps/api/app/integrations/middleware.py](../../apps/api/app/integrations/middleware.py) | `25f70aa7f83dbb890e2e5bf95d628a8de873a723e1e5a8ad3c1d01181bd08bfa` |
-| [apps/api/app/integrations/odoo.py](../../apps/api/app/integrations/odoo.py) | `d05c9cff81a009c0f81ee18c7f13303e50b9eb1270b25425ca1d7a64d15a4de6` |
-| [apps/api/app/integrations/payouts.py](../../apps/api/app/integrations/payouts.py) | `9793b34fd1b84d1755e5d5d3d7707311c1c3768fd9a6781e681b79d1df3af443` |
-| [apps/api/app/integrations/sms.py](../../apps/api/app/integrations/sms.py) | `501a3fde48e1af9df546d7f237dc4294091a740f09444eb0f43f68e789e6928c` |
-| [apps/api/app/integrations/stripe.py](../../apps/api/app/integrations/stripe.py) | `ee3b85e8c3d1beabdd4b204ee8a7662d96e4bb26afbc440201300aed7d722d37` |
+| [apps/api/app/integrations/contracts.py](../../apps/api/app/integrations/contracts.py) | `e4bc1153e2cb9c7200bc437f89bb4389a79a175bd48ca23142078d3a59c7cfee` |
+| [apps/api/app/integrations/email.py](../../apps/api/app/integrations/email.py) | `7a2d106903668e2fb23a16189973e06f2228267ce8de4de1b535a5192a96352a` |
+| [apps/api/app/integrations/event_envelope.py](../../apps/api/app/integrations/event_envelope.py) | `1e88d37ce7d2170736357e9c704e7a41291f78449566d723bc85cd4f2ddafc30` |
+| [apps/api/app/integrations/geocoding.py](../../apps/api/app/integrations/geocoding.py) | `c993875ecd07dd2e3c509acafcc3c1ee9478c0dcf6df2ba50182cdd5001c85fd` |
+| [apps/api/app/integrations/middleware.py](../../apps/api/app/integrations/middleware.py) | `3f576d0d691fab2644b5e53cad4f90b8d4bb36de176d8405d0464351fb466c54` |
+| [apps/api/app/integrations/odoo.py](../../apps/api/app/integrations/odoo.py) | `21410c86ab073052680cb8d94fa3714da70ef6b268336c0b383ab1c033ad8592` |
+| [apps/api/app/integrations/payouts.py](../../apps/api/app/integrations/payouts.py) | `1e9bcc5a93c2964ddd1781d39620f874a2397f8b27d5052b8004e66f903502de` |
+| [apps/api/app/integrations/sms.py](../../apps/api/app/integrations/sms.py) | `98fff0ac475301b0d42d24e772c9e8c9fe4fd35b579bdc662942391f3b1e1fc3` |
+| [apps/api/app/integrations/stripe.py](../../apps/api/app/integrations/stripe.py) | `72063778e869aeda79910f28a7c78bbb6857d5a85797dc508e57bbbb7fe5de9d` |
 
 ## Odoo projection source
 
