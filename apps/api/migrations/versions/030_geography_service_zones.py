@@ -1,17 +1,23 @@
 """normalize address evidence and service-zone postal routing
 
-Revision ID: 021_geography_service_zones
-Revises: 020_booking_intents
+Revision ID: 030_geography_service_zones
+Revises: 029_booking_intents
 """
 
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-revision = "021_geography_service_zones"
-down_revision = "020_booking_intents"
+revision = "030_geography_service_zones"
+down_revision = "029_booking_intents"
 branch_labels = None
 depends_on = None
+
+
+def _add_column_if_missing(table_name: str, column: sa.Column) -> None:
+    existing = {item["name"] for item in sa.inspect(op.get_bind()).get_columns(table_name)}
+    if column.name not in existing:
+        op.add_column(table_name, column)
 
 
 def upgrade() -> None:
@@ -48,9 +54,9 @@ def upgrade() -> None:
     # DuplicateObject. The constraint is left untouched by this migration.
     op.create_index("ix_service_areas_priority", "service_areas", ["priority"])
 
-    op.add_column("addresses", sa.Column("line2", sa.String(200)))
+    _add_column_if_missing("addresses", sa.Column("line2", sa.String(200)))
     op.add_column("addresses", sa.Column("county", sa.String(120)))
-    op.add_column("addresses", sa.Column("postal_code_plus4", sa.String(4)))
+    _add_column_if_missing("addresses", sa.Column("postal_code_plus4", sa.String(4)))
     op.add_column(
         "addresses",
         sa.Column(
@@ -151,7 +157,7 @@ def upgrade() -> None:
     )
 
     op.create_table(
-        "service_zone_postal_codes",
+        "service_area_postal_codes",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column(
             "service_area_id",
@@ -191,56 +197,56 @@ def upgrade() -> None:
         ),
         sa.CheckConstraint(
             "postal_code ~ '^[0-9]{5}(-[0-9]{4})?$'",
-            name="ck_service_zone_postal_codes_service_zone_postal_code_format",
+            name="ck_service_area_postal_codes_service_zone_postal_code_format",
         ),
         sa.CheckConstraint(
             "priority >= 0",
             name=(
-                "ck_service_zone_postal_codes_"
+                "ck_service_area_postal_codes_"
                 "service_zone_postal_code_priority_nonnegative"
             ),
         ),
         sa.CheckConstraint(
             "version > 0",
             name=(
-                "ck_service_zone_postal_codes_"
+                "ck_service_area_postal_codes_"
                 "service_zone_postal_code_positive_version"
             ),
         ),
         sa.UniqueConstraint(
             "service_area_id",
             "postal_code",
-            name="uq_service_zone_postal_codes_area_postal",
+            name="uq_service_area_postal_codes_area_postal",
         ),
     )
     op.create_index(
-        "ix_service_zone_postal_codes_service_area_id",
-        "service_zone_postal_codes",
+        "ix_service_area_postal_codes_service_area_id",
+        "service_area_postal_codes",
         ["service_area_id"],
     )
     op.create_index(
-        "ix_service_zone_postal_codes_postal_code",
-        "service_zone_postal_codes",
+        "ix_service_area_postal_codes_postal_code",
+        "service_area_postal_codes",
         ["postal_code"],
     )
     op.create_index(
-        "ix_service_zone_postal_codes_city",
-        "service_zone_postal_codes",
+        "ix_service_area_postal_codes_city",
+        "service_area_postal_codes",
         ["city"],
     )
     op.create_index(
-        "ix_service_zone_postal_codes_state_code",
-        "service_zone_postal_codes",
+        "ix_service_area_postal_codes_state_code",
+        "service_area_postal_codes",
         ["state_code"],
     )
     op.create_index(
-        "ix_service_zone_postal_codes_active",
-        "service_zone_postal_codes",
+        "ix_service_area_postal_codes_active",
+        "service_area_postal_codes",
         ["active"],
     )
     op.create_index(
         "ix_service_zone_postal_match",
-        "service_zone_postal_codes",
+        "service_area_postal_codes",
         ["postal_code", "active", "regular_service_enabled"],
     )
 
@@ -347,7 +353,7 @@ def upgrade() -> None:
     )
     op.execute(
         """
-        INSERT INTO service_zone_postal_codes (
+        INSERT INTO service_area_postal_codes (
             id,
             service_area_id,
             postal_code,
@@ -386,7 +392,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("postal_code_imports")
-    op.drop_table("service_zone_postal_codes")
+    op.drop_table("service_area_postal_codes")
     op.drop_table("service_zone_services")
     postgresql.ENUM(name="postal_code_import_status").drop(op.get_bind())
 

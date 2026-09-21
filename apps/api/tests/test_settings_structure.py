@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from app import config
 from app.settings import Settings, get_settings, settings
 from app.settings.release import disabled_release_flags
@@ -27,6 +29,15 @@ def test_secret_file_bindings_are_explicit() -> None:
 def test_release_boundary_lists_every_high_risk_capability() -> None:
     flags = disabled_release_flags(Settings())
     expected = {
+        "AUTO_ASSIGN_PROVIDER",
+        "AUTO_CONFIRM_BOOKING",
+        "LIVE_PROVIDER_DISPATCH",
+        "LIVE_SMS_DELIVERY",
+        "LIVE_CALLBACKS",
+        "ODOO_DELIVERY_ENABLED",
+        "ODOO_WRITE_ENABLED",
+        "PUBLIC_BOOKING_API_ENABLED",
+
         "STRIPE_ENABLED",
         "PAYMENTS_ENABLED",
         "ONLINE_CHECKOUT_ENABLED",
@@ -45,3 +56,25 @@ def test_release_boundary_lists_every_high_risk_capability() -> None:
         "MARKETING_SMS_ENABLED",
     }
     assert expected == set(flags)
+
+
+def test_keycloak_secret_files_are_loaded(tmp_path: Path) -> None:
+    client = tmp_path / "client"
+    provisioner = tmp_path / "provisioner"
+    client.write_text("SYNTHETIC-client-file")
+    provisioner.write_text("SYNTHETIC-provisioner-file")
+    client.chmod(0o600)
+    provisioner.chmod(0o600)
+    configured = Settings(
+        app_env="test",
+        keycloak_client_secret_file=str(client),
+        keycloak_provisioner_client_secret_file=str(provisioner),
+    )
+    assert configured.keycloak_client_secret == "SYNTHETIC-client-file"
+    assert configured.keycloak_provisioner_client_secret == "SYNTHETIC-provisioner-file"
+
+
+@pytest.mark.parametrize("name", ["keycloak_client_secret", "keycloak_provisioner_client_secret"])
+def test_keycloak_secret_sources_cannot_conflict(name: str, tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="configure only one source"):
+        Settings(app_env="test", **{name: "SYNTHETIC-inline", f"{name}_file": str(tmp_path / "secret")})

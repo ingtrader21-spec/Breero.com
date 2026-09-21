@@ -1,30 +1,12 @@
-from dataclasses import dataclass
 from typing import Any
 
 import httpx
 
 from app.config import settings
 from app.core.errors import DomainError
+from app.integrations.contracts import GeocodedAddress, GeocodingGateway
 
-
-@dataclass(frozen=True)
-class GeocodedAddress:
-    formatted_address: str
-    line1: str
-    city: str
-    postal_code: str
-    country_code: str
-    latitude: float
-    longitude: float
-    provider: str
-    provider_reference: str | None = None
-    confidence: float | None = None
-    quality: str | None = None
-    state_code: str | None = None
-    timezone_name: str | None = None
-    line2: str | None = None
-    county: str | None = None
-    postal_code_plus4: str | None = None
+__all__ = ["FakeGeocodingAdapter", "GeocodedAddress", "GeocodingAdapter", "GeocodingGateway"]
 
 
 class FakeGeocodingAdapter:

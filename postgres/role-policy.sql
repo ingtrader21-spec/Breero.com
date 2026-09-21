@@ -1,0 +1,17 @@
+REVOKE ALL ON DATABASE breero FROM PUBLIC;
+GRANT CONNECT ON DATABASE breero TO breero_runtime, breero_migrator;
+GRANT TEMPORARY ON DATABASE breero TO breero_migrator;
+
+GRANT USAGE ON SCHEMA public, tiger, tiger_data, topology TO breero_runtime;
+GRANT USAGE, CREATE ON SCHEMA public TO breero_migrator;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO breero_runtime;
+GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO breero_runtime;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO breero_runtime;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE breero_migrator IN SCHEMA public
+    GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO breero_runtime;
+ALTER DEFAULT PRIVILEGES FOR ROLE breero_migrator IN SCHEMA public
+    GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO breero_runtime;
+ALTER DEFAULT PRIVILEGES FOR ROLE breero_migrator IN SCHEMA public
+    GRANT EXECUTE ON FUNCTIONS TO breero_runtime;

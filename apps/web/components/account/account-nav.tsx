@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { CalendarIcon, ChevronDownIcon, HomeIcon, UserIcon } from "@breero/ui";
-import { logoutCustomerSession } from "@/lib/customer/session-actions";
+import { customerApi, customerSession } from "@/lib/customer/api";
+import { keycloak } from "@/lib/keycloak";
 
 const links = [
   { href: "/account", label: "Overview", icon: <HomeIcon /> },
@@ -15,13 +15,18 @@ const links = [
 
 export function AccountNav() {
   const pathname = usePathname();
-  const [signingOut, setSigningOut] = useState(false);
-
   const logout = async () => {
-    setSigningOut(true);
-    await logoutCustomerSession("/account/login");
+    if (keycloak.enabled) {
+      await keycloak.logout();
+      return;
+    }
+    try {
+      await customerApi.auth.logout({ refresh_token: "cookie-session-not-readable-by-javascript" });
+    } finally {
+      customerSession.clear();
+      window.location.assign("/account/login");
+    }
   };
-
   return (
     <>
       <aside className="account-nav">
@@ -43,8 +48,8 @@ export function AccountNav() {
               </a>
             );
           })}
-          <button type="button" disabled={signingOut} onClick={() => void logout()}>
-            {signingOut ? "Signing out…" : "Log out"}
+          <button type="button" onClick={logout}>
+            Log out
           </button>
         </nav>
         <div className="account-nav__help">
@@ -72,12 +77,10 @@ export function AccountNav() {
                 {link.label}
               </option>
             ))}
+            <option value="/account/login">Sign in page</option>
           </select>
           <ChevronDownIcon />
         </span>
-        <button type="button" disabled={signingOut} onClick={() => void logout()}>
-          {signingOut ? "Signing out…" : "Log out"}
-        </button>
       </div>
     </>
   );

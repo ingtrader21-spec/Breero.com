@@ -89,12 +89,12 @@ class ServiceSkillRequirement(Base):
 
 
 class ProviderService(Base):
-    __tablename__ = "provider_services"
+    __tablename__ = "provider_catalog_services"
     __table_args__ = (
         UniqueConstraint(
             "vendor_id",
             "service_id",
-            name="uq_provider_services_vendor_service",
+            name="uq_provider_catalog_services_vendor_service",
         ),
         CheckConstraint("version > 0", name="provider_service_positive_version"),
         CheckConstraint(
@@ -138,12 +138,12 @@ class ProviderService(Base):
 
 
 class ProviderSkill(Base):
-    __tablename__ = "provider_skills"
+    __tablename__ = "provider_catalog_skills"
     __table_args__ = (
         UniqueConstraint(
             "worker_id",
             "skill_id",
-            name="uq_provider_skills_worker_skill",
+            name="uq_provider_catalog_skills_worker_skill",
         ),
         CheckConstraint("version > 0", name="provider_skill_positive_version"),
     )
