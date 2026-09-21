@@ -54,8 +54,8 @@ importers:
         specifier: ^9.17.0
         version: 9.39.5
       eslint-config-next:
-        specifier: ^15.5.24
-        version: 15.5.25(eslint@9.39.5)(typescript@5.9.3)
+        specifier: 15.5.24
+        version: 15.5.24(eslint@9.39.5)(typescript@5.9.3)
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
@@ -94,8 +94,8 @@ importers:
         specifier: ^9.17.0
         version: 9.39.5
       eslint-config-next:
-        specifier: ^15.5.24
-        version: 15.5.25(eslint@9.39.5)(typescript@5.9.3)
+        specifier: 15.5.24
+        version: 15.5.24(eslint@9.39.5)(typescript@5.9.3)
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
@@ -134,8 +134,8 @@ importers:
         specifier: ^9.17.0
         version: 9.39.5
       eslint-config-next:
-        specifier: ^15.5.24
-        version: 15.5.25(eslint@9.39.5)(typescript@5.9.3)
+        specifier: 15.5.24
+        version: 15.5.24(eslint@9.39.5)(typescript@5.9.3)
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
@@ -192,8 +192,8 @@ importers:
         specifier: ^9.17.0
         version: 9.39.5
       eslint-config-next:
-        specifier: ^15.5.24
-        version: 15.5.25(eslint@9.39.5)(typescript@5.9.3)
+        specifier: 15.5.24
+        version: 15.5.24(eslint@9.39.5)(typescript@5.9.3)
       jsdom:
         specifier: ^25.0.1
         version: 25.0.1
@@ -786,8 +786,8 @@ packages:
   '@next/eslint-plugin-next@15.5.23':
     resolution: {integrity: sha512-0KnCFpiWVIsbwBhByZ0uIcjYM5xqGrFzN2eOPbwru/wuy5Z1dmA+3gP+PRbi4gl1Ny7an66BqAM/NHkX/50rbw==}
 
-  '@next/eslint-plugin-next@15.5.25':
-    resolution: {integrity: sha512-dAzOqZQCAOgIq5yQpsuMBZcwxK0AtzGqHMQpxNWYLQlvf79rsP3SDwdGPNQC4ySaMSihOQXMO/VXubQ3JWW+3A==}
+  '@next/eslint-plugin-next@15.5.24':
+    resolution: {integrity: sha512-K6jcYhwMY73qpeJ5SP+rrXs7Fuvv94HEvOCEen/zjwG7aq83utZY8n+8YdKHZR1lv0n5cB4z9C6QqwpE9acN+A==}
 
   '@next/swc-darwin-arm64@15.5.24':
     resolution: {integrity: sha512-AGdNLvxZNY6eR2iSnV+6wUa8CiHTMr4F7g3uHH7fT4ICIJBE00R9u4tzN/Vuwsw0cOi8MTD2HJcTCb6siMH88Q==}
@@ -1639,8 +1639,8 @@ packages:
       typescript:
         optional: true
 
-  eslint-config-next@15.5.25:
-    resolution: {integrity: sha512-hB1oClZzRO3vMAeMmBMch0FHNJ4irH74LvQWDEMHkJtG/Us9+SAsg1f5Pvcw9jz4tc8wSGnvbmF050BRAAIbBg==}
+  eslint-config-next@15.5.24:
+    resolution: {integrity: sha512-RXne8azyj9DKV9N15elyRsnh98BtKINYHCG7bmVhpIhaOtaYvrNJ37XwWpjY9Z09f5RHYOf9vn5uU0MgV1iLrw==}
     peerDependencies:
       eslint: ^7.23.0 || ^8.0.0 || ^9.0.0
       typescript: '>=3.3.1'
@@ -3260,7 +3260,7 @@ snapshots:
     dependencies:
       fast-glob: 3.3.1
 
-  '@next/eslint-plugin-next@15.5.25':
+  '@next/eslint-plugin-next@15.5.24':
     dependencies:
       fast-glob: 3.3.1
 
@@ -4155,9 +4155,9 @@ snapshots:
       - eslint-plugin-import-x
       - supports-color
 
-  eslint-config-next@15.5.25(eslint@9.39.5)(typescript@5.9.3):
+  eslint-config-next@15.5.24(eslint@9.39.5)(typescript@5.9.3):
     dependencies:
-      '@next/eslint-plugin-next': 15.5.25
+      '@next/eslint-plugin-next': 15.5.24
       '@rushstack/eslint-patch': 1.16.1
       '@typescript-eslint/eslint-plugin': 8.67.0(@typescript-eslint/parser@8.67.0(eslint@9.39.5)(typescript@5.9.3))(eslint@9.39.5)(typescript@5.9.3)
       '@typescript-eslint/parser': 8.67.0(eslint@9.39.5)(typescript@5.9.3)

@@ -47,6 +47,7 @@ jobs:
           JWT_SECRET_REFERENCE: /tmp/breero-jwt-access
           JWT_REFRESH_SECRET_REFERENCE: /tmp/breero-jwt-refresh
           GEOAPIFY_API_KEY_REFERENCE: /tmp/breero-geoapify
+          KEYCLOAK_CLIENT_SECRET_REFERENCE: /tmp/breero-keycloak-client-secret
           POSTGRES_PASSWORD_REFERENCE: /tmp/breero-postgres-password
           REDIS_PASSWORD_REFERENCE: /tmp/breero-redis-password
           BREERO_STAGING_API_IMAGE: ghcr.io/example/breero-api@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
@@ -65,6 +66,7 @@ jobs:
                 /tmp/breero-jwt-access \
                 /tmp/breero-jwt-refresh \
                 /tmp/breero-geoapify \
+                /tmp/breero-keycloak-client-secret \
                 /tmp/breero-postgres-password \
                 /tmp/breero-redis-password \
                 /tmp/breero-staging-database-url \
