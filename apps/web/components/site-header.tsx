@@ -23,21 +23,27 @@ export function SiteHeader() {
 
   useEffect(() => {
     setOpen(false);
-    setAuthenticated(hasCustomerSession());
   }, [pathname]);
 
   useEffect(() => {
-    const syncSession = () => setAuthenticated(hasCustomerSession());
-    syncSession();
-    window.addEventListener("focus", syncSession);
-    window.addEventListener("pageshow", syncSession);
-    window.addEventListener("storage", syncSession);
-    window.addEventListener(CUSTOMER_SESSION_EVENT, syncSession);
+    let cancelled = false;
+    const syncSession = async () => {
+      const active = await hasCustomerSession();
+      if (!cancelled) setAuthenticated(active);
+    };
+    const onSessionChanged = () => { void syncSession(); };
+
+    void syncSession();
+    window.addEventListener("focus", onSessionChanged);
+    window.addEventListener("pageshow", onSessionChanged);
+    window.addEventListener("storage", onSessionChanged);
+    window.addEventListener(CUSTOMER_SESSION_EVENT, onSessionChanged);
     return () => {
-      window.removeEventListener("focus", syncSession);
-      window.removeEventListener("pageshow", syncSession);
-      window.removeEventListener("storage", syncSession);
-      window.removeEventListener(CUSTOMER_SESSION_EVENT, syncSession);
+      cancelled = true;
+      window.removeEventListener("focus", onSessionChanged);
+      window.removeEventListener("pageshow", onSessionChanged);
+      window.removeEventListener("storage", onSessionChanged);
+      window.removeEventListener(CUSTOMER_SESSION_EVENT, onSessionChanged);
     };
   }, []);
 

@@ -26,30 +26,30 @@ export function AccountFrame({ children }: { children: ReactNode }) {
   const [authorized, setAuthorized] = useState(isPublicRoute);
 
   useEffect(() => {
+    let cancelled = false;
     if (isPublicRoute) {
       setAuthorized(true);
-      return;
+      return () => { cancelled = true; };
     }
 
-    if (hasCustomerSession()) {
-      setAuthorized(true);
-      return;
-    }
-
-    setAuthorized(false);
-    const next = encodeURIComponent(pathname);
-    router.replace(`/account/login?next=${next}`);
-  }, [isPublicRoute, pathname, router]);
-
-  useEffect(() => {
-    if (isPublicRoute) return;
-    const syncSession = () => {
-      if (hasCustomerSession()) return;
+    const syncSession = async () => {
+      const active = await hasCustomerSession();
+      if (cancelled) return;
+      if (active) {
+        setAuthorized(true);
+        return;
+      }
       setAuthorized(false);
       router.replace(`/account/login?next=${encodeURIComponent(pathname)}`);
     };
-    window.addEventListener(CUSTOMER_SESSION_EVENT, syncSession);
-    return () => window.removeEventListener(CUSTOMER_SESSION_EVENT, syncSession);
+
+    void syncSession();
+    const onSessionChanged = () => { void syncSession(); };
+    window.addEventListener(CUSTOMER_SESSION_EVENT, onSessionChanged);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(CUSTOMER_SESSION_EVENT, onSessionChanged);
+    };
   }, [isPublicRoute, pathname, router]);
 
   if (isPublicRoute) {
