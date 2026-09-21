@@ -612,7 +612,7 @@ APPROVED_COMPLEX_SCRIPT_SHA256: dict[str, dict[str, str]] = {
     },
     "ingtrader21-spec/Breero.com": {
         "apps/api/scripts/check_schema_drift.py": "2d4f1783c134af3d68c1bae459c42f6d46ce67ae7468e7ed0da64f6feffa9967",
-        "apps/api/scripts/generate_openapi.py": "0d40816580fd602a97ab22f97371d50717c16676e35f8628e6a619a34b971c25",
+        "apps/api/scripts/generate_openapi.py": "46ed75f51bfacfd5eb7f7f225fa68042d40e6f61c489dad559ada8268b48ab0f",
         "scripts/ci/test-classify-quality-scope.sh": "0365cd71d85e00facf1a64c2f11734e413430af75e4cf39e0e52971d13d5c473",
         "scripts/ci/test-validate-breero-scope.sh": "ea29de36868e28ff82e3ec151f896aed388d2421f5907151c4c13480dae20bf8",
         "scripts/ci/validate-breero-scope.sh": "f8ffb8a3953c56d7d6722938825bfb33fced802ba162f4cefd3d12be8ffb9a1e",
