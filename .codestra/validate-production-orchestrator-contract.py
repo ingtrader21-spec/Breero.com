@@ -722,6 +722,7 @@ APPROVED_CONTROL_PLANE_WORKFLOW_SHA256: dict[str, dict[str, str]] = {
     },
     "ingtrader21-spec/Breero.com": {
         ".github/workflows/quality.yml": "2be72e0820aea5373c0f273b260dd9be5599698802864ae50fb28077abe53c6a",
+        ".github/workflows/portal-release-quality.yml": "27ae17766a4ff5d0d8214829f931329df9743b00dbfa5d616eea20af25824648",
     },
     "appolon1908-hue/Moneybee-Backend": {
         ".github/workflows/ci.yml": (
@@ -857,6 +858,12 @@ APPROVED_UNRESOLVED_SCRIPT_TARGETS: dict[str, frozenset[str]] = {
 APPROVED_READ_ONLY_SCRIPT_INVOCATIONS: dict[
     str, dict[str, tuple[str, frozenset[tuple[str, ...]]]]
 ] = {
+    "ingtrader21-spec/Breero.com": {
+        "scripts/validate_portal_release.sh": (
+            "eae8c1306c64ee27d71c98c47bd98962c83fa9b3b2570cf34594c69b13969e9f",
+            frozenset({("production",), ("staging",)}),
+        ),
+    },
     "appolon1908-hue/Keycloak": {
         "scripts/validate-repository-name-authority.py": (
             "d56d85a41734dc468efecb99d590d0d33267dcd1c84f4ff4dd3fa93c2076bd96",

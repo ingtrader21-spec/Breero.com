@@ -1,0 +1,45 @@
+# syntax=docker/dockerfile:1.7
+
+ARG NODE_BUILD_IMAGE
+ARG NODE_RUNTIME_IMAGE
+FROM ${NODE_BUILD_IMAGE} AS build
+
+ARG APP_DIR
+ARG APP_FILTER
+WORKDIR /workspace
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN corepack enable
+COPY . .
+RUN --mount=type=cache,id=breero-pnpm,target=/pnpm/store \
+    pnpm config set store-dir /pnpm/store && \
+    pnpm install --frozen-lockfile
+RUN test -n "${APP_DIR}" && test -n "${APP_FILTER}" && \
+    mkdir -p "apps/${APP_DIR}/public" && \
+    pnpm --filter "${APP_FILTER}" build
+
+FROM ${NODE_RUNTIME_IMAGE} AS runtime
+
+ARG APP_DIR
+ARG VCS_REF
+ARG BUILD_DATE
+LABEL org.opencontainers.image.source="https://github.com/appolon1908-hue/Breero.com" \
+      org.opencontainers.image.revision="${VCS_REF}" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.vendor="Codestra SRL" \
+      com.codestra.product="breero"
+
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    HOSTNAME=0.0.0.0 \
+    PORT=3000 \
+    APP_DIR=${APP_DIR}
+WORKDIR /app
+RUN apk upgrade --no-cache  && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx  && addgroup -S -g 10001 breero  && adduser -S -D -H -u 10001 -G breero breero
+COPY --from=build --chown=10001:10001 /workspace/apps/${APP_DIR}/.next/standalone ./
+COPY --from=build --chown=10001:10001 /workspace/apps/${APP_DIR}/.next/static ./apps/${APP_DIR}/.next/static
+COPY --from=build --chown=10001:10001 /workspace/apps/${APP_DIR}/public ./apps/${APP_DIR}/public
+USER 10001:10001
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+CMD ["sh", "-c", "exec node apps/${APP_DIR}/server.js"]

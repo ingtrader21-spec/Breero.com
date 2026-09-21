@@ -1,0 +1,337 @@
+name: Deploy BREERO portals
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        options: [staging, production]
+        required: true
+      release_sha:
+        description: Exact reviewed 40-character Git commit
+        type: string
+        required: true
+      web_image:
+        description: Digest-pinned web image
+        type: string
+        required: true
+      partner_image:
+        description: Digest-pinned partner image
+        type: string
+        required: true
+      ops_image:
+        description: Digest-pinned operations image
+        type: string
+        required: true
+      admin_image:
+        description: Digest-pinned administration image
+        type: string
+        required: true
+      change_id:
+        description: Approved change-control identifier
+        type: string
+        required: true
+      apply:
+        description: Apply after preflight and environment approval
+        type: boolean
+        default: false
+        required: true
+
+permissions:
+  contents: read
+  issues: read
+  packages: read
+
+concurrency:
+  group: breero-portals-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    name: Exact-artifact and safety preflight
+    # RUNTIME_MUTATION_DISABLED=true
+    # This manual deployment path is pending controller-owned source registration.
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    outputs:
+      release_sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - name: Validate immutable inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha='${{ inputs.release_sha }}'
+          change='${{ inputs.change_id }}'
+          [[ "${sha}" =~ ^[0-9a-f]{40}$ ]] || { echo "release_sha must be exact 40-hex" >&2; exit 1; }
+          [[ "${change}" =~ ^[A-Za-z0-9][A-Za-z0-9._:-]{5,127}$ ]] || { echo "invalid change_id" >&2; exit 1; }
+          for image in \
+            '${{ inputs.web_image }}' \
+            '${{ inputs.partner_image }}' \
+            '${{ inputs.ops_image }}' \
+            '${{ inputs.admin_image }}'; do
+            [[ "${image}" =~ ^[^[:space:]]+@sha256:[0-9a-f]{64}$ ]] || {
+              echo "image is not digest pinned: ${image}" >&2
+              exit 1
+            }
+          done
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_sha }}
+          fetch-depth: 1
+      - id: source
+        name: Verify exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          test "${actual}" = '${{ inputs.release_sha }}'
+          echo "sha=${actual}" >> "${GITHUB_OUTPUT}"
+          git diff --exit-code
+      - name: Refuse unresolved hard blockers
+        if: ${{ inputs.apply }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for issue in 17 18 19; do
+            state="$(gh api "repos/${GITHUB_REPOSITORY}/issues/${issue}" --jq .state)"
+            if [[ "${state}" != closed ]]; then
+              echo "Hard blocker #${issue} is ${state}; apply is prohibited." >&2
+              exit 1
+            fi
+          done
+      - name: Validate release contracts without applying
+        shell: bash
+        env:
+          BREERO_RELEASE_SHA: ${{ inputs.release_sha }}
+          BREERO_WEB_IMAGE: ${{ inputs.web_image }}
+          BREERO_PARTNER_IMAGE: ${{ inputs.partner_image }}
+          BREERO_OPS_IMAGE: ${{ inputs.ops_image }}
+          BREERO_ADMIN_IMAGE: ${{ inputs.admin_image }}
+          BREERO_API_INTERNAL_URL: http://kong:8000/breero/api/v1
+          BREERO_KEYCLOAK_ISSUER: https://auth.example.test/realms/breero
+          BREERO_PARTNER_KEYCLOAK_CLIENT_SECRET_FILE: /tmp/breero-release-secrets/partner-client
+          BREERO_PARTNER_SESSION_SECRET_FILE: /tmp/breero-release-secrets/partner-session
+          BREERO_OPS_KEYCLOAK_CLIENT_SECRET_FILE: /tmp/breero-release-secrets/ops-client
+          BREERO_OPS_SESSION_SECRET_FILE: /tmp/breero-release-secrets/ops-session
+          BREERO_ADMIN_KEYCLOAK_CLIENT_SECRET_FILE: /tmp/breero-release-secrets/admin-client
+          BREERO_ADMIN_SESSION_SECRET_FILE: /tmp/breero-release-secrets/admin-session
+          BREERO_STAGING_WEB_IMAGE: ${{ inputs.web_image }}
+          BREERO_STAGING_PARTNER_IMAGE: ${{ inputs.partner_image }}
+          BREERO_STAGING_OPS_IMAGE: ${{ inputs.ops_image }}
+          BREERO_STAGING_ADMIN_IMAGE: ${{ inputs.admin_image }}
+          BREERO_STAGING_KEYCLOAK_ISSUER: https://auth.example.test/realms/breero-staging
+          BREERO_STAGING_API_INTERNAL_URL: http://kong-staging:8000/breero/api/v1
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/breero-release-secrets
+          for name in partner-client partner-session ops-client ops-session admin-client admin-session; do
+            printf '%s' 'validation-secret-value-at-least-32-characters' > "/tmp/breero-release-secrets/${name}"
+          done
+          bash scripts/validate_portal_release.sh '${{ inputs.environment }}'
+      - name: Write planning summary
+        shell: bash
+        env:
+          PLAN_ENVIRONMENT: ${{ inputs.environment }}
+          PLAN_RELEASE_SHA: ${{ inputs.release_sha }}
+          PLAN_CHANGE_ID: ${{ inputs.change_id }}
+          PLAN_APPLY: ${{ inputs.apply }}
+        run: |
+          {
+            echo '## BREERO portal deployment plan'
+            echo
+            printf -- '- Environment: %s\n' "$PLAN_ENVIRONMENT"
+            printf -- '- Release: %s\n' "$PLAN_RELEASE_SHA"
+            printf -- '- Change: %s\n' "$PLAN_CHANGE_ID"
+            printf -- '- Apply requested: %s\n' "$PLAN_APPLY"
+            echo '- Caddy/Kong/Keycloak changes: **not applied by this workflow**'
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+  apply:
+    name: Apply approved portal release
+    # RUNTIME_MUTATION_DISABLED=true
+    # Application branches have no runtime mutation authority. Activation requires
+    # an approved controller-owned deployment path and separate release evidence.
+    if: ${{ false }}
+    needs: preflight
+    runs-on:
+      - self-hosted
+      - linux
+      - breero-deploy
+      - ${{ inputs.environment }}
+    environment:
+      name: breero-${{ inputs.environment }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.preflight.outputs.release_sha }}
+          fetch-depth: 1
+      - name: Verify deployment host contract
+        env:
+          DEPLOY_ROOT: ${{ vars.BREERO_PORTAL_DEPLOY_ROOT }}
+          BASE_ENV_FILE: ${{ vars.BREERO_PORTAL_ENV_FILE }}
+          GATE_TOKEN_FILE: ${{ vars.BREERO_RELEASE_GATE_TOKEN_FILE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ needs.preflight.outputs.release_sha }}'
+          test -n "${DEPLOY_ROOT}" && test -d "${DEPLOY_ROOT}"
+          test -n "${BASE_ENV_FILE}" && test -f "${BASE_ENV_FILE}" && test ! -L "${BASE_ENV_FILE}"
+          test -n "${GATE_TOKEN_FILE}" && test -f "${GATE_TOKEN_FILE}" && test ! -L "${GATE_TOKEN_FILE}"
+          mode="$(stat -c '%a' "${BASE_ENV_FILE}")"
+          [[ "${mode}" == 400 || "${mode}" == 440 || "${mode}" == 600 || "${mode}" == 640 ]] || {
+            echo "base env file permissions must be restrictive" >&2
+            exit 1
+          }
+      - name: Create immutable release candidate
+        id: candidate
+        env:
+          DEPLOY_ROOT: ${{ vars.BREERO_PORTAL_DEPLOY_ROOT }}
+          BASE_ENV_FILE: ${{ vars.BREERO_PORTAL_ENV_FILE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          release="${DEPLOY_ROOT}/releases/${{ needs.preflight.outputs.release_sha }}"
+          install -d -m 0750 "${release}"
+          install -m 0640 deploy/production/docker-compose.portals.yml "${release}/compose.yml"
+          if [[ '${{ inputs.environment }}' == staging ]]; then
+            install -m 0640 deploy/staging/docker-compose.portals.override.yml "${release}/compose.override.yml"
+          fi
+          install -m 0750 scripts/validate_portal_release.sh "${release}/validate.sh"
+          install -m 0600 "${BASE_ENV_FILE}" "${release}/portal.env"
+          cat >> "${release}/portal.env" <<'ENV'
+          BREERO_RELEASE_SHA=${{ needs.preflight.outputs.release_sha }}
+          BREERO_WEB_IMAGE=${{ inputs.web_image }}
+          BREERO_PARTNER_IMAGE=${{ inputs.partner_image }}
+          BREERO_OPS_IMAGE=${{ inputs.ops_image }}
+          BREERO_ADMIN_IMAGE=${{ inputs.admin_image }}
+          BREERO_STAGING_WEB_IMAGE=${{ inputs.web_image }}
+          BREERO_STAGING_PARTNER_IMAGE=${{ inputs.partner_image }}
+          BREERO_STAGING_OPS_IMAGE=${{ inputs.ops_image }}
+          BREERO_STAGING_ADMIN_IMAGE=${{ inputs.admin_image }}
+          ENV
+          previous="$(readlink -f "${DEPLOY_ROOT}/current" 2>/dev/null || true)"
+          echo "release=${release}" >> "${GITHUB_OUTPUT}"
+          echo "previous=${previous}" >> "${GITHUB_OUTPUT}"
+      - name: Verify capabilities remain fail closed
+        env:
+          RELEASE_DIR: ${{ steps.candidate.outputs.release }}
+          GATE_TOKEN_FILE: ${{ vars.BREERO_RELEASE_GATE_TOKEN_FILE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          set -a
+          # shellcheck disable=SC1090
+          source "${RELEASE_DIR}/portal.env"
+          set +a
+          response="$(curl --fail --silent --show-error \
+            --connect-timeout 3 --max-time 10 \
+            -H "Authorization: Bearer $(cat "${GATE_TOKEN_FILE}")" \
+            "${BREERO_API_INTERNAL_URL%/}/portal/capabilities")"
+          python3 - "${response}" <<'PY'
+          import json, sys
+          data = json.loads(sys.argv[1])
+          required_false = (
+              "online_payments",
+              "payouts",
+              "automatic_assignment",
+              "middleware_delivery",
+          )
+          enabled = [key for key in required_false if data.get(key) is not False]
+          if enabled:
+              raise SystemExit(f"unsafe capabilities are not false: {enabled}")
+          PY
+      - name: Validate candidate on target host
+        env:
+          RELEASE_DIR: ${{ steps.candidate.outputs.release }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(-f "${RELEASE_DIR}/compose.yml")
+          if [[ -f "${RELEASE_DIR}/compose.override.yml" ]]; then
+            files+=(-f "${RELEASE_DIR}/compose.override.yml")
+          fi
+          docker compose --env-file "${RELEASE_DIR}/portal.env" "${files[@]}" config --quiet
+      - name: Pull and apply candidate
+        id: apply
+        env:
+          RELEASE_DIR: ${{ steps.candidate.outputs.release }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(-f "${RELEASE_DIR}/compose.yml")
+          if [[ -f "${RELEASE_DIR}/compose.override.yml" ]]; then
+            files+=(-f "${RELEASE_DIR}/compose.override.yml")
+          fi
+          docker compose --env-file "${RELEASE_DIR}/portal.env" "${files[@]}" pull
+          docker compose --env-file "${RELEASE_DIR}/portal.env" "${files[@]}" up -d --wait --remove-orphans
+      - name: Public and identity smoke tests
+        env:
+          RELEASE_DIR: ${{ steps.candidate.outputs.release }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          set -a
+          # shellcheck disable=SC1090
+          source "${RELEASE_DIR}/portal.env"
+          set +a
+          for origin in \
+            "${BREERO_WEB_PUBLIC_ORIGIN}" \
+            "${BREERO_PARTNER_PUBLIC_ORIGIN}" \
+            "${BREERO_OPS_PUBLIC_ORIGIN}" \
+            "${BREERO_ADMIN_PUBLIC_ORIGIN}"; do
+            curl --fail --silent --show-error --location \
+              --connect-timeout 5 --max-time 15 \
+              "${origin%/}/health" >/dev/null
+          done
+          for origin in \
+            "${BREERO_PARTNER_PUBLIC_ORIGIN}" \
+            "${BREERO_OPS_PUBLIC_ORIGIN}" \
+            "${BREERO_ADMIN_PUBLIC_ORIGIN}"; do
+            status="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+              --connect-timeout 5 --max-time 15 \
+              "${origin%/}/api/auth/login")"
+            [[ "${status}" == 303 || "${status}" == 307 || "${status}" == 308 ]]
+          done
+      - name: Promote release and record evidence
+        env:
+          DEPLOY_ROOT: ${{ vars.BREERO_PORTAL_DEPLOY_ROOT }}
+          RELEASE_DIR: ${{ steps.candidate.outputs.release }}
+          PREVIOUS_DIR: ${{ steps.candidate.outputs.previous }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d -m 0750 "${RELEASE_DIR}/evidence"
+          cat > "${RELEASE_DIR}/evidence/release.json" <<JSON
+          {
+            "environment": "${{ inputs.environment }}",
+            "release_sha": "${{ needs.preflight.outputs.release_sha }}",
+            "change_id": "${{ inputs.change_id }}",
+            "previous_release": "${PREVIOUS_DIR}",
+            "web_image": "${{ inputs.web_image }}",
+            "partner_image": "${{ inputs.partner_image }}",
+            "ops_image": "${{ inputs.ops_image }}",
+            "admin_image": "${{ inputs.admin_image }}",
+            "workflow_run": "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}",
+            "applied_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          JSON
+          chmod 0640 "${RELEASE_DIR}/evidence/release.json"
+          ln -sfn "${RELEASE_DIR}" "${DEPLOY_ROOT}/current"
+          echo "Release promoted: ${{ needs.preflight.outputs.release_sha }}" >> "${GITHUB_STEP_SUMMARY}"
+      - name: Roll back failed candidate
+        if: failure() && steps.candidate.outputs.previous != ''
+        env:
+          PREVIOUS_DIR: ${{ steps.candidate.outputs.previous }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(-f "${PREVIOUS_DIR}/compose.yml")
+          if [[ -f "${PREVIOUS_DIR}/compose.override.yml" ]]; then
+            files+=(-f "${PREVIOUS_DIR}/compose.override.yml")
+          fi
+          docker compose --env-file "${PREVIOUS_DIR}/portal.env" "${files[@]}" up -d --wait --remove-orphans
+          echo "Candidate failed; previous release restored from ${PREVIOUS_DIR}." >> "${GITHUB_STEP_SUMMARY}"

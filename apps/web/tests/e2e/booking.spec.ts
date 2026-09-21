@@ -118,6 +118,7 @@ test("request-service submission remains pending manual dispatch", async ({ page
   await page.getByLabel(/may contact me about this request/i).check();
   await page.getByRole("button", { name: "Request service" }).click();
 
+  await expect.poll(() => submitted, { timeout: 10_000 }).not.toBeUndefined();
   await expect(
     page.getByText(/not an appointment, provider assignment, final price or payment confirmation/i),
   ).toBeVisible();

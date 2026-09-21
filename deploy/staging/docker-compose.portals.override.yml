@@ -1,0 +1,43 @@
+services:
+  web:
+    image: ${BREERO_STAGING_WEB_IMAGE:?Set digest-pinned BREERO_STAGING_WEB_IMAGE}
+    environment:
+      PORTAL_PUBLIC_ORIGIN: ${BREERO_STAGING_WEB_PUBLIC_ORIGIN:-https://staging.breero.com}
+    labels:
+      com.codestra.environment: staging
+
+  partner:
+    image: ${BREERO_STAGING_PARTNER_IMAGE:?Set digest-pinned BREERO_STAGING_PARTNER_IMAGE}
+    environment:
+      PORTAL_PUBLIC_ORIGIN: ${BREERO_STAGING_PARTNER_PUBLIC_ORIGIN:-https://partners.staging.breero.com}
+      KEYCLOAK_ISSUER: ${BREERO_STAGING_KEYCLOAK_ISSUER:?Set staging Keycloak issuer}
+      KEYCLOAK_CLIENT_ID: ${BREERO_STAGING_PARTNER_KEYCLOAK_CLIENT_ID:-breero-staging-partner}
+      BREERO_API_INTERNAL_URL: ${BREERO_STAGING_API_INTERNAL_URL:?Set private staging Kong URL ending in /api/v1}
+    labels:
+      com.codestra.environment: staging
+
+  ops:
+    image: ${BREERO_STAGING_OPS_IMAGE:?Set digest-pinned BREERO_STAGING_OPS_IMAGE}
+    environment:
+      PORTAL_PUBLIC_ORIGIN: ${BREERO_STAGING_OPS_PUBLIC_ORIGIN:-https://ops.staging.breero.com}
+      KEYCLOAK_ISSUER: ${BREERO_STAGING_KEYCLOAK_ISSUER:?Set staging Keycloak issuer}
+      KEYCLOAK_CLIENT_ID: ${BREERO_STAGING_OPS_KEYCLOAK_CLIENT_ID:-breero-staging-operations}
+      BREERO_API_INTERNAL_URL: ${BREERO_STAGING_API_INTERNAL_URL:?Set private staging Kong URL ending in /api/v1}
+    labels:
+      com.codestra.environment: staging
+
+  admin:
+    image: ${BREERO_STAGING_ADMIN_IMAGE:?Set digest-pinned BREERO_STAGING_ADMIN_IMAGE}
+    environment:
+      PORTAL_PUBLIC_ORIGIN: ${BREERO_STAGING_ADMIN_PUBLIC_ORIGIN:-https://admin.staging.breero.com}
+      KEYCLOAK_ISSUER: ${BREERO_STAGING_KEYCLOAK_ISSUER:?Set staging Keycloak issuer}
+      KEYCLOAK_CLIENT_ID: ${BREERO_STAGING_ADMIN_KEYCLOAK_CLIENT_ID:-breero-staging-administration}
+      BREERO_API_INTERNAL_URL: ${BREERO_STAGING_API_INTERNAL_URL:?Set private staging Kong URL ending in /api/v1}
+    labels:
+      com.codestra.environment: staging
+
+networks:
+  edge:
+    name: ${BREERO_STAGING_EDGE_NETWORK:-codestra-staging-edge}
+  gateway:
+    name: ${BREERO_STAGING_GATEWAY_NETWORK:-codestra-staging-gateway}

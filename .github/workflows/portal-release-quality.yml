@@ -1,0 +1,212 @@
+name: Portal release quality
+
+on:
+  pull_request:
+    paths:
+      - "apps/web/**"
+      - "apps/partner/**"
+      - "apps/ops/**"
+      - "apps/admin/**"
+      - "packages/portal/**"
+      - "deploy/frontend/Dockerfile.portal"
+      - "deploy/production/docker-compose.portals.yml"
+      - "deploy/staging/docker-compose.portals.override.yml"
+      - "deploy/edge/BREERO_PORTAL_ROUTE_CONTRACT.yaml"
+      - "deploy/gateway/BREERO_PORTAL_API_CONTRACT.yaml"
+      - "scripts/validate_portal_release.sh"
+      - ".github/workflows/portal-release-quality.yml"
+      - ".github/workflows/portal-deploy.yml"
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: portal-release-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app-quality:
+    name: ${{ matrix.app }} quality
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: web
+            filter: "@breero/web"
+          - app: partner
+            filter: "@breero/partner"
+          - app: ops
+            filter: "@breero/ops"
+          - app: admin
+            filter: "@breero/admin"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+        with:
+          version: 10.0.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+          cache: pnpm
+      - name: Frozen workspace install
+        env:
+          NODE_ENV: development
+        run: pnpm install --frozen-lockfile
+      - run: pnpm --filter '${{ matrix.filter }}' lint
+      - run: pnpm --filter '${{ matrix.filter }}' typecheck
+      - run: pnpm --filter '${{ matrix.filter }}' test
+      - run: pnpm --filter '${{ matrix.filter }}' build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+
+  image-security:
+    name: ${{ matrix.app }} image security
+    needs: app-quality
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: web
+            directory: web
+            filter: "@breero/web"
+          - app: partner
+            directory: partner
+            filter: "@breero/partner"
+          - app: ops
+            directory: ops
+            filter: "@breero/ops"
+          - app: admin
+            directory: admin
+            filter: "@breero/admin"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Resolve Node base image to immutable digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="node:22.14.0-alpine3.21"
+          digest="$(docker buildx imagetools inspect "${base}" --format '{{json .Manifest.Digest}}' | tr -d '"')"
+          test -n "${digest}"
+          echo "NODE_BASE_IMAGE=node@${digest}" >> "${GITHUB_ENV}"
+          echo "Node base: node@${digest}" >> "${GITHUB_STEP_SUMMARY}"
+      - name: Build immutable candidate image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy/frontend/Dockerfile.portal
+          load: true
+          push: false
+          tags: breero-${{ matrix.app }}:${{ github.sha }}
+          build-args: |
+            APP_DIR=${{ matrix.directory }}
+            APP_FILTER=${{ matrix.filter }}
+            NODE_BUILD_IMAGE=${{ env.NODE_BASE_IMAGE }}
+            NODE_RUNTIME_IMAGE=${{ env.NODE_BASE_IMAGE }}
+            VCS_REF=${{ github.sha }}
+            BUILD_DATE=${{ github.event.repository.updated_at }}
+          cache-from: type=gha,scope=breero-${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=breero-${{ matrix.app }}
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: breero-${{ matrix.app }}:${{ github.sha }}
+          format: cyclonedx-json
+          output-file: /tmp/breero-${{ matrix.app }}-sbom.cdx.json
+      - name: Scan candidate image
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: breero-${{ matrix.app }}:${{ github.sha }}
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          scanners: vuln,secret,misconfig
+          exit-code: "1"
+      - name: Runtime health smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/breero-secrets
+          printf '%s' 'validation-client-secret' > /tmp/breero-secrets/client
+          printf '%s' 'validation-session-secret-at-least-32-characters' > /tmp/breero-secrets/session
+          args=(--rm -d --read-only --user 10001:10001 --cap-drop ALL --security-opt no-new-privileges --tmpfs '/tmp:rw,noexec,nosuid,nodev,size=64m')
+          if [[ '${{ matrix.app }}' != web ]]; then
+            args+=(
+              -e PORTAL_PUBLIC_ORIGIN=https://${{ matrix.app }}.example.test
+              -e KEYCLOAK_ISSUER=https://auth.example.test/realms/breero
+              -e KEYCLOAK_CLIENT_ID=breero-${{ matrix.app }}
+              -e KEYCLOAK_CLIENT_SECRET_FILE=/run/secrets/client
+              -e PORTAL_SESSION_SECRET_FILE=/run/secrets/session
+              -e BREERO_API_INTERNAL_URL=http://kong:8000/breero/api/v1
+              -v /tmp/breero-secrets/client:/run/secrets/client:ro
+              -v /tmp/breero-secrets/session:/run/secrets/session:ro
+            )
+          fi
+          container="$(docker run "${args[@]}" breero-${{ matrix.app }}:${{ github.sha }})"
+          trap 'docker rm -f "${container}" >/dev/null 2>&1 || true' EXIT
+          for _ in $(seq 1 30); do
+            status="$(docker inspect --format '{{.State.Health.Status}}' "${container}")"
+            [[ "${status}" == healthy ]] && exit 0
+            [[ "${status}" == unhealthy ]] && docker logs "${container}" && exit 1
+            sleep 2
+          done
+          docker logs "${container}"
+          exit 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: breero-${{ matrix.app }}-sbom-${{ github.sha }}
+          path: /tmp/breero-${{ matrix.app }}-sbom.cdx.json
+          if-no-files-found: error
+          retention-days: 30
+
+  composition:
+    name: Portal composition and authority contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare non-secret validation inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/breero-release-secrets
+          for name in partner-client partner-session ops-client ops-session admin-client admin-session; do
+            printf '%s' 'validation-secret-value-at-least-32-characters' > "/tmp/breero-release-secrets/${name}"
+          done
+      - name: Validate production composition
+        env: &release-env
+          BREERO_RELEASE_SHA: ${{ github.sha }}
+          BREERO_WEB_IMAGE: ghcr.io/example/breero-web@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          BREERO_PARTNER_IMAGE: ghcr.io/example/breero-partner@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          BREERO_OPS_IMAGE: ghcr.io/example/breero-ops@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          BREERO_ADMIN_IMAGE: ghcr.io/example/breero-admin@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          BREERO_API_INTERNAL_URL: http://kong:8000/breero/api/v1
+          BREERO_KEYCLOAK_ISSUER: https://auth.example.test/realms/breero
+          BREERO_PARTNER_KEYCLOAK_CLIENT_SECRET_FILE: /tmp/breero-release-secrets/partner-client
+          BREERO_PARTNER_SESSION_SECRET_FILE: /tmp/breero-release-secrets/partner-session
+          BREERO_OPS_KEYCLOAK_CLIENT_SECRET_FILE: /tmp/breero-release-secrets/ops-client
+          BREERO_OPS_SESSION_SECRET_FILE: /tmp/breero-release-secrets/ops-session
+          BREERO_ADMIN_KEYCLOAK_CLIENT_SECRET_FILE: /tmp/breero-release-secrets/admin-client
+          BREERO_ADMIN_SESSION_SECRET_FILE: /tmp/breero-release-secrets/admin-session
+          BREERO_STAGING_WEB_IMAGE: ghcr.io/example/breero-web@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          BREERO_STAGING_PARTNER_IMAGE: ghcr.io/example/breero-partner@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          BREERO_STAGING_OPS_IMAGE: ghcr.io/example/breero-ops@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          BREERO_STAGING_ADMIN_IMAGE: ghcr.io/example/breero-admin@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+          BREERO_STAGING_KEYCLOAK_ISSUER: https://auth.example.test/realms/breero-staging
+          BREERO_STAGING_API_INTERNAL_URL: http://kong-staging:8000/breero/api/v1
+        run: bash scripts/validate_portal_release.sh production
+      - name: Validate staging isolation
+        env: *release-env
+        run: bash scripts/validate_portal_release.sh staging
+      - name: Verify ownership contracts cannot apply infrastructure
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'applyFromThisRepository: false' deploy/edge/BREERO_PORTAL_ROUTE_CONTRACT.yaml
+          grep -q 'ownerRepository: appolon1908-hue/Caddy' deploy/edge/BREERO_PORTAL_ROUTE_CONTRACT.yaml
+          grep -q 'applyFromThisRepository: false' deploy/gateway/BREERO_PORTAL_API_CONTRACT.yaml
+          grep -q 'ownerRepository: appolon1908-hue/Kong' deploy/gateway/BREERO_PORTAL_API_CONTRACT.yaml

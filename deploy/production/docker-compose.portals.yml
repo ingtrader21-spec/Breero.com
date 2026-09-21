@@ -1,0 +1,144 @@
+name: breero-portals
+
+x-portal-common: &portal-common
+  restart: unless-stopped
+  init: true
+  user: "10001:10001"
+  read_only: true
+  cap_drop: ["ALL"]
+  security_opt:
+    - no-new-privileges:true
+  pids_limit: 256
+  tmpfs:
+    - /tmp:rw,noexec,nosuid,nodev,size=64m,uid=10001,gid=10001
+  expose:
+    - "3000"
+  healthcheck:
+    test:
+      - CMD
+      - node
+      - -e
+      - fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))
+    interval: 30s
+    timeout: 5s
+    start_period: 20s
+    retries: 3
+  deploy:
+    resources:
+      limits:
+        cpus: "1.00"
+        memory: 768M
+        pids: 256
+      reservations:
+        cpus: "0.10"
+        memory: 128M
+  labels:
+    com.codestra.product: breero
+    com.codestra.release.sha: ${BREERO_RELEASE_SHA:?Set BREERO_RELEASE_SHA}
+    com.codestra.observability.logs: "true"
+
+services:
+  web:
+    <<: *portal-common
+    image: ${BREERO_WEB_IMAGE:?Set digest-pinned BREERO_WEB_IMAGE}
+    environment:
+      NODE_ENV: production
+      PORTAL_PUBLIC_ORIGIN: ${BREERO_WEB_PUBLIC_ORIGIN:-https://breero.com}
+    networks:
+      - edge
+    labels:
+      com.codestra.product: breero
+      com.codestra.component: web
+      com.codestra.release.sha: ${BREERO_RELEASE_SHA:?Set BREERO_RELEASE_SHA}
+      com.codestra.observability.logs: "true"
+
+  partner:
+    <<: *portal-common
+    image: ${BREERO_PARTNER_IMAGE:?Set digest-pinned BREERO_PARTNER_IMAGE}
+    environment:
+      NODE_ENV: production
+      PORTAL_PUBLIC_ORIGIN: ${BREERO_PARTNER_PUBLIC_ORIGIN:-https://partners.breero.com}
+      KEYCLOAK_ISSUER: ${BREERO_KEYCLOAK_ISSUER:?Set BREERO_KEYCLOAK_ISSUER}
+      KEYCLOAK_CLIENT_ID: ${BREERO_PARTNER_KEYCLOAK_CLIENT_ID:-breero-partner}
+      KEYCLOAK_CLIENT_SECRET_FILE: /run/secrets/partner_keycloak_client_secret
+      PORTAL_SESSION_SECRET_FILE: /run/secrets/partner_session_secret
+      BREERO_API_INTERNAL_URL: ${BREERO_API_INTERNAL_URL:?Set private Kong URL ending in /api/v1}
+    secrets:
+      - partner_keycloak_client_secret
+      - partner_session_secret
+    networks:
+      - edge
+      - gateway
+    labels:
+      com.codestra.product: breero
+      com.codestra.component: partner
+      com.codestra.release.sha: ${BREERO_RELEASE_SHA:?Set BREERO_RELEASE_SHA}
+      com.codestra.observability.logs: "true"
+
+  ops:
+    <<: *portal-common
+    image: ${BREERO_OPS_IMAGE:?Set digest-pinned BREERO_OPS_IMAGE}
+    environment:
+      NODE_ENV: production
+      PORTAL_PUBLIC_ORIGIN: ${BREERO_OPS_PUBLIC_ORIGIN:-https://ops.breero.com}
+      KEYCLOAK_ISSUER: ${BREERO_KEYCLOAK_ISSUER:?Set BREERO_KEYCLOAK_ISSUER}
+      KEYCLOAK_CLIENT_ID: ${BREERO_OPS_KEYCLOAK_CLIENT_ID:-breero-operations}
+      KEYCLOAK_CLIENT_SECRET_FILE: /run/secrets/ops_keycloak_client_secret
+      PORTAL_SESSION_SECRET_FILE: /run/secrets/ops_session_secret
+      BREERO_API_INTERNAL_URL: ${BREERO_API_INTERNAL_URL:?Set private Kong URL ending in /api/v1}
+    secrets:
+      - ops_keycloak_client_secret
+      - ops_session_secret
+    networks:
+      - edge
+      - gateway
+    labels:
+      com.codestra.product: breero
+      com.codestra.component: ops
+      com.codestra.release.sha: ${BREERO_RELEASE_SHA:?Set BREERO_RELEASE_SHA}
+      com.codestra.observability.logs: "true"
+
+  admin:
+    <<: *portal-common
+    image: ${BREERO_ADMIN_IMAGE:?Set digest-pinned BREERO_ADMIN_IMAGE}
+    environment:
+      NODE_ENV: production
+      PORTAL_PUBLIC_ORIGIN: ${BREERO_ADMIN_PUBLIC_ORIGIN:-https://admin.breero.com}
+      KEYCLOAK_ISSUER: ${BREERO_KEYCLOAK_ISSUER:?Set BREERO_KEYCLOAK_ISSUER}
+      KEYCLOAK_CLIENT_ID: ${BREERO_ADMIN_KEYCLOAK_CLIENT_ID:-breero-administration}
+      KEYCLOAK_CLIENT_SECRET_FILE: /run/secrets/admin_keycloak_client_secret
+      PORTAL_SESSION_SECRET_FILE: /run/secrets/admin_session_secret
+      BREERO_API_INTERNAL_URL: ${BREERO_API_INTERNAL_URL:?Set private Kong URL ending in /api/v1}
+    secrets:
+      - admin_keycloak_client_secret
+      - admin_session_secret
+    networks:
+      - edge
+      - gateway
+    labels:
+      com.codestra.product: breero
+      com.codestra.component: admin
+      com.codestra.release.sha: ${BREERO_RELEASE_SHA:?Set BREERO_RELEASE_SHA}
+      com.codestra.observability.logs: "true"
+
+secrets:
+  partner_keycloak_client_secret:
+    file: ${BREERO_PARTNER_KEYCLOAK_CLIENT_SECRET_FILE:?Set partner Keycloak secret file}
+  partner_session_secret:
+    file: ${BREERO_PARTNER_SESSION_SECRET_FILE:?Set partner session secret file}
+  ops_keycloak_client_secret:
+    file: ${BREERO_OPS_KEYCLOAK_CLIENT_SECRET_FILE:?Set ops Keycloak secret file}
+  ops_session_secret:
+    file: ${BREERO_OPS_SESSION_SECRET_FILE:?Set ops session secret file}
+  admin_keycloak_client_secret:
+    file: ${BREERO_ADMIN_KEYCLOAK_CLIENT_SECRET_FILE:?Set admin Keycloak secret file}
+  admin_session_secret:
+    file: ${BREERO_ADMIN_SESSION_SECRET_FILE:?Set admin session secret file}
+
+networks:
+  edge:
+    external: true
+    name: ${BREERO_EDGE_NETWORK:-codestra-edge}
+  gateway:
+    external: true
+    name: ${BREERO_GATEWAY_NETWORK:-codestra-gateway}

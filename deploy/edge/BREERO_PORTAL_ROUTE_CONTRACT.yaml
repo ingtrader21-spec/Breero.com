@@ -1,0 +1,47 @@
+apiVersion: codestra.io/v1
+kind: EdgeRouteContract
+metadata:
+  name: breero-portals
+  ownerRepository: appolon1908-hue/Caddy
+  sourceRepository: appolon1908-hue/Breero.com
+spec:
+  applyFromThisRepository: false
+  tls:
+    required: true
+    redirectHttpToHttps: true
+    hsts: "max-age=31536000; includeSubDomains"
+  routes:
+    - host: breero.com
+      upstream: web:3000
+      healthPath: /health
+    - host: partners.breero.com
+      upstream: partner:3000
+      healthPath: /health
+    - host: ops.breero.com
+      upstream: ops:3000
+      healthPath: /health
+    - host: admin.breero.com
+      upstream: admin:3000
+      healthPath: /health
+  network:
+    name: codestra-edge
+    publishedHostPortsAllowed: false
+  requestFlow:
+    browser:
+      - Caddy
+      - Next.js BFF
+      - private Kong
+      - BREERO API
+    identity:
+      - Next.js BFF
+      - Keycloak
+    downstreamWrites:
+      - BREERO API
+      - durable outbox
+      - Middleware
+  forbidden:
+    - direct browser access to BREERO API containers
+    - public exposure of container port 3000
+    - Caddy configuration applied from the BREERO repository
+    - forwarding Authorization or Cookie headers to access logs
+    - wildcard portal origins or wildcard Keycloak redirect URIs

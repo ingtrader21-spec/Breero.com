@@ -1,0 +1,52 @@
+apiVersion: codestra.io/v1
+kind: GatewayRouteContract
+metadata:
+  name: breero-portal-api
+  ownerRepository: appolon1908-hue/Kong
+  sourceRepository: appolon1908-hue/Breero.com
+spec:
+  applyFromThisRepository: false
+  exposure: private-network-only
+  network: codestra-gateway
+  upstream:
+    service: breero-api
+    port: 8000
+    pathPrefix: /api/v1
+    healthPath: /health/ready
+  consumers:
+    - name: breero-partner-bff
+      audience: breero-api
+      roles: [vendor_admin]
+    - name: breero-operations-bff
+      audience: breero-api
+      roles: [operations, ops_manager, admin, superadmin]
+    - name: breero-administration-bff
+      audience: breero-api
+      roles: [finance, admin, superadmin]
+  authentication:
+    protocol: oidc-bearer
+    issuer: https://auth.codestra.co/realms/breero
+    verifyIssuer: true
+    verifyAudience: true
+    allowAnonymous: false
+  controls:
+    correlationId:
+      required: true
+      header: X-Correlation-ID
+    requestSizeBytes: 1048576
+    preserveHost: false
+    retries: 1
+    connectTimeoutMs: 3000
+    readTimeoutMs: 15000
+    writeTimeoutMs: 15000
+    rateLimits:
+      partnerPerMinute: 300
+      operationsPerMinute: 600
+      administrationPerMinute: 300
+  forbidden:
+    - public listener or public DNS route to this upstream
+    - anonymous access
+    - direct portal-to-API network attachment
+    - wildcard issuer or audience
+    - logging bearer tokens, cookies, request bodies, or query strings
+    - enabling payment, payout, automatic assignment, email, SMS, or middleware capabilities
