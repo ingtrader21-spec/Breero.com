@@ -19,6 +19,10 @@ assert_scope frontend-only $'backend=false\nfrontend=true\nbootstrap=false' apps
 assert_scope backend-and-frontend $'backend=true\nfrontend=true\nbootstrap=false' apps/api/app/main.py apps/web/app/page.tsx
 assert_scope workflow-only $'backend=false\nfrontend=false\nbootstrap=false' .github/workflows/quality.yml
 assert_scope documentation-only $'backend=false\nfrontend=false\nbootstrap=false' docs/runbook.md
+assert_scope deployment-preflight $'backend=true\nfrontend=true\nbootstrap=false' .github/workflows/deployment-preflight.yml
+assert_scope deployment-verifier $'backend=true\nfrontend=true\nbootstrap=false' scripts/deploy/verify-runtime-paths.sh
+assert_scope frontend-deployment $'backend=false\nfrontend=true\nbootstrap=false' deploy/frontend/docker-compose.frontend.yml
+assert_scope backend-deployment $'backend=true\nfrontend=false\nbootstrap=false' deploy/production/docker-compose.backend.yml
 
 test_cross_boundary_rename() {
   local fixture base head actual expected

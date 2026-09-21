@@ -1,0 +1,128 @@
+name: Secure deployment preflight
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/deployment-preflight.yml"
+      - "apps/api/Dockerfile"
+      - "docker-compose.production.yml"
+      - "deploy/**"
+      - "scripts/deploy/**"
+      - "scripts/ci/classify-quality-scope.sh"
+      - "scripts/ci/test-classify-quality-scope.sh"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/deployment-preflight.yml"
+      - "apps/api/Dockerfile"
+      - "docker-compose.production.yml"
+      - "deploy/**"
+      - "scripts/deploy/**"
+      - "scripts/ci/classify-quality-scope.sh"
+      - "scripts/ci/test-classify-quality-scope.sh"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deployment-preflight-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deployment-preflight:
+    name: deployment-preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned validator dependencies
+        run: >-
+          python -m pip install --disable-pip-version-check --no-deps
+          -r scripts/deploy/requirements-preflight.txt
+
+      - name: Validate read-only verifier and security validators
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n scripts/deploy/verify-runtime-paths.sh
+          bash -n scripts/deploy/test-runtime-path-verifier.sh
+          python -m compileall -q \
+            scripts/deploy/validate-compose-security.py \
+            scripts/deploy/validate-runtime-evidence.py \
+            scripts/deploy/test-security-validators.py
+          scripts/deploy/test-runtime-path-verifier.sh
+          python scripts/deploy/test-security-validators.py
+          scripts/ci/test-classify-quality-scope.sh
+
+      - name: Render candidate Compose configurations with non-secret fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          fixture="$(mktemp -d)"
+          trap 'find "$fixture" -mindepth 1 -delete; rmdir "$fixture"' EXIT
+
+          printf 'APP_ENV=production\nPOSTGRES_USER=breero\nPOSTGRES_DB=breero\nPOSTGRES_PASSWORD_FILE=/run/secrets/breero_postgres_password\n' >"$fixture/backend.env"
+          printf 'POSTGRES_USER=breero\nPOSTGRES_DB=breero\nPOSTGRES_PASSWORD_FILE=/run/secrets/breero_postgres_password\n' >"$fixture/postgres.env"
+          printf 'REDIS_PASSWORD_FILE=/run/secrets/breero_redis_password\n' >"$fixture/redis.env"
+          printf 'NEXT_PUBLIC_API_BASE_URL=https://api.example.invalid\n' >"$fixture/frontend.env"
+          for secret in database_url redis_url jwt_access jwt_refresh geoapify keycloak_client_secret postgres_password redis_acl redis_password; do
+            printf 'ci-placeholder\n' >"$fixture/$secret"
+            chmod 600 "$fixture/$secret"
+          done
+
+          export BREERO_IMAGE="ghcr.io/example/breero-api@sha256:1111111111111111111111111111111111111111111111111111111111111111"
+          export BREERO_ENV_FILE="$fixture/backend.env"
+          export CADDY_NETWORK="breero_edge_candidate"
+          export DATABASE_URL_REFERENCE="$fixture/database_url"
+          export REDIS_URL_REFERENCE="$fixture/redis_url"
+          export JWT_SECRET_REFERENCE="$fixture/jwt_access"
+          export JWT_REFRESH_SECRET_REFERENCE="$fixture/jwt_refresh"
+          export GEOAPIFY_API_KEY_REFERENCE="$fixture/geoapify"
+          export KEYCLOAK_CLIENT_SECRET_REFERENCE="$fixture/keycloak_client_secret"
+          export POSTGRES_PASSWORD_REFERENCE="$fixture/postgres_password"
+          export REDIS_ACL_FILE_REFERENCE="$fixture/redis_acl"
+          docker compose --profile migration -f docker-compose.production.yml config --format json >"$fixture/backend.json"
+
+          export BREERO_FRONTEND_IMAGE="ghcr.io/example/breero-web@sha256:2222222222222222222222222222222222222222222222222222222222222222"
+          export BREERO_FRONTEND_ENV_FILE="$fixture/frontend.env"
+          export BREERO_FRONTEND_NETWORK="breero_frontend_candidate"
+          docker compose -f deploy/frontend/docker-compose.frontend.yml config --format json >"$fixture/frontend.json"
+
+          export BREERO_PROD_API_IMAGE="$BREERO_IMAGE"
+          export BREERO_PROD_API_ENV="$fixture/backend.env"
+          export BREERO_PROD_POSTGRES_ENV="$fixture/postgres.env"
+          export BREERO_PROD_REDIS_ENV="$fixture/redis.env"
+          export REDIS_PASSWORD_REFERENCE="$fixture/redis_password"
+          docker compose --profile migration -f deploy/production/docker-compose.backend.yml config --quiet
+
+          python scripts/deploy/validate-compose-security.py \
+            --backend-json "$fixture/backend.json" \
+            --frontend-json "$fixture/frontend.json" \
+            --workflow .github/workflows/deployment-preflight.yml
+
+      - name: Verify container non-root declarations
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Eq '^USER[[:space:]]+breero$' apps/api/Dockerfile
+          grep -Eq '^USER[[:space:]]+(breero|nextjs|1001)$' deploy/frontend/Dockerfile
+
+      - name: Record non-deployment status
+        shell: bash
+        run: |
+          {
+            echo '### Secure deployment preflight'
+            echo
+            echo '- Live server changed: **no**'
+            echo '- Deployment credentials used: **no**'
+            echo '- Runtime paths verified: **no — host-side read-only evidence is still required**'
+            echo '- Canonical production Compose selected: **candidate only; runtime authority is not yet certified**'
+          } >>"$GITHUB_STEP_SUMMARY"

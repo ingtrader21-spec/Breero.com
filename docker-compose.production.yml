@@ -3,6 +3,11 @@ name: breero
 x-app: &app
   image: ${BREERO_IMAGE:?Set BREERO_IMAGE to an immutable image digest}
   env_file: ${BREERO_ENV_FILE:-.env.production}
+  environment:
+    DATABASE_URL_FILE: /run/secrets/breero_database_url
+    REDIS_URL_FILE: /run/secrets/breero_redis_url
+    JWT_SECRET_FILE: /run/secrets/breero_jwt_access_secret
+    JWT_REFRESH_SECRET_FILE: /run/secrets/breero_jwt_refresh_secret
   restart: unless-stopped
   init: true
   read_only: true
