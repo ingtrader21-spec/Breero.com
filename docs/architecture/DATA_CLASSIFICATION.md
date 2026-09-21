@@ -1,6 +1,6 @@
 # Data classification and handling baseline
 
-Regenerated for source baseline `41b6a3f20c35172e3fc2c751fca0bc994126e11a`. This is handling
+Regenerated for source baseline `50407f46777e44fb0efbd6af0c7b70466a43a93d`. This is handling
 policy and source-boundary evidence, not legal advice or production-retention certification.
 
 | Class | Examples | Required handling |

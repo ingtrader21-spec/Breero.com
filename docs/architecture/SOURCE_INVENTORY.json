@@ -23780,7 +23780,7 @@
       "sha256": "b05316a83e1b7c4389b5a684e2f4c13c84b124f2297672b6715e81162b7d8e4b"
     }
   ],
-  "baseline_main_sha": "41b6a3f20c35172e3fc2c751fca0bc994126e11a",
+  "baseline_main_sha": "50407f46777e44fb0efbd6af0c7b70466a43a93d",
   "contract_sources": [
     {
       "path": "packages/api-client/src/client.test.ts",

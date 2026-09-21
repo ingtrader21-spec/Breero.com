@@ -1,8 +1,8 @@
 {
-  "captured_at": "2026-09-20T23:45:44.354Z",
+  "captured_at": "2026-09-21T02:42:00Z",
   "repository": "ingtrader21-spec/Breero.com",
   "default_branch": "main",
-  "main_sha": "8b2b22adf94c5a5d7c7699e3fb5d1a536a6beeec",
+  "main_sha": "50407f46777e44fb0efbd6af0c7b70466a43a93d",
   "rulesets": [
     {
       "id": 22208362,
@@ -94,11 +94,6 @@
   ],
   "open_pull_requests": [
     {
-      "number": 123,
-      "title": "reconcile: promote live Breero runtime into canonical repository",
-      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/123"
-    },
-    {
       "number": 41,
       "title": "fix(tooling): make BREERO backend bootstrap fail closed and tested",
       "url": "https://github.com/ingtrader21-spec/Breero.com/pull/41"
@@ -107,6 +102,11 @@
       "number": 62,
       "title": "refactor(api): add fail-closed runtime endpoint policy registry",
       "url": "https://github.com/ingtrader21-spec/Breero.com/pull/62"
+    },
+    {
+      "number": 109,
+      "title": "feat(portals): scoped provider, operations, and admin read models",
+      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/109"
     },
     {
       "number": 65,
@@ -122,11 +122,6 @@
       "number": 70,
       "title": "feat(email): add tenant provisioning, compose and durable outbox",
       "url": "https://github.com/ingtrader21-spec/Breero.com/pull/70"
-    },
-    {
-      "number": 109,
-      "title": "feat(portals): scoped provider, operations, and admin read models",
-      "url": "https://github.com/ingtrader21-spec/Breero.com/pull/109"
     },
     {
       "number": 110,

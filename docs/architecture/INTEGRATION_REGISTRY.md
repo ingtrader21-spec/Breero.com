@@ -1,6 +1,6 @@
 # Integration registry
 
-Generated source evidence at `41b6a3f20c35172e3fc2c751fca0bc994126e11a`. File presence does not certify external provider connectivity or authorize live effects.
+Generated source evidence at `50407f46777e44fb0efbd6af0c7b70466a43a93d`. File presence does not certify external provider connectivity or authorize live effects.
 
 ## BREERO integration source modules
 

@@ -1,6 +1,6 @@
 # BREERO API registry
 
-Generated from `SOURCE_INVENTORY.json` at `41b6a3f20c35172e3fc2c751fca0bc994126e11a`. The canonical contract profile is authoritative for shared method/path pairs. Implemented/dark-only routes remain inventoried but are not activation evidence.
+Generated from `SOURCE_INVENTORY.json` at `50407f46777e44fb0efbd6af0c7b70466a43a93d`. The canonical contract profile is authoritative for shared method/path pairs. Implemented/dark-only routes remain inventoried but are not activation evidence.
 
 ## Profile summary
 

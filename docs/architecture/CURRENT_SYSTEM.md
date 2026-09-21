@@ -1,13 +1,13 @@
 # Current BREERO system
 
-Generated from executable source inventory at `41b6a3f20c35172e3fc2c751fca0bc994126e11a`. This is source truth only; deployed database revision, external services, and production activation require separate runtime certification.
+Generated from executable source inventory at `50407f46777e44fb0efbd6af0c7b70466a43a93d`. This is source truth only; deployed database revision, external services, and production activation require separate runtime certification.
 
 ## Canonical source record
 
 | Field | Source evidence |
 |---|---|
 | REPOSITORY | `ingtrader21-spec/Breero.com` |
-| SOURCE_SHA | `41b6a3f20c35172e3fc2c751fca0bc994126e11a` |
+| SOURCE_SHA | `50407f46777e44fb0efbd6af0c7b70466a43a93d` |
 | ALEMBIC_HEADS | `031_provider_catalog` |
 | ALEMBIC_REVISIONS | 32 |
 | OPENAPI_ARTIFACT | `apps/api/openapi.json` / `7c2ea4ffaa0b79705f8c0298eca24526268c8db86906491a5214384a0e7f05bf` |

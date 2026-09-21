@@ -1,6 +1,6 @@
 # Capability registry
 
-Generated from source defaults at `41b6a3f20c35172e3fc2c751fca0bc994126e11a`. Defaults describe code/configuration only; they are not production activation evidence.
+Generated from source defaults at `50407f46777e44fb0efbd6af0c7b70466a43a93d`. Defaults describe code/configuration only; they are not production activation evidence.
 
 | Source setting | Default | Source |
 |---|---|---|
