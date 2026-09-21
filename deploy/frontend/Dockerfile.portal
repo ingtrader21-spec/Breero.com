@@ -34,7 +34,7 @@ ENV NODE_ENV=production \
     PORT=3000 \
     APP_DIR=${APP_DIR}
 WORKDIR /app
-RUN addgroup -S -g 10001 breero && adduser -S -D -H -u 10001 -G breero breero
+RUN apk upgrade --no-cache  && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx  && addgroup -S -g 10001 breero  && adduser -S -D -H -u 10001 -G breero breero
 COPY --from=build --chown=10001:10001 /workspace/apps/${APP_DIR}/.next/standalone ./
 COPY --from=build --chown=10001:10001 /workspace/apps/${APP_DIR}/.next/static ./apps/${APP_DIR}/.next/static
 COPY --from=build --chown=10001:10001 /workspace/apps/${APP_DIR}/public ./apps/${APP_DIR}/public

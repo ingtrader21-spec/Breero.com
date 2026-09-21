@@ -722,7 +722,7 @@ APPROVED_CONTROL_PLANE_WORKFLOW_SHA256: dict[str, dict[str, str]] = {
     },
     "ingtrader21-spec/Breero.com": {
         ".github/workflows/quality.yml": "2be72e0820aea5373c0f273b260dd9be5599698802864ae50fb28077abe53c6a",
-        ".github/workflows/portal-release-quality.yml": "68b9ab889c1cd5d8aca077c77201d55109c084a489badaf8a4692b7c81f601bb",
+        ".github/workflows/portal-release-quality.yml": "27ae17766a4ff5d0d8214829f931329df9743b00dbfa5d616eea20af25824648",
     },
     "appolon1908-hue/Moneybee-Backend": {
         ".github/workflows/ci.yml": (
