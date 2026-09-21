@@ -1,33 +1,25 @@
-import secrets
 import uuid
 from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.errors import DomainError
 from app.db.session import get_db
 from app.domains.administration.models import FeatureFlag, OperatingHour
 from app.domains.administration.schemas import (
-    AdminUserCreate,
-    AdminUserRead,
     AuditEventRead,
     FeatureFlagPatch,
     FeatureFlagRead,
     OperatingHourRead,
     OperatingHourWrite,
-    ProviderApplicationDecision,
 )
 from app.domains.auth.dependencies import require_roles
 from app.domains.auth.models import User, UserRole
-from app.domains.auth.repository import UserRepository
-from app.domains.auth.security import hash_password
 from app.domains.common.outbox import AuditLog
-from app.domains.workforce.models import Vendor, VendorStatus, Worker, WorkerStatus
-from app.domains.workforce.provider_models import ProviderService, ProviderServiceArea
+from app.domains.workforce.models import Vendor
 from app.domains.workforce.schemas import VendorRead
 
 router = APIRouter()
@@ -61,35 +53,6 @@ def audit(actor: User, action: str, resource_type: str, resource_id: uuid.UUID, 
     )
 
 
-@router.post("/users", response_model=AdminUserRead, status_code=201)
-async def create_admin_user(
-    data: AdminUserCreate,
-    actor: Annotated[User, Depends(admin_only)],
-    session: Annotated[AsyncSession, Depends(get_db)],
-) -> User:
-    email = str(data.email).lower()
-    if await UserRepository(session).by_email(email):
-        raise DomainError("CONFLICT", "An account with this email already exists", 409)
-    user = User(
-        email=email,
-        phone=data.phone,
-        full_name=data.full_name.strip(),
-        role=data.role,
-        password_hash=hash_password(secrets.token_urlsafe(48)),
-        password_set_required=True,
-        email_verified=False,
-    )
-    session.add(user)
-    try:
-        await session.flush()
-    except IntegrityError as exc:
-        raise DomainError("CONFLICT", "An account with this email already exists", 409) from exc
-    session.add(audit(actor, "admin_user.created", "user", user.id, {"role": user.role.value}))
-    await session.commit()
-    await session.refresh(user)
-    return user
-
-
 @router.get("/providers", response_model=list[VendorRead])
 async def providers(
     _: Annotated[User, Depends(internal_read)],
@@ -108,99 +71,6 @@ async def provider(
     if not record:
         raise DomainError("NOT_FOUND", "Provider not found", 404)
     return record
-
-
-@router.get("/provider-applications", response_model=list[VendorRead])
-async def provider_applications(
-    _: Annotated[User, Depends(internal_read)],
-    session: Annotated[AsyncSession, Depends(get_db)],
-) -> list[Vendor]:
-    return list(
-        (
-            await session.scalars(
-                select(Vendor)
-                .where(Vendor.onboarding_status.in_(["PENDING", "UNDER_REVIEW", "INFORMATION_REQUESTED"]))
-                .order_by(Vendor.created_at)
-            )
-        ).all()
-    )
-
-
-@router.get("/provider-applications/{provider_id}", response_model=VendorRead)
-async def provider_application(
-    provider_id: uuid.UUID,
-    _: Annotated[User, Depends(internal_read)],
-    session: Annotated[AsyncSession, Depends(get_db)],
-) -> Vendor:
-    return await provider(provider_id, _, session)
-
-
-async def decide_provider(
-    provider_id: uuid.UUID,
-    data: ProviderApplicationDecision,
-    actor: User,
-    session: AsyncSession,
-    decision: str,
-) -> Vendor:
-    record = await session.scalar(select(Vendor).where(Vendor.id == provider_id).with_for_update())
-    if not record:
-        raise DomainError("NOT_FOUND", "Provider application not found", 404)
-    if record.onboarding_status not in {"PENDING", "UNDER_REVIEW", "INFORMATION_REQUESTED"}:
-        raise DomainError("INVALID_STATE_TRANSITION", "Provider application is already decided", 409)
-    if decision == "APPROVED":
-        record.status = VendorStatus.ACTIVE
-        record.onboarding_status = "APPROVED"
-        record.compliance_status = "APPROVED"
-        workers = list((await session.scalars(select(Worker).where(Worker.vendor_id == record.id))).all())
-        for worker in workers:
-            worker.status = WorkerStatus.ACTIVE
-            worker.available = True
-        for service in (await session.scalars(select(ProviderService).where(ProviderService.provider_id == record.id))).all():
-            service.active = True
-            service.approval_status = "APPROVED"
-        for area in (await session.scalars(select(ProviderServiceArea).where(ProviderServiceArea.provider_id == record.id))).all():
-            area.active = True
-            area.approval_status = "APPROVED"
-    elif decision == "REJECTED":
-        record.status = VendorStatus.REJECTED
-        record.onboarding_status = "REJECTED"
-    else:
-        record.status = VendorStatus.UNDER_REVIEW
-        record.onboarding_status = "INFORMATION_REQUESTED"
-    session.add(audit(actor, f"provider_application.{decision.lower()}", "vendor", record.id, {"reason": data.reason}))
-    await session.commit()
-    await session.refresh(record)
-    return record
-
-
-@router.post("/provider-applications/{provider_id}/approve", response_model=VendorRead)
-async def approve_provider(
-    provider_id: uuid.UUID,
-    data: ProviderApplicationDecision,
-    actor: Annotated[User, Depends(admin_only)],
-    session: Annotated[AsyncSession, Depends(get_db)],
-) -> Vendor:
-    return await decide_provider(provider_id, data, actor, session, "APPROVED")
-
-
-@router.post("/provider-applications/{provider_id}/reject", response_model=VendorRead)
-async def reject_provider(
-    provider_id: uuid.UUID,
-    data: ProviderApplicationDecision,
-    actor: Annotated[User, Depends(admin_only)],
-    session: Annotated[AsyncSession, Depends(get_db)],
-) -> Vendor:
-    return await decide_provider(provider_id, data, actor, session, "REJECTED")
-
-
-@router.post("/provider-applications/{provider_id}/request-information", response_model=VendorRead)
-async def request_provider_information(
-    provider_id: uuid.UUID,
-    data: ProviderApplicationDecision,
-    actor: Annotated[User, Depends(admin_only)],
-    session: Annotated[AsyncSession, Depends(get_db)],
-) -> Vendor:
-    return await decide_provider(provider_id, data, actor, session, "INFORMATION_REQUESTED")
 
 
 @router.get("/feature-flags", response_model=list[FeatureFlagRead])

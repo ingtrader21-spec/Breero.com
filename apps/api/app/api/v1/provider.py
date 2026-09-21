@@ -2,7 +2,7 @@ import uuid
 from datetime import date
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.errors import DomainError
@@ -22,24 +22,11 @@ from app.domains.workforce.provider_schemas import (
     CapacityRuleWrite,
     ProviderServiceAreaRead,
     ProviderServiceAreaWrite,
-    ProviderServicePatch,
-    ProviderServiceRead,
-    ProviderServiceWrite,
 )
 from app.domains.workforce.provider_service import ProviderPortalService
-from app.domains.workforce.schemas import VendorRead
 
 router = APIRouter()
 provider_user = require_roles(UserRole.vendor_admin, UserRole.technician)
-
-
-@router.get("/profile", response_model=VendorRead)
-async def profile(
-    session: Annotated[AsyncSession, Depends(get_db)],
-    user: Annotated[User, Depends(provider_user)],
-):
-    vendor, _ = await ProviderPortalService(session, user).context()
-    return vendor
 
 
 @router.get("/jobs", response_model=list[JobRead])
@@ -57,44 +44,6 @@ async def job(
     user: Annotated[User, Depends(provider_user)],
 ):
     return await ProviderPortalService(session, user).job(job_id)
-
-
-@router.get("/services", response_model=list[ProviderServiceRead])
-async def services(
-    session: Annotated[AsyncSession, Depends(get_db)],
-    user: Annotated[User, Depends(provider_user)],
-):
-    return await ProviderPortalService(session, user).services()
-
-
-@router.post("/services", response_model=ProviderServiceRead, status_code=201)
-async def add_service(
-    data: ProviderServiceWrite,
-    session: Annotated[AsyncSession, Depends(get_db)],
-    user: Annotated[User, Depends(require_roles(UserRole.vendor_admin))],
-):
-    return await ProviderPortalService(session, user).add_service(data.service_id)
-
-
-@router.delete("/services/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_service(
-    item_id: uuid.UUID,
-    session: Annotated[AsyncSession, Depends(get_db)],
-    user: Annotated[User, Depends(require_roles(UserRole.vendor_admin))],
-) -> None:
-    await ProviderPortalService(session, user).remove_service(item_id)
-
-
-@router.patch("/services/{item_id}", response_model=ProviderServiceRead)
-async def change_service(
-    item_id: uuid.UUID,
-    data: ProviderServicePatch,
-    session: Annotated[AsyncSession, Depends(get_db)],
-    user: Annotated[User, Depends(require_roles(UserRole.vendor_admin))],
-):
-    return await ProviderPortalService(session, user).change_service(
-        item_id, data.requested_active
-    )
 
 
 @router.get("/service-areas", response_model=list[ProviderServiceAreaRead])

@@ -126,6 +126,21 @@ def test_unowned_route_still_fails_closed(path: str) -> None:
         build_endpoint_policies(isolated)
 
 
+def test_structurally_duplicate_parameterized_routes_fail_closed() -> None:
+    isolated = FastAPI()
+
+    @isolated.get("/api/v1/bookings/{booking_id}")
+    def booking_by_id(booking_id: str):
+        return {"booking_id": booking_id}
+
+    @isolated.get("/api/v1/bookings/{legacy_id}")
+    def booking_by_legacy_id(legacy_id: str):
+        return {"booking_id": legacy_id}
+
+    with pytest.raises(RuntimeError, match="structural_duplicates=GET"):
+        build_endpoint_policies(isolated)
+
+
 def test_readiness_alias_uses_the_same_policy_as_the_health_endpoint() -> None:
     endpoints = get_endpoint_registry(app)["endpoints"]
     ready = next(entry for entry in endpoints if entry["path"] == "/ready")
