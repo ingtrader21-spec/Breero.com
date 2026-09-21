@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.db.session import get_db
-from app.domains.auth.dependencies import require_roles
-from app.domains.auth.models import User, UserRole
+from app.domains.auth.dependencies import require_any_permission
+from app.domains.auth.models import User
 from app.domains.common.outbox import EventStatus, IntegrationEvent
 from app.domains.common.outbox_service import OutboxService
 
@@ -22,10 +22,21 @@ FAILURE_STATUSES = (
 
 
 @router.get("/health")
-async def provider_health(_: User = Depends(require_roles(UserRole.finance, UserRole.admin))):
+async def provider_health(
+    _: User = Depends(
+        require_any_permission(
+            "admin.integrations.read",
+            "finance.reconciliation.read",
+        )
+    ),
+):
     return {
         "stripe": {"configured": bool(settings.stripe_secret_key)},
-        "email": {"configured": bool(settings.smtp_host and settings.smtp_from_email)},
+        "email": {
+            "configured": bool(settings.email_enabled),
+            "mode": settings.transactional_email_mode,
+            "tenant_credentials": True,
+        },
         "sms": {"configured": bool(settings.sms_provider and settings.sms_api_key)},
         "odoo": {
             "configured": bool(
@@ -46,7 +57,12 @@ async def provider_health(_: User = Depends(require_roles(UserRole.finance, User
 @router.get("/failures")
 async def failures(
     session: AsyncSession = Depends(get_db),
-    _: User = Depends(require_roles(UserRole.finance, UserRole.admin)),
+    _: User = Depends(
+        require_any_permission(
+            "admin.integrations.read",
+            "finance.reconciliation.read",
+        )
+    ),
 ):
     return list(
         (
@@ -64,7 +80,7 @@ async def failures(
 async def retry_event(
     event_id: uuid.UUID,
     session: AsyncSession = Depends(get_db),
-    user: User = Depends(require_roles(UserRole.finance, UserRole.admin)),
+    user: User = Depends(require_any_permission("integration.retry")),
 ):
     try:
         return await OutboxService(session).retry(event_id, user.id)

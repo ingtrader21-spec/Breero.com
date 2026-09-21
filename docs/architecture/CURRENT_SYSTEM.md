@@ -1,18 +1,18 @@
 # Current BREERO system
 
-Generated from executable source inventory at `ee79c3cb0bd667c3456dd20521563017b7d2d246`. This is source truth only; deployed database revision, external services, and production activation require separate runtime certification.
+Generated from executable source inventory at `54c5b25d5332a2c5d6b4ca7300e7f7e30c1b3aa0`. This is source truth only; deployed database revision, external services, and production activation require separate runtime certification.
 
 ## Canonical source record
 
 | Field | Source evidence |
 |---|---|
 | REPOSITORY | `ingtrader21-spec/Breero.com` |
-| SOURCE_SHA | `ee79c3cb0bd667c3456dd20521563017b7d2d246` |
-| ALEMBIC_HEADS | `031_provider_catalog` |
-| ALEMBIC_REVISIONS | 32 |
-| OPENAPI_ARTIFACT | `apps/api/openapi.json` / `d7fd1a8b77323eca8d98183d43bc704b02fedccd72729562063576ec1cdec4e7` |
-| BACKEND_DOMAINS | 17 |
-| FRONTEND_ROUTES | 91 |
+| SOURCE_SHA | `54c5b25d5332a2c5d6b4ca7300e7f7e30c1b3aa0` |
+| ALEMBIC_HEADS | `032_tenant_email_provisioning` |
+| ALEMBIC_REVISIONS | 33 |
+| OPENAPI_ARTIFACT | `apps/api/openapi.json` / `0de5a21ac17aec2b143fa946f886012dca32d764b38812fd573a61125997553b` |
+| BACKEND_DOMAINS | 18 |
+| FRONTEND_ROUTES | 93 |
 | WORKER_TASKS | 4 |
 | DEPLOYMENT_FILES | 11 |
 | LIVE_PRODUCTION_CERTIFICATION | NOT ESTABLISHED BY THIS INVENTORY |
@@ -23,9 +23,9 @@ Stale PR/issue counts are intentionally not copied into this source document. Gi
 
 | Profile | OpenAPI paths | OpenAPI operations | Checked artifact match | Duplicate registrations |
 |---|---:|---:|---|---:|
-| canonical_contract | 149 | 182 | TRUE | 0 |
-| default | 140 | 172 | FALSE | 0 |
-| implemented_routes | 159 | 191 | FALSE | 0 |
+| canonical_contract | 157 | 193 | TRUE | 0 |
+| default | 148 | 183 | FALSE | 0 |
+| implemented_routes | 167 | 202 | FALSE | 0 |
 
 The `canonical_contract` profile is the checked-in OpenAPI authority. The default profile is the fail-closed route surface; implemented/dark profiles are evidence of code presence, not authorization to activate capabilities.
 
@@ -53,6 +53,7 @@ Profile-contract variants: **0**. Duplicate registrations remain explicit eviden
 | `professional_leads` | SOURCE_PRESENT |
 | `provider_catalog` | SOURCE_PRESENT |
 | `public_submissions` | SOURCE_PRESENT |
+| `tenant_email` | SOURCE_PRESENT |
 | `workforce` | SOURCE_PRESENT |
 
 Functional completeness is intentionally not inferred from directory presence. Domain acceptance remains governed by the M00–M30 mission board.
@@ -114,6 +115,7 @@ Filesystem route presence is source evidence, not proof of authentication, acces
 | web | page | `/account/session-expired` | [apps/web/app/account/session-expired/page.tsx](../../apps/web/app/account/session-expired/page.tsx) |
 | web | page | `/account/unauthorized` | [apps/web/app/account/unauthorized/page.tsx](../../apps/web/app/account/unauthorized/page.tsx) |
 | web | page | `/account/verify` | [apps/web/app/account/verify/page.tsx](../../apps/web/app/account/verify/page.tsx) |
+| web | page | `/admin/email` | [apps/web/app/admin/email/page.tsx](../../apps/web/app/admin/email/page.tsx) |
 | web | page | `/admin` | [apps/web/app/admin/page.tsx](../../apps/web/app/admin/page.tsx) |
 | web | handler | `/api/addresses/validate` | [apps/web/app/api/addresses/validate/route.ts](../../apps/web/app/api/addresses/validate/route.ts) |
 | web | handler | `/api/capabilities` | [apps/web/app/api/capabilities/route.ts](../../apps/web/app/api/capabilities/route.ts) |
@@ -153,6 +155,7 @@ Filesystem route presence is source evidence, not proof of authentication, acces
 | web | page | `/privacy` | [apps/web/app/privacy/page.tsx](../../apps/web/app/privacy/page.tsx) |
 | web | page | `/privacy-choices` | [apps/web/app/privacy-choices/page.tsx](../../apps/web/app/privacy-choices/page.tsx) |
 | web | page | `/professional-lead-policy` | [apps/web/app/professional-lead-policy/page.tsx](../../apps/web/app/professional-lead-policy/page.tsx) |
+| web | page | `/provider/email` | [apps/web/app/provider/email/page.tsx](../../apps/web/app/provider/email/page.tsx) |
 | web | page | `/provider` | [apps/web/app/provider/page.tsx](../../apps/web/app/provider/page.tsx) |
 | web | page | `/provider-terms` | [apps/web/app/provider-terms/page.tsx](../../apps/web/app/provider-terms/page.tsx) |
 | web | page | `/quality` | [apps/web/app/quality/page.tsx](../../apps/web/app/quality/page.tsx) |

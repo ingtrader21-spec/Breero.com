@@ -163,3 +163,24 @@ def require_permissions(*permissions: str) -> Callable:
         return user
 
     return dependency
+
+
+def require_any_permission(*permissions: str) -> Callable:
+    requested = frozenset(permission.strip() for permission in permissions if permission.strip())
+    if not requested:
+        raise ValueError("At least one permission is required")
+
+    async def dependency(
+        user: Annotated[User, Depends(current_user)],
+        session: Annotated[AsyncSession, Depends(get_db)],
+    ) -> User:
+        context = await AccessService(session).context(user, BRAND_KEY)
+        effective = set(context.permissions)
+        if "*" not in effective and not effective.intersection(requested):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions",
+            )
+        return user
+
+    return dependency

@@ -3,6 +3,12 @@ import { DepartmentDashboard } from "@/components/portal/department-dashboard";
 export const metadata = { title: "Provider dashboard" };
 
 const modules = [
+  {
+    title: "Email provisioning & compose",
+    description: "Manage tenant domains, senders, credential references, queued messages and outbox state.",
+    permission: "email.message.compose",
+    href: "/provider/email",
+  },
   { title: "Company profile", description: "Provider identity and service coverage.", permission: "provider.profile.read" },
   { title: "Credentials", description: "License and insurance verification records.", permission: "provider.credentials.read" },
   { title: "Team", description: "Provider team access.", permission: "provider.worker.manage" },

@@ -2,10 +2,12 @@ import type {
   AccessCatalog, AccessProfileUpdate, AddressValidation, AddressValidationRequest, AuthSession,
   AvailabilitySearchRequest, AvailabilitySlot, Booking, BookingConfirmation, BookingCreateRequest,
   BookingCreateResponse, ChangePasswordRequest, CustomerAddress, CustomerAddressInput,
-  CustomerBookingList, CustomerPayment, CustomerProfile, CustomerProfilePatch, ForgotPasswordRequest,
-  LoginMode, LoginRequest, MessageResponse, Page, Payment, PaymentIntentRequest, PortalContext,
-  PublicCapabilities, Quote, RefreshRequest, RegisterRequest, ResetPasswordRequest, ServiceDetail,
-  ServiceQuestion, ServiceSummary, TokenRequest, User, UUID,
+  CustomerBookingList, CustomerPayment, CustomerProfile, CustomerProfilePatch, EmailComposeRequest,
+  EmailCredential, EmailCredentialCreate, EmailDomain, EmailDomainCreate, EmailOutboxEntry,
+  EmailSender, EmailSenderCreate, ForgotPasswordRequest, LoginMode, LoginRequest, MessageResponse,
+  Page, Payment, PaymentIntentRequest, PortalContext, PublicCapabilities, Quote, RefreshRequest,
+  RegisterRequest, ResetPasswordRequest, ServiceDetail, ServiceQuestion, ServiceSummary,
+  TenantEmailMessage, TokenRequest, User, UUID,
 } from "@breero/types";
 import { ApiTransport, type Transport, type TransportOptions } from "./transport";
 
@@ -23,6 +25,19 @@ export interface BreeroApi {
     accessCatalog(signal?: AbortSignal): Promise<AccessCatalog>;
     userAccess(userId: UUID, signal?: AbortSignal): Promise<PortalContext>;
     replaceUserAccess(userId: UUID, input: AccessProfileUpdate, signal?: AbortSignal): Promise<PortalContext>;
+  };
+  email: {
+    domains(signal?: AbortSignal): Promise<EmailDomain[]>;
+    createDomain(input: EmailDomainCreate, signal?: AbortSignal): Promise<EmailDomain>;
+    setDomainVerification(id: UUID, verified: boolean, signal?: AbortSignal): Promise<EmailDomain>;
+    senders(signal?: AbortSignal): Promise<EmailSender[]>;
+    createSender(input: EmailSenderCreate, signal?: AbortSignal): Promise<EmailSender>;
+    credentials(signal?: AbortSignal): Promise<EmailCredential[]>;
+    createCredential(input: EmailCredentialCreate, signal?: AbortSignal): Promise<EmailCredential>;
+    compose(input: EmailComposeRequest, signal?: AbortSignal): Promise<TenantEmailMessage>;
+    message(id: UUID, signal?: AbortSignal): Promise<TenantEmailMessage>;
+    outbox(signal?: AbortSignal): Promise<EmailOutboxEntry[]>;
+    retryOutbox(id: UUID, signal?: AbortSignal): Promise<EmailOutboxEntry>;
   };
   services: { list(signal?: AbortSignal): Promise<ServiceSummary[]>; detail(id: UUID, signal?: AbortSignal): Promise<ServiceDetail>; questions(id: UUID, signal?: AbortSignal): Promise<ServiceQuestion[]> };
   addresses: { validate(input: AddressValidationRequest, signal?: AbortSignal): Promise<AddressValidation> };
@@ -71,6 +86,19 @@ export function createApiClient(http: Transport): BreeroApi {
       userAccess: (userId, signal) => http.request(`/auth/access/users/${encoded(userId)}`, { signal }),
       replaceUserAccess: (userId, body, signal) => http.request(`/auth/access/users/${encoded(userId)}`, { method: "PUT", body, signal, retry: false }),
     },
+    email: {
+      domains: (signal) => http.request("/email/domains", { signal }),
+      createDomain: (body, signal) => http.request("/email/domains", { method: "POST", body, signal, retry: false }),
+      setDomainVerification: (id, verified, signal) => http.request(`/email/domains/${encoded(id)}/verification?verified=${verified}`, { method: "POST", signal, retry: false }),
+      senders: (signal) => http.request("/email/senders", { signal }),
+      createSender: (body, signal) => http.request("/email/senders", { method: "POST", body, signal, retry: false }),
+      credentials: (signal) => http.request("/email/credentials", { signal }),
+      createCredential: (body, signal) => http.request("/email/credentials", { method: "POST", body, signal, retry: false }),
+      compose: (body, signal) => http.request("/email/messages", { method: "POST", body, signal, retry: false }),
+      message: (id, signal) => http.request(`/email/messages/${encoded(id)}`, { signal }),
+      outbox: (signal) => http.request("/email/outbox", { signal }),
+      retryOutbox: (id, signal) => http.request(`/email/outbox/${encoded(id)}/retry`, { method: "POST", signal, retry: false }),
+    },
     services: {
       list: (signal) => http.request("/services", { signal }),
       detail: (id, signal) => http.request(`/services/${encoded(id)}`, { signal }),
@@ -86,9 +114,7 @@ export function createApiClient(http: Transport): BreeroApi {
       getMine: (id, signal) => http.request(`/customer/bookings/${encoded(id)}`, { signal }),
       cancelMine: (id, signal) => http.request(`/customer/bookings/${encoded(id)}/cancel`, { method: "POST", signal, retry: false }),
     },
-    payments: {
-      createIntent: (body, key, signal) => http.request("/payments/intents", { method: "POST", body, signal, retry: false, headers: { "Idempotency-Key": key } }),
-    },
+    payments: { createIntent: (body, key, signal) => http.request("/payments/intents", { method: "POST", body, signal, retry: false, headers: { "Idempotency-Key": key } }) },
     customer: {
       profile: (signal) => http.request("/customer/profile", { signal }),
       updateProfile: (body, signal) => http.request("/customer/profile", { method: "PATCH", body, signal, retry: false }),

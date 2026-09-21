@@ -33,7 +33,7 @@ from app.observability import (
     route_template,
 )
 
-EXPECTED_SCHEMA_REVISION = "031_provider_catalog"
+EXPECTED_SCHEMA_REVISION = "032_tenant_email_provisioning"
 READINESS_TIMEOUT_SECONDS = 3.0
 TRACE_ID_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}")
 app = FastAPI(title=settings.app_name, version="2.0.0", lifespan=lifespan)

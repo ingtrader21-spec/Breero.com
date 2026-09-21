@@ -10,6 +10,7 @@ from app.domains.booking.models import EXPIRING_BOOKING_STATUSES, Booking, Booki
 from app.domains.common.outbox_service import OutboxService
 from app.domains.finance.service import FinanceService
 from app.domains.public_submissions.models import DownstreamStatus, PublicSubmission
+from app.domains.tenant_email.delivery import TenantEmailDeliveryService
 from app.integrations.email import EmailAdapter
 from app.integrations.middleware import MiddlewareAdapter
 from app.workers.celery_app import celery_app
@@ -88,7 +89,11 @@ def publish_outbox() -> int:
         async with WorkerSessionLocal() as session:
             adapter = MiddlewareAdapter()
             email = EmailAdapter()
+            tenant_email = TenantEmailDeliveryService(session)
+
             async def deliver(event):
+                if event.aggregate_type == "email_message" and event.event_type == "email.message.queued":
+                    return await tenant_email.deliver(event)
                 return await deliver_outbox_event(event, session, adapter, email)
 
             outbox = OutboxService(session)
@@ -96,6 +101,14 @@ def publish_outbox() -> int:
                 await outbox.activate_pending_configuration()
             else:
                 await outbox.park_unconfigured()
+            if settings.email_enabled and settings.transactional_email_mode != "disabled":
+                await outbox.activate_pending_configuration(
+                    event_prefix="email.message.", aggregate_type="email_message"
+                )
+            else:
+                await outbox.park_unconfigured(
+                    event_prefix="email.message.", aggregate_type="email_message"
+                )
             return await outbox.process(deliver)
 
     return asyncio.run(run())
@@ -118,7 +131,6 @@ def generate_weekly_payout_candidates() -> str:
                 batch = await FinanceService(session).create_batch("USD")
                 return str(batch.id)
             except Exception as exc:
-                # A no-candidate week is expected; unexpected task failures remain visible in Celery.
                 if getattr(exc, "status_code", None) == 409:
                     return "no_candidates"
                 raise

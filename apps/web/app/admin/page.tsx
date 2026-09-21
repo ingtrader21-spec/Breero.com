@@ -5,6 +5,12 @@ export const metadata = { title: "Administration dashboard" };
 
 const modules = [
   {
+    title: "Email provisioning & compose",
+    description: "Manage tenant domains, senders, credential references, queued messages and outbox state.",
+    permission: "email.message.compose",
+    href: "/admin/email",
+  },
+  {
     title: "Access control",
     description: "Department and role access administration.",
     permission: "admin.access.manage",

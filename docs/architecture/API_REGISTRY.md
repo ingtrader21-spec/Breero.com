@@ -1,14 +1,14 @@
 # BREERO API registry
 
-Generated from `SOURCE_INVENTORY.json` at `ee79c3cb0bd667c3456dd20521563017b7d2d246`. The canonical contract profile is authoritative for shared method/path pairs. Implemented/dark-only routes remain inventoried but are not activation evidence.
+Generated from `SOURCE_INVENTORY.json` at `54c5b25d5332a2c5d6b4ca7300e7f7e30c1b3aa0`. The canonical contract profile is authoritative for shared method/path pairs. Implemented/dark-only routes remain inventoried but are not activation evidence.
 
 ## Profile summary
 
 | Profile | Paths | Operations | Artifact match |
 |---|---:|---:|---|
-| canonical_contract | 149 | 182 | TRUE |
-| default | 140 | 172 | FALSE |
-| implemented_routes | 159 | 191 | FALSE |
+| canonical_contract | 157 | 193 | TRUE |
+| default | 148 | 183 | FALSE |
+| implemented_routes | 167 | 202 | FALSE |
 
 ## Duplicate route registrations
 
@@ -137,6 +137,17 @@ Duplicate method/path registrations are source-authority defects to be resolved 
 | GET | `/api/v1/customer/quotes` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/customer/quotes.py](../../apps/api/app/api/v1/customer/quotes.py) | `quotes` | `quotes_api_v1_customer_quotes_get` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
 | GET | `/api/v1/customer/quotes/{quote_id}` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/customer/quotes.py](../../apps/api/app/api/v1/customer/quotes.py) | `quote` | `quote_api_v1_customer_quotes__quote_id__get` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
 | POST | `/api/v1/customer/quotes/{quote_id}/decision` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/customer/quotes.py](../../apps/api/app/api/v1/customer/quotes.py) | `decide_quote` | `decide_quote_api_v1_customer_quotes__quote_id__decision_post` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
+| GET | `/api/v1/email/credentials` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/email.py](../../apps/api/app/api/v1/email.py) | `list_credentials` | `list_credentials_api_v1_email_credentials_get` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
+| POST | `/api/v1/email/credentials` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/email.py](../../apps/api/app/api/v1/email.py) | `create_credential` | `create_credential_api_v1_email_credentials_post` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
+| GET | `/api/v1/email/domains` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/email.py](../../apps/api/app/api/v1/email.py) | `list_domains` | `list_domains_api_v1_email_domains_get` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
+| POST | `/api/v1/email/domains` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/email.py](../../apps/api/app/api/v1/email.py) | `create_domain` | `create_domain_api_v1_email_domains_post` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
+| POST | `/api/v1/email/domains/{domain_id}/verification` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/email.py](../../apps/api/app/api/v1/email.py) | `set_domain_verification` | `set_domain_verification_api_v1_email_domains__domain_id__verification_post` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
+| POST | `/api/v1/email/messages` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/email.py](../../apps/api/app/api/v1/email.py) | `compose_message` | `compose_message_api_v1_email_messages_post` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
+| GET | `/api/v1/email/messages/{message_id}` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/email.py](../../apps/api/app/api/v1/email.py) | `get_message` | `get_message_api_v1_email_messages__message_id__get` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
+| GET | `/api/v1/email/outbox` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/email.py](../../apps/api/app/api/v1/email.py) | `list_outbox` | `list_outbox_api_v1_email_outbox_get` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
+| POST | `/api/v1/email/outbox/{event_id}/retry` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/email.py](../../apps/api/app/api/v1/email.py) | `retry_outbox` | `retry_outbox_api_v1_email_outbox__event_id__retry_post` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
+| GET | `/api/v1/email/senders` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/email.py](../../apps/api/app/api/v1/email.py) | `list_senders` | `list_senders_api_v1_email_senders_get` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
+| POST | `/api/v1/email/senders` | canonical_contract, default, implemented_routes | v1 | [apps/api/app/api/v1/email.py](../../apps/api/app/api/v1/email.py) | `create_sender` | `create_sender_api_v1_email_senders_post` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
 | POST | `/api/v1/finance/compensation-plans` | implemented_routes | v1 | [apps/api/app/api/v1/finance.py](../../apps/api/app/api/v1/finance.py) | `create_compensation_plan` | `create_compensation_plan_api_v1_finance_compensation_plans_post` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
 | GET | `/api/v1/finance/earnings` | implemented_routes | v1 | [apps/api/app/api/v1/finance.py](../../apps/api/app/api/v1/finance.py) | `list_earnings` | `list_earnings_api_v1_finance_earnings_get` | UNREGISTERED | UNREGISTERED | UNREGISTERED |
 | POST | `/api/v1/finance/earnings/{earning_id}/adjustments` | implemented_routes | v1 | [apps/api/app/api/v1/finance.py](../../apps/api/app/api/v1/finance.py) | `adjust_earning` | `adjust_earning_api_v1_finance_earnings__earning_id__adjustments_post` | UNREGISTERED | UNREGISTERED | UNREGISTERED |

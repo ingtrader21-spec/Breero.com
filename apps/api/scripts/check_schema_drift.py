@@ -26,6 +26,7 @@ from app.domains.payments import models as _payments  # noqa: F401
 from app.domains.professional_leads import models as _professional_leads  # noqa: F401
 from app.domains.provider_catalog import models as _provider_catalog  # noqa: F401
 from app.domains.public_submissions import models as _public_submissions  # noqa: F401
+from app.domains.tenant_email import models as _tenant_email  # noqa: F401
 from app.domains.workforce import models as _workforce  # noqa: F401
 from app.domains.workforce import provider_models as _workforce_provider  # noqa: F401
 
