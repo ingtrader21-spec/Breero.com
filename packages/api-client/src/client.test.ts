@@ -23,6 +23,26 @@ const portalContext = {
 };
 
 describe("BREERO client", () => {
+  it("keeps browser-cookie authentication alongside portal discovery", async () => {
+    const fetcher = vi.fn(async () => new Response("{}", { status: 200 }));
+    const api = createBreeroApi({ baseUrl: "https://api.test/api/v1", fetch: fetcher as typeof fetch });
+    await api.auth.login({ email: "synthetic@breero.test", password: "SYNTHETIC-TEST-INPUT" });
+    await api.auth.register({ full_name: "Synthetic User", email: "synthetic@breero.test", password: "SYNTHETIC-TEST-INPUT" });
+    await api.auth.refresh({ refresh_token: "SYNTHETIC-UNUSED" });
+    await api.auth.logout({ refresh_token: "SYNTHETIC-UNUSED" });
+    await api.auth.loginMode();
+    await api.auth.context();
+    const calls = fetcher.mock.calls as unknown as Array<[URL | RequestInfo, RequestInit]>;
+    expect(calls.map(([url]) => new URL(String(url)).pathname)).toEqual([
+      "/api/v1/auth/browser/login", "/api/v1/auth/browser/register/client",
+      "/api/v1/auth/browser/refresh", "/api/v1/auth/browser/logout",
+      "/api/v1/auth/login-mode", "/api/v1/auth/context",
+    ]);
+    expect(calls.every(([, init]) => init.credentials === "include")).toBe(true);
+    expect(calls[2][1].body).toBeUndefined();
+    expect(calls[3][1].body).toBeUndefined();
+  });
+
   it("sends idempotency keys on booking writes", async () => {
     const fetcher = vi.fn(async (_url: URL | RequestInfo, init?: RequestInit) => {
       expect(new Headers(init?.headers).get("idempotency-key")).toBe("booking-123456");

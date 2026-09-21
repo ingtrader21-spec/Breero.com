@@ -1,14 +1,12 @@
-from typing import Protocol
+from app.integrations.contracts import IntegrationNotConfigured, SmsGateway
 
-from app.integrations.payouts import IntegrationNotConfigured
-
-
-class SmsGateway(Protocol):
-    async def send(self, *, to: str, text: str) -> str: ...
+__all__ = ["FakeSmsGateway", "SmsGateway", "UnconfiguredSmsGateway", "render_sms"]
 
 
 class FakeSmsGateway:
-    def __init__(self): self.sent: list[dict] = []
+    def __init__(self) -> None:
+        self.sent: list[dict[str, str]] = []
+
     async def send(self, *, to: str, text: str) -> str:
         self.sent.append({"to": to, "text": text})
         return f"fake-sms-{len(self.sent)}"

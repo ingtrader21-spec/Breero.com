@@ -13,11 +13,12 @@ for (const route of publicRoutes.filter((path) => path !== "/book")) {
   });
 }
 
-test("book enters the request-only manual-dispatch journey", async ({ page }) => {
+test("book enters the protected booking journey", async ({ page }) => {
   await page.goto("/book");
-  await expect(page).toHaveURL(/\/request-service$/);
+  await expect(page).toHaveURL(/\/booking$/);
   await expect(page.locator("main")).toBeVisible();
-  await expect(page.getByText(/not a confirmed booking, provider assignment, price or appointment/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: /choose a time that works at your home/i })).toBeVisible();
+  await expect(page.getByText(/dispatcher will review/i)).toHaveCount(0);
 });
 
 test("policy and contact surfaces expose the approved operator identity", async ({ page }) => {

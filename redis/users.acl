@@ -1,0 +1,2 @@
+user default off
+user breero_app on #fc971cd2594fc2ee5f65de47d49316cad26e70695f5fe308563e3dc5164061ce ~* &* +@all -flushall -flushdb -config -module -acl -shutdown -replicaof -slaveof -debug -migrate

@@ -11,7 +11,7 @@ import inventory
 class InventoryAcceptanceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.recorded = json.loads(inventory.OUTPUT.read_text())
+        cls.recorded = json.loads(inventory.OUTPUT.read_text(encoding="utf-8"))
         # Ambient production configuration must neither alter the evidence nor
         # trigger file-backed credentials, telemetry or external connections.
         with patch.dict(
@@ -54,11 +54,18 @@ class InventoryAcceptanceTests(unittest.TestCase):
 
     def test_capability_profiles_do_not_misreport_dark_routes(self):
         default = self.actual["runtime_profiles"]["default"]
+        canonical = self.actual["runtime_profiles"]["canonical_contract"]
         implemented = self.actual["runtime_profiles"]["implemented_routes"]
-        self.assertTrue(default["openapi_matches_artifact"])
+        self.assertFalse(default["openapi_matches_artifact"])
+        self.assertTrue(canonical["openapi_matches_artifact"])
+        self.assertNotIn("POST /api/v1/booking/holds", default["operations"])
+        self.assertIn("POST /api/v1/booking/holds", canonical["operations"])
         self.assertNotIn("POST /api/v1/payments/webhooks/stripe", default["operations"])
         self.assertIn(
             "POST /api/v1/payments/webhooks/stripe", implemented["operations"]
+        )
+        self.assertGreater(
+            canonical["openapi_operations"], default["openapi_operations"]
         )
         self.assertGreater(
             implemented["openapi_operations"], default["openapi_operations"]
