@@ -73,7 +73,7 @@ jobs:
           printf 'POSTGRES_USER=breero\nPOSTGRES_DB=breero\nPOSTGRES_PASSWORD_FILE=/run/secrets/breero_postgres_password\n' >"$fixture/postgres.env"
           printf 'REDIS_PASSWORD_FILE=/run/secrets/breero_redis_password\n' >"$fixture/redis.env"
           printf 'NEXT_PUBLIC_API_BASE_URL=https://api.example.invalid\n' >"$fixture/frontend.env"
-          for secret in database_url redis_url jwt_access jwt_refresh geoapify postgres_password redis_acl redis_password; do
+          for secret in database_url redis_url jwt_access jwt_refresh geoapify keycloak_client_secret postgres_password redis_acl redis_password; do
             printf 'ci-placeholder\n' >"$fixture/$secret"
             chmod 600 "$fixture/$secret"
           done
@@ -86,6 +86,7 @@ jobs:
           export JWT_SECRET_REFERENCE="$fixture/jwt_access"
           export JWT_REFRESH_SECRET_REFERENCE="$fixture/jwt_refresh"
           export GEOAPIFY_API_KEY_REFERENCE="$fixture/geoapify"
+          export KEYCLOAK_CLIENT_SECRET_REFERENCE="$fixture/keycloak_client_secret"
           export POSTGRES_PASSWORD_REFERENCE="$fixture/postgres_password"
           export REDIS_ACL_FILE_REFERENCE="$fixture/redis_acl"
           docker compose --profile migration -f docker-compose.production.yml config --format json >"$fixture/backend.json"
