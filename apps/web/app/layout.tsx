@@ -4,6 +4,8 @@ import "@breero/ui/styles.css";
 import "./globals.css";
 import "./marketplace.css";
 import "./brand.css";
+import "./horizon.css";
+import "./horizon-compatibility.css";
 import { AppShell } from "@/components/app-shell";
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-br-sans", display: "swap" });
@@ -26,5 +28,15 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" className={manrope.variable}><body><AppShell>{children}</AppShell></body></html>;
+  return (
+    <html
+      lang="en"
+      className={manrope.variable}
+      data-horizon-root
+      data-horizon-theme="breero"
+      data-horizon-appearance="dark"
+    >
+      <body><AppShell>{children}</AppShell></body>
+    </html>
+  );
 }

@@ -1,0 +1,80 @@
+/*
+ * Reconciles the Horizon shell with BREERO's retained legacy selectors.
+ * This file is loaded after horizon.css so breakpoint and typography contracts
+ * remain deterministic until the legacy selectors are removed in a later PR.
+ */
+
+.hz-site-footer__grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 3rem);
+}
+
+.hz-site-footer__intro {
+  grid-column: 1 / -1;
+}
+
+.footer__intro.hz-site-footer__intro > .hz-eyebrow {
+  max-width: none;
+  margin: 0;
+  color: var(--hz-text-muted);
+  font-family: var(--hz-font-body);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  line-height: 1.55;
+  text-transform: uppercase;
+}
+
+.footer__intro.hz-site-footer__intro > .hz-site-footer__legal-address {
+  max-width: 28rem;
+  margin: 0;
+  color: var(--hz-text-muted);
+  font-family: var(--hz-font-body);
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+
+.footer__intro.hz-site-footer__intro > .hz-site-footer__legal-address a {
+  color: var(--hz-text);
+}
+
+@media (max-width: 64rem) {
+  .hz-site-footer__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 56.25rem) {
+  .hz-site-nav--desktop {
+    display: none;
+  }
+
+  .site-header .mobile-menu-button.hz-menu-button {
+    display: inline-flex;
+  }
+
+  .site-header .header-signin,
+  .site-header .header-book {
+    display: none;
+  }
+}
+
+@media (min-width: 56.3125rem) {
+  .hz-site-nav--desktop {
+    display: flex;
+  }
+
+  .site-header .mobile-menu-button.hz-menu-button {
+    display: none;
+  }
+}
+
+@media (max-width: 42rem) {
+  .hz-site-footer__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hz-site-footer__intro {
+    grid-column: auto;
+  }
+}

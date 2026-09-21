@@ -1,0 +1,208 @@
+{
+  "schemaVersion": "1.0",
+  "repository": "appolon1908-hue/Breero.com",
+  "visualContract": {
+    "repository": "appolon1908-hue/SDK-repository",
+    "commit": "7db4c6549a0a007922355090f03c082a308f3855"
+  },
+  "suiteDiscovery": [
+    {
+      "root": "apps",
+      "packageFile": "package.json",
+      "exclude": ["api"]
+    }
+  ],
+  "suites": [
+    {
+      "id": "breero-web",
+      "root": "apps/web",
+      "surface": "customer",
+      "theme": "breero",
+      "canonicalOrigin": "https://breero.com",
+      "domains": {
+        "public": ["https://breero.com"],
+        "partner": ["https://partners.breero.com"],
+        "operator": ["https://ops.breero.com"],
+        "administration": ["https://admin.breero.com"],
+        "identity": ["https://auth.codestra.co"],
+        "corporate": ["https://codestra.co"]
+      },
+      "shell": {
+        "mode": "application",
+        "rootFile": "apps/web/app/layout.tsx",
+        "headerFile": "apps/web/components/site-header.tsx",
+        "footerFile": "apps/web/components/site-footer.tsx",
+        "tokensFile": "apps/web/app/horizon.css",
+        "requiredRootMarkers": [
+          "data-horizon-root",
+          "data-horizon-theme=\"breero\"",
+          "data-horizon-appearance=\"dark\""
+        ],
+        "pageRoots": ["apps/web/app"]
+      },
+      "auth": {
+        "mode": "api-session",
+        "protectedRoutes": true,
+        "loginPath": "/account/login",
+        "loginSourceFile": "apps/web/components/account/auth-form.tsx",
+        "logoutSourceFile": "apps/web/lib/customer/session-actions.ts",
+        "guardSourceFile": "apps/web/components/account/account-frame.tsx",
+        "backendAuthorizationRequired": true,
+        "headerReflectsSession": true,
+        "durableIdentity": "backend-user-id",
+        "migrationTarget": "issuer+subject",
+        "browserTokenStorage": "legacy-session-storage-migration-required"
+      },
+      "colorPolicy": {
+        "rejectNewRawColors": true,
+        "allowedColorFiles": ["apps/web/app/horizon.css"]
+      },
+      "newPagePolicy": {
+        "inheritsRootShell": true,
+        "usesHorizonTokens": true,
+        "requiresStateMatrix": true
+      }
+    },
+    {
+      "id": "breero-admin",
+      "root": "apps/admin",
+      "surface": "admin",
+      "theme": "breero",
+      "canonicalOrigin": "https://admin.breero.com",
+      "domains": {
+        "public": ["https://breero.com"],
+        "administration": ["https://admin.breero.com"],
+        "identity": ["https://auth.codestra.co"],
+        "api": ["https://api.codestra.co"]
+      },
+      "shell": {
+        "mode": "operator",
+        "rootFile": "apps/admin/app/layout.tsx",
+        "topbarFile": "packages/portal/src/index.tsx",
+        "tokensFile": "packages/portal/src/styles.css",
+        "requiredRootMarkers": [
+          "data-horizon-root",
+          "data-horizon-theme=\"breero\"",
+          "data-horizon-appearance=\"dark\""
+        ],
+        "pageRoots": ["apps/admin/app"]
+      },
+      "auth": {
+        "mode": "api-session",
+        "protectedRoutes": true,
+        "loginPath": "/",
+        "loginSourceFile": "packages/portal/src/index.tsx",
+        "logoutSourceFile": "packages/portal/src/index.tsx",
+        "guardSourceFile": "packages/portal/src/index.tsx",
+        "backendAuthorizationRequired": true,
+        "headerReflectsSession": true,
+        "durableIdentity": "backend-user-id",
+        "migrationTarget": "issuer+subject",
+        "browserTokenStorage": "legacy-session-storage-migration-required"
+      },
+      "colorPolicy": {
+        "rejectNewRawColors": true,
+        "allowedColorFiles": ["packages/portal/src/styles.css"]
+      },
+      "newPagePolicy": {
+        "inheritsRootShell": true,
+        "usesHorizonTokens": true,
+        "requiresStateMatrix": true
+      }
+    },
+    {
+      "id": "breero-operations",
+      "root": "apps/ops",
+      "surface": "operator",
+      "theme": "breero",
+      "canonicalOrigin": "https://ops.breero.com",
+      "domains": {
+        "public": ["https://breero.com"],
+        "operator": ["https://ops.breero.com"],
+        "identity": ["https://auth.codestra.co"],
+        "api": ["https://api.codestra.co"]
+      },
+      "shell": {
+        "mode": "operator",
+        "rootFile": "apps/ops/app/layout.tsx",
+        "topbarFile": "packages/portal/src/index.tsx",
+        "tokensFile": "packages/portal/src/styles.css",
+        "requiredRootMarkers": [
+          "data-horizon-root",
+          "data-horizon-theme=\"breero\"",
+          "data-horizon-appearance=\"dark\""
+        ],
+        "pageRoots": ["apps/ops/app"]
+      },
+      "auth": {
+        "mode": "api-session",
+        "protectedRoutes": true,
+        "loginPath": "/",
+        "loginSourceFile": "packages/portal/src/index.tsx",
+        "logoutSourceFile": "packages/portal/src/index.tsx",
+        "guardSourceFile": "packages/portal/src/index.tsx",
+        "backendAuthorizationRequired": true,
+        "headerReflectsSession": true,
+        "durableIdentity": "backend-user-id",
+        "migrationTarget": "issuer+subject",
+        "browserTokenStorage": "legacy-session-storage-migration-required"
+      },
+      "colorPolicy": {
+        "rejectNewRawColors": true,
+        "allowedColorFiles": ["packages/portal/src/styles.css"]
+      },
+      "newPagePolicy": {
+        "inheritsRootShell": true,
+        "usesHorizonTokens": true,
+        "requiresStateMatrix": true
+      }
+    },
+    {
+      "id": "breero-partner",
+      "root": "apps/partner",
+      "surface": "operator",
+      "theme": "breero",
+      "canonicalOrigin": "https://partners.breero.com",
+      "domains": {
+        "public": ["https://breero.com"],
+        "partner": ["https://partners.breero.com"],
+        "identity": ["https://auth.codestra.co"],
+        "api": ["https://api.codestra.co"]
+      },
+      "shell": {
+        "mode": "operator",
+        "rootFile": "apps/partner/app/layout.tsx",
+        "topbarFile": "packages/portal/src/index.tsx",
+        "tokensFile": "packages/portal/src/styles.css",
+        "requiredRootMarkers": [
+          "data-horizon-root",
+          "data-horizon-theme=\"breero\"",
+          "data-horizon-appearance=\"dark\""
+        ],
+        "pageRoots": ["apps/partner/app"]
+      },
+      "auth": {
+        "mode": "api-session",
+        "protectedRoutes": true,
+        "loginPath": "/",
+        "loginSourceFile": "packages/portal/src/index.tsx",
+        "logoutSourceFile": "packages/portal/src/index.tsx",
+        "guardSourceFile": "packages/portal/src/index.tsx",
+        "backendAuthorizationRequired": true,
+        "headerReflectsSession": true,
+        "durableIdentity": "backend-user-id",
+        "migrationTarget": "issuer+subject",
+        "browserTokenStorage": "legacy-session-storage-migration-required"
+      },
+      "colorPolicy": {
+        "rejectNewRawColors": true,
+        "allowedColorFiles": ["packages/portal/src/styles.css"]
+      },
+      "newPagePolicy": {
+        "inheritsRootShell": true,
+        "usesHorizonTokens": true,
+        "requiresStateMatrix": true
+      }
+    }
+  ]
+}

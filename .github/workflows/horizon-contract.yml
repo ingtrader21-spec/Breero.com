@@ -1,0 +1,35 @@
+name: Horizon portfolio contract
+
+on:
+  pull_request:
+    paths:
+      - "apps/**"
+      - "packages/portal/**"
+      - "horizon/**"
+      - ".github/workflows/horizon-contract.yml"
+  push:
+    branches:
+      - main
+      - feature/horizon-portfolio-shell-v1
+    paths:
+      - "apps/**"
+      - "packages/portal/**"
+      - "horizon/**"
+      - ".github/workflows/horizon-contract.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact revision
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Enforce registered suites, auth logic, page inheritance, and color tokens
+        uses: appolon1908-hue/SDK-repository/.github/actions/horizon-validate@b258cf952df3a2ef11a2ba2e0df16c7983ee2a99
+        with:
+          manifest: horizon/suite.json
+          base-ref: ${{ github.base_ref }}
