@@ -36,7 +36,28 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     keycloak_enabled: bool = False
     keycloak_issuer: str = ""
-    keycloak_audience: str = "breero-api-production"
+    keycloak_audience: str = "breero-api"
+    breero_local_password_auth: bool = True
+    keycloak_client_id: str = "breero-client-web"
+    keycloak_client_secret: str = Field(default="", repr=False)
+    keycloak_client_secret_file: str = ""
+    keycloak_redirect_uri: str = ""
+    breero_web_url: str = "https://breero.com"
+    breero_provider_web_url: str = "https://provider.breero.com"
+    breero_admin_web_url: str = "https://admin.breero.com"
+    keycloak_provisioner_client_id: str = "breero-provisioner"
+    keycloak_provisioner_client_secret: str = Field(default="", repr=False)
+    keycloak_provisioner_client_secret_file: str = ""
+    keycloak_provisioning_enabled: bool = False
+    public_booking_api_enabled: bool = False
+    provider_assignment_mode: str = "MANUAL"
+    auto_assign_provider: bool = False
+    auto_confirm_booking: bool = False
+    live_provider_dispatch: bool = False
+    live_sms_delivery: bool = False
+    live_callbacks: bool = False
+    odoo_delivery_enabled: bool = False
+    odoo_write_enabled: bool = False
     access_token_minutes: int = 30
     refresh_token_days: int = 30
     stripe_secret_key: str = Field(default="", repr=False)

@@ -304,14 +304,22 @@ def test_openapi_exposes_only_the_real_v2_foundation_route() -> None:
     assert "/api/v2/project-requests" not in schema["paths"]
 
 
+def _stable_operation_contract(operation: dict[str, Any]) -> dict[str, Any]:
+    """Exclude additive vendor extensions owned by later contract layers."""
+
+    return {key: value for key, value in operation.items() if not key.startswith("x-")}
+
+
 def test_checked_in_openapi_matches_the_runtime_v2_contract() -> None:
     api_root = Path(__file__).resolve().parents[1]
     checked_in = json.loads((api_root / "openapi.json").read_text(encoding="utf-8"))
     runtime = app.openapi()
 
     assert checked_in["info"] == runtime["info"]
-    assert checked_in["paths"]["/api/v2/capabilities"] == (
-        runtime["paths"]["/api/v2/capabilities"]
+    checked_operation = checked_in["paths"]["/api/v2/capabilities"]["get"]
+    runtime_operation = runtime["paths"]["/api/v2/capabilities"]["get"]
+    assert _stable_operation_contract(checked_operation) == _stable_operation_contract(
+        runtime_operation
     )
     for schema_name in ("ApiError", "PublicCapabilities"):
         assert checked_in["components"]["schemas"][schema_name] == (

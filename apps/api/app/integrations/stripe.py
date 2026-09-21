@@ -4,38 +4,15 @@ import json
 import os
 import time
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any
 
 import httpx
 
 from app.domains.payments.exceptions import InvalidWebhook, PaymentError
 from app.domains.payments.schemas import ProviderIntent, ProviderRefund
+from app.integrations.contracts import PaymentProvider
 
-
-class PaymentProvider(Protocol):
-    async def create_intent(
-        self,
-        *,
-        amount_minor: int,
-        currency: str,
-        capture_method: str,
-        metadata: dict[str, str],
-        idempotency_key: str,
-    ) -> ProviderIntent: ...
-
-    async def capture_intent(
-        self,
-        provider_payment_id: str,
-        *,
-        amount_minor: int | None,
-        idempotency_key: str,
-    ) -> ProviderIntent: ...
-
-    def verify_webhook(self, body: bytes, signature: str) -> dict[str, Any]: ...
-
-    async def create_refund(
-        self, provider_payment_id: str, *, amount_minor: int, idempotency_key: str
-    ) -> ProviderRefund: ...
+__all__ = ["PaymentProvider", "StripeAdapter"]
 
 
 @dataclass(slots=True)

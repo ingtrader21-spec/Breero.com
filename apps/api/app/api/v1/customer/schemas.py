@@ -11,7 +11,6 @@ class ProfilePatch(BaseModel):
     full_name: str | None = Field(None, min_length=1, max_length=160)
     phone: str | None = Field(None, min_length=3, max_length=40)
 
-
 class ProfileRead(BaseModel):
     id: uuid.UUID
     email: EmailStr
@@ -19,25 +18,30 @@ class ProfileRead(BaseModel):
     phone: str
     email_verified: bool
 
-
 class AddressInput(BaseModel):
+    label: str = Field(default="Home", pattern="^(Home|Rental property|Office|Other)$")
     line1: str = Field(min_length=1, max_length=200)
+    line2: str | None = Field(default=None, max_length=200)
     city: str = Field(min_length=1, max_length=120)
-    postal_code: str = Field(min_length=1, max_length=32)
-    country_code: str = Field(min_length=2, max_length=2)
-    latitude: float = Field(ge=-90, le=90)
-    longitude: float = Field(ge=-180, le=180)
-
+    state: str = Field(min_length=2, max_length=3)
+    postal_code: str = Field(pattern=r"^\d{5}(?:-\d{4})?$")
+    country_code: str = Field(default="US", pattern="^US$")
+    is_default: bool = False
 
 class AddressRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-
     id: uuid.UUID
+    label: str
     line1: str
+    line2: str | None
     city: str
+    state_code: str | None
     postal_code: str
+    postal_code_plus4: str | None
     country_code: str
-
+    timezone_name: str
+    address_validation_status: str
+    is_default: bool
 
 class Page(BaseModel):
     items: list[Any]
@@ -45,6 +49,9 @@ class Page(BaseModel):
     page: int
     page_size: int
 
+class BookingRescheduleRequest(BaseModel):
+    hold_id: uuid.UUID
+    booking_session: str = Field(min_length=16, max_length=512)
 
 class CustomerPaymentRead(BaseModel):
     id: uuid.UUID

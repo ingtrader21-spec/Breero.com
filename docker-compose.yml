@@ -2,7 +2,7 @@ services:
   api:
     build:
       context: ./apps/api
-    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    command: sh -c 'DATABASE_URL="$${MIGRATION_DATABASE_URL}" alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000'
     env_file: .env
     volumes:
       - ./apps/api:/app
@@ -42,26 +42,48 @@ services:
 
   postgres:
     image: postgis/postgis:17-3.5
+    command: ["postgres", "-c", "hba_file=/etc/postgresql/pg_hba.conf", "-c", "listen_addresses=*"]
     environment:
       POSTGRES_DB: breero
       POSTGRES_USER: breero
-      POSTGRES_PASSWORD: breero
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U breero -d breero"]
       interval: 5s
       timeout: 5s
       retries: 10
 
+  db-backup:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: breero
+      PGUSER: breero_runtime
+      PGPASSWORD: ${BREERO_RUNTIME_PASSWORD:?set BREERO_RUNTIME_PASSWORD in .env}
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}
+    volumes:
+      - ./backups:/backups
+      - ./postgres/backup-loop.sh:/usr/local/bin/backup-loop.sh:ro
+    command: ["/bin/sh", "/usr/local/bin/backup-loop.sh"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     volumes:
       - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./redis/users.acl:/usr/local/etc/redis/users.acl:ro
 
 volumes:
   postgres_data:

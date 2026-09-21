@@ -5,6 +5,15 @@ def disabled_release_flags(settings: Any) -> dict[str, bool]:
     """Return capability flags that must remain disabled for this release."""
 
     return {
+        "AUTO_ASSIGN_PROVIDER": settings.auto_assign_provider,
+        "AUTO_CONFIRM_BOOKING": settings.auto_confirm_booking,
+        "LIVE_PROVIDER_DISPATCH": settings.live_provider_dispatch,
+        "LIVE_SMS_DELIVERY": settings.live_sms_delivery,
+        "LIVE_CALLBACKS": settings.live_callbacks,
+        "ODOO_DELIVERY_ENABLED": settings.odoo_delivery_enabled,
+        "ODOO_WRITE_ENABLED": settings.odoo_write_enabled,
+        "PUBLIC_BOOKING_API_ENABLED": settings.public_booking_api_enabled,
+
         "STRIPE_ENABLED": settings.stripe_enabled,
         "PAYMENTS_ENABLED": settings.payments_enabled,
         "ONLINE_CHECKOUT_ENABLED": settings.online_checkout_enabled,
@@ -36,6 +45,14 @@ def validate_release_boundary(settings: Any) -> None:
         )
     if settings.app_env.lower() == "production" and not settings.scheduling_enabled:
         raise ValueError("SCHEDULING_ENABLED must remain enabled for this release")
+    if settings.provider_assignment_mode not in {"MANUAL", "SUGGESTED", "AUTOMATIC"}:
+        raise ValueError("PROVIDER_ASSIGNMENT_MODE must be MANUAL, SUGGESTED, or AUTOMATIC")
+    if settings.provider_assignment_mode == "AUTOMATIC" and not settings.auto_assign_provider:
+        raise ValueError("AUTOMATIC provider assignment mode requires AUTO_ASSIGN_PROVIDER")
+    if settings.public_booking_api_enabled and not settings.geocoding_enabled:
+        raise ValueError("PUBLIC_BOOKING_API_ENABLED requires GEOCODING_ENABLED")
+    if settings.public_booking_api_enabled and not settings.scheduling_enabled:
+        raise ValueError("PUBLIC_BOOKING_API_ENABLED requires SCHEDULING_ENABLED")
     if settings.transactional_email_mode not in {"disabled", "controlled_canary"}:
         raise ValueError(
             "TRANSACTIONAL_EMAIL_MODE must be disabled or controlled_canary"

@@ -8,6 +8,7 @@ from sqlalchemy import delete, func, select
 
 from app.api.internal_odoo import failures
 from app.db.session import SessionLocal
+from app.domains.booking.capacity_models import ServiceZone
 from app.domains.booking.models import (
     Address,
     Booking,
@@ -70,6 +71,8 @@ async def test_expired_holds_do_not_consume_service_or_provider_capacity() -> No
     now = datetime.now(UTC)
     start = now + timedelta(days=3)
     async with SessionLocal() as session:
+        # Register the migration-018 service-zone table that Address.service_zone_id references.
+        assert ServiceZone.__table__.name == "service_zones"
         entity = LegalEntity(code=f"RS-{marker[:8]}", name="Release Safety", currency="USD")
         service = Service(
             slug=f"release-safety-{marker}",
