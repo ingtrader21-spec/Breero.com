@@ -721,7 +721,9 @@ APPROVED_CONTROL_PLANE_WORKFLOW_SHA256: dict[str, dict[str, str]] = {
         ),
     },
     "ingtrader21-spec/Breero.com": {
-        ".github/workflows/quality.yml": "2be72e0820aea5373c0f273b260dd9be5599698802864ae50fb28077abe53c6a",
+        ".github/workflows/quality.yml": "334419b496981eb3b613ded088376bc8965e46a319292bad3af3b7c4f17a1764",
+        ".github/workflows/frontend-production.yml": "ba5f99dcdbcdb78e4e638153fb740ab104502cb2f8c75923a134d7d5e1e24b8d",
+        ".github/workflows/design-system.yml": "12ba59131d071171198272bedde16592a67b8338477189695bbfdb0849e01d88",
     },
     "appolon1908-hue/Moneybee-Backend": {
         ".github/workflows/ci.yml": (
@@ -857,6 +859,15 @@ APPROVED_UNRESOLVED_SCRIPT_TARGETS: dict[str, frozenset[str]] = {
 APPROVED_READ_ONLY_SCRIPT_INVOCATIONS: dict[
     str, dict[str, tuple[str, frozenset[tuple[str, ...]]]]
 ] = {
+    "ingtrader21-spec/Breero.com": {
+        "scripts/check-design-system.mjs": (
+            "7e63c15c48602cbd99672ed5095ea2c97763dac4f3bdc63916c5c68f7a6161be",
+            frozenset({
+                ("$DESIGN_BASE_SHA",),
+                ("${{ github.event.pull_request.base.sha }}",),
+            }),
+        ),
+    },
     "appolon1908-hue/Keycloak": {
         "scripts/validate-repository-name-authority.py": (
             "d56d85a41734dc468efecb99d590d0d33267dcd1c84f4ff4dd3fa93c2076bd96",

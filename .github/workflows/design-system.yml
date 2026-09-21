@@ -1,0 +1,50 @@
+name: Design system guard
+
+on:
+  pull_request:
+    paths:
+      - "apps/web/**"
+      - "packages/ui/**"
+      - "docs/brand/**"
+      - "docs/design-system.md"
+      - "docs/design-system-migration.md"
+      - "docs/marketplace-experience-system.md"
+      - "scripts/check-design-system.mjs"
+      - ".github/CODEOWNERS"
+      - ".github/pull_request_template.md"
+      - ".github/workflows/design-system.yml"
+      - ".github/workflows/quality.yml"
+      - "package.json"
+  push:
+    branches: ["main"]
+    paths:
+      - "apps/web/**"
+      - "packages/ui/**"
+      - "docs/brand/**"
+      - "docs/design-system.md"
+      - "docs/design-system-migration.md"
+      - "docs/marketplace-experience-system.md"
+      - "scripts/check-design-system.mjs"
+      - ".github/CODEOWNERS"
+      - ".github/pull_request_template.md"
+      - ".github/workflows/design-system.yml"
+      - ".github/workflows/quality.yml"
+      - "package.json"
+
+permissions:
+  contents: read
+
+jobs:
+  design-system:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact repository history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Enforce BREERO design system
+        env:
+          DESIGN_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node scripts/check-design-system.mjs "$DESIGN_BASE_SHA"

@@ -1,0 +1,18 @@
+# BREERO design-system governance
+# Changes to shared visual and marketplace-experience authority require owner review.
+
+/docs/brand/ @appolon1908-hue
+/docs/design-system.md @appolon1908-hue
+/docs/design-system-migration.md @appolon1908-hue
+/docs/marketplace-experience-system.md @appolon1908-hue
+/packages/ui/ @appolon1908-hue
+/apps/web/app/globals.css @appolon1908-hue
+/apps/web/app/marketplace.css @appolon1908-hue
+/apps/web/app/brand.css @appolon1908-hue
+/apps/web/app/enterprise-design-system.css @appolon1908-hue
+/apps/web/components/site-header.tsx @appolon1908-hue
+/apps/web/components/site-footer.tsx @appolon1908-hue
+/apps/web/components/brand/ @appolon1908-hue
+/scripts/check-design-system.mjs @appolon1908-hue
+/.github/workflows/design-system.yml @appolon1908-hue
+/.github/workflows/quality.yml @appolon1908-hue
