@@ -95,6 +95,10 @@ Certify each portal with a dedicated test account and no shared roles:
 - cookies are `__Host-`, Secure, HttpOnly, SameSite=Lax
 - CSRF, cross-origin mutation, traversal, oversized body, timeout, and disallowed route tests fail closed
 
+Session model: the browser holds only `__Host-breero-portal-session`, an opaque 256-bit identifier. Access and refresh tokens, the CSRF secret, and the bound subject/user/portal live in the portal process (`packages/portal/src/session-store.ts`). The ID token signature is verified against the issuer JWKS together with `iss`, `aud`, `azp`, `exp`, `iat`, and `nonce`. Sessions expire after 30 idle minutes or 12 hours absolute. A session is destroyed on role loss, deactivation, identity change, cross-portal replay, refresh rejection, or API 401; identity-provider or API outages return 503 without destroying it. Logout revokes the refresh token at Keycloak.
+
+Each portal must run as a single replica until a shared session store is implemented; `PORTAL_SESSION_STORE` accepts only `memory` and any other value fails closed. A portal restart signs every user out.
+
 ### Partner
 
 - another vendor cannot be selected by request parameters
