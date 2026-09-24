@@ -861,7 +861,7 @@ APPROVED_READ_ONLY_SCRIPT_INVOCATIONS: dict[
 ] = {
     "ingtrader21-spec/Breero.com": {
         "scripts/check-design-system.mjs": (
-            "7e63c15c48602cbd99672ed5095ea2c97763dac4f3bdc63916c5c68f7a6161be",
+            "233b33edd4efbd728aa5c63bac6d2c2ea9d3c675ebc4efe7c8124a57b135b810",
             frozenset({
                 ("$DESIGN_BASE_SHA",),
                 ("${{ github.event.pull_request.base.sha }}",),
