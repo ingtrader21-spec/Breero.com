@@ -8,7 +8,8 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test && pnpm test:e2e:bookings",
+    "test:e2e:bookings": "playwright test -c playwright.bookings.config.ts",
     "validate:marketing": "node scripts/validate-marketing.mjs"
   },
   "dependencies": {
