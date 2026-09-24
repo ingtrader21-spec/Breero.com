@@ -69,6 +69,7 @@ DEFAULT_PERMISSIONS: dict[AccessRole, set[str]] = {
         "provider.availability.manage",
         "provider.jobs.read",
         "provider.quotes.manage",
+        "analytics.provider.read",
     },
     AccessRole.technician: {
         "worker.profile.read",
@@ -94,6 +95,7 @@ DEFAULT_PERMISSIONS: dict[AccessRole, set[str]] = {
         "ops.providers.manage",
         "ops.customers.read",
         "ops.audit.read",
+        "analytics.marketplace.read",
     },
     AccessRole.support: {
         "support.customers.read",
@@ -136,6 +138,7 @@ DEFAULT_PERMISSIONS: dict[AccessRole, set[str]] = {
         "admin.audit.read",
         "admin.capabilities.read",
         "admin.integrations.read",
+        "analytics.marketplace.read",
     },
     AccessRole.superadmin: {"*"},
 }

@@ -7,6 +7,7 @@ from app.api.v1 import (
     admin_dispatch,
     admin_geography,
     admin_users,
+    analytics,
     auth,
     availability,
     booking_intents,
@@ -75,6 +76,7 @@ api_router.include_router(admin_dispatch.router, prefix="/admin", tags=["admin-d
 api_router.include_router(admin.router, prefix="/admin", tags=["administration"])
 if settings.payout_enabled:
     api_router.include_router(finance.router, prefix="/finance", tags=["finance"])
+api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 api_router.include_router(integrations.router, prefix="/integrations", tags=["integrations"])
 api_router.include_router(public_forms.router, tags=["public-forms"])
 if settings.paid_leads_enabled and settings.payments_enabled and settings.stripe_enabled:

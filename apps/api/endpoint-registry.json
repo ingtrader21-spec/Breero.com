@@ -1,5 +1,5 @@
 {
-  "digest": "sha256:f4a67549cacb38aacf8e739c97239f0a06694750ba595bdeec51c11fa0502472",
+  "digest": "sha256:af18acfbfb4724ae9c7d37212bf5bfab0a4020e559f8f0cbdf9eb2cdf36e7881",
   "endpoints": [
     {
       "audience": "public",
@@ -726,6 +726,50 @@
       "resource_owner": "identity",
       "response_schema": "app.domains.auth.schemas.InternalUserProvisionResponse",
       "tenant_scope": "route-defined-current-scope"
+    },
+    {
+      "audience": "internal",
+      "authentication": "bearer",
+      "capability_gate": "always",
+      "deprecation_status": "active",
+      "emitted_effect": "none",
+      "idempotency_key_policy": "not-applicable",
+      "if_match_version_policy": "not-applicable",
+      "method": "GET",
+      "operation_id": "marketplace_metrics_api_v1_analytics_marketplace_metrics_get",
+      "path": "/api/v1/analytics/marketplace/metrics",
+      "permission": "analytics.marketplace.read",
+      "pii_classification": "aggregated-no-pii",
+      "policy_rule": "analytics-marketplace-metrics",
+      "rate_limit_class": "standard",
+      "record_policy": "aggregated-read-only-projection",
+      "request_hash_policy": "not-applicable",
+      "request_schema": "none",
+      "resource_owner": "analytics",
+      "response_schema": "app.domains.analytics.schemas.MarketplaceMetricsRead",
+      "tenant_scope": "internal-global-or-brand-assignment-without-vendor-scope"
+    },
+    {
+      "audience": "provider",
+      "authentication": "bearer",
+      "capability_gate": "always",
+      "deprecation_status": "active",
+      "emitted_effect": "none",
+      "idempotency_key_policy": "not-applicable",
+      "if_match_version_policy": "not-applicable",
+      "method": "GET",
+      "operation_id": "provider_metrics_api_v1_analytics_provider_metrics_get",
+      "path": "/api/v1/analytics/provider/metrics",
+      "permission": "analytics.provider.read",
+      "pii_classification": "aggregated-no-pii",
+      "policy_rule": "analytics-provider-metrics",
+      "rate_limit_class": "standard",
+      "record_policy": "aggregated-read-only-projection-current-provider",
+      "request_hash_policy": "not-applicable",
+      "request_schema": "none",
+      "resource_owner": "analytics",
+      "response_schema": "app.domains.analytics.schemas.MarketplaceMetricsRead",
+      "tenant_scope": "provider-membership"
     },
     {
       "audience": "admin",

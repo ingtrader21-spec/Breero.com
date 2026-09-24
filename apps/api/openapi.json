@@ -459,6 +459,92 @@
         "title": "AdminUnassignmentRequest",
         "type": "object"
       },
+      "AnalyticsProjectionRead": {
+        "additionalProperties": false,
+        "properties": {
+          "consistency": {
+            "default": "repeatable_read_snapshot",
+            "description": "All groups in one response are read from one database snapshot.",
+            "title": "Consistency",
+            "type": "string"
+          },
+          "max_age_seconds": {
+            "description": "Clients must treat the response as stale after this many seconds.",
+            "title": "Max Age Seconds",
+            "type": "integer"
+          },
+          "mode": {
+            "default": "live_read_model",
+            "description": "Figures are computed at read time from source-of-record tables.",
+            "title": "Mode",
+            "type": "string"
+          },
+          "source_of_record": {
+            "default": "postgresql",
+            "title": "Source Of Record",
+            "type": "string"
+          }
+        },
+        "required": [
+          "max_age_seconds"
+        ],
+        "title": "AnalyticsProjectionRead",
+        "type": "object"
+      },
+      "AnalyticsScopeKind": {
+        "enum": [
+          "marketplace",
+          "provider"
+        ],
+        "title": "AnalyticsScopeKind",
+        "type": "string"
+      },
+      "AnalyticsScopeRead": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/AnalyticsScopeKind"
+          },
+          "vendor_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vendor Id"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "AnalyticsScopeRead",
+        "type": "object"
+      },
+      "AnalyticsWindowRead": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "format": "date-time",
+            "title": "End",
+            "type": "string"
+          },
+          "start": {
+            "format": "date-time",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "AnalyticsWindowRead",
+        "type": "object"
+      },
       "ApiError": {
         "properties": {
           "code": {
@@ -3121,6 +3207,41 @@
         "title": "ManualAssignment",
         "type": "object"
       },
+      "MarketplaceMetricsRead": {
+        "additionalProperties": false,
+        "properties": {
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/MetricGroupRead"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "projection": {
+            "$ref": "#/components/schemas/AnalyticsProjectionRead"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/AnalyticsScopeRead"
+          },
+          "window": {
+            "$ref": "#/components/schemas/AnalyticsWindowRead"
+          }
+        },
+        "required": [
+          "scope",
+          "window",
+          "generated_at",
+          "projection",
+          "groups"
+        ],
+        "title": "MarketplaceMetricsRead",
+        "type": "object"
+      },
       "MessageResponse": {
         "properties": {
           "message": {
@@ -3132,6 +3253,184 @@
           "message"
         ],
         "title": "MessageResponse",
+        "type": "object"
+      },
+      "MetricGroupKey": {
+        "enum": [
+          "request",
+          "qualification",
+          "matching",
+          "opportunity",
+          "quote",
+          "booking",
+          "utilization",
+          "completion",
+          "cancellation",
+          "review",
+          "response_time",
+          "finance"
+        ],
+        "title": "MetricGroupKey",
+        "type": "string"
+      },
+      "MetricGroupRead": {
+        "additionalProperties": false,
+        "properties": {
+          "blocked_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Delivery dependency that must land before this group can be projected.",
+            "title": "Blocked By"
+          },
+          "key": {
+            "$ref": "#/components/schemas/MetricGroupKey"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Interpretation caveat for available groups.",
+            "title": "Note"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "source_watermark": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Latest source-row change inside the scope and window.",
+            "title": "Source Watermark"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MetricGroupStatus"
+          },
+          "values": {
+            "items": {
+              "$ref": "#/components/schemas/MetricValueRead"
+            },
+            "title": "Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "status"
+        ],
+        "title": "MetricGroupRead",
+        "type": "object"
+      },
+      "MetricGroupStatus": {
+        "enum": [
+          "available",
+          "unavailable",
+          "restricted"
+        ],
+        "title": "MetricGroupStatus",
+        "type": "string"
+      },
+      "MetricValueRead": {
+        "additionalProperties": false,
+        "properties": {
+          "denominator": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Denominator"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "numerator": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Numerator"
+          },
+          "unit": {
+            "enum": [
+              "count",
+              "ratio",
+              "seconds"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null when the value is undefined, e.g. a rate with a zero denominator.",
+            "title": "Value"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "unit",
+          "value"
+        ],
+        "title": "MetricValueRead",
         "type": "object"
       },
       "OfferDecision": {
@@ -10477,6 +10776,198 @@
             "resource_owner": "identity",
             "response_schema": "app.domains.auth.schemas.InternalUserProvisionResponse",
             "tenant_scope": "route-defined-current-scope"
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/marketplace/metrics": {
+      "get": {
+        "operationId": "marketplace_metrics_api_v1_analytics_marketplace_metrics_get",
+        "parameters": [
+          {
+            "description": "Inclusive window start with timezone offset. Defaults to 30 days before end.",
+            "in": "query",
+            "name": "start",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive window start with timezone offset. Defaults to 30 days before end.",
+              "title": "Start"
+            }
+          },
+          {
+            "description": "Exclusive window end with timezone offset. Defaults to now.",
+            "in": "query",
+            "name": "end",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Exclusive window end with timezone offset. Defaults to now.",
+              "title": "End"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketplaceMetricsRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission or tenant scope denied"
+          },
+          "422": {
+            "description": "Invalid analytics window"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Marketplace-wide metrics projection for internal analysts",
+        "tags": [
+          "analytics"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "internal",
+            "authentication": "bearer",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "analytics.marketplace.read",
+            "pii_classification": "aggregated-no-pii",
+            "policy_rule": "analytics-marketplace-metrics",
+            "rate_limit_class": "standard",
+            "record_policy": "aggregated-read-only-projection",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "analytics",
+            "response_schema": "app.domains.analytics.schemas.MarketplaceMetricsRead",
+            "tenant_scope": "internal-global-or-brand-assignment-without-vendor-scope"
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/provider/metrics": {
+      "get": {
+        "operationId": "provider_metrics_api_v1_analytics_provider_metrics_get",
+        "parameters": [
+          {
+            "description": "Inclusive window start with timezone offset. Defaults to 30 days before end.",
+            "in": "query",
+            "name": "start",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Inclusive window start with timezone offset. Defaults to 30 days before end.",
+              "title": "Start"
+            }
+          },
+          {
+            "description": "Exclusive window end with timezone offset. Defaults to now.",
+            "in": "query",
+            "name": "end",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Exclusive window end with timezone offset. Defaults to now.",
+              "title": "End"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketplaceMetricsRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission or tenant scope denied"
+          },
+          "422": {
+            "description": "Invalid analytics window"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Metrics projection limited to the caller's provider organization",
+        "tags": [
+          "analytics"
+        ],
+        "x-breero-policy": {
+          "GET": {
+            "audience": "provider",
+            "authentication": "bearer",
+            "capability_gate": "always",
+            "deprecation_status": "active",
+            "emitted_effect": "none",
+            "idempotency_key_policy": "not-applicable",
+            "if_match_version_policy": "not-applicable",
+            "permission": "analytics.provider.read",
+            "pii_classification": "aggregated-no-pii",
+            "policy_rule": "analytics-provider-metrics",
+            "rate_limit_class": "standard",
+            "record_policy": "aggregated-read-only-projection-current-provider",
+            "request_hash_policy": "not-applicable",
+            "request_schema": "none",
+            "resource_owner": "analytics",
+            "response_schema": "app.domains.analytics.schemas.MarketplaceMetricsRead",
+            "tenant_scope": "provider-membership"
           }
         }
       }
@@ -20424,5 +20915,5 @@
       }
     }
   },
-  "x-breero-endpoint-registry-digest": "sha256:f4a67549cacb38aacf8e739c97239f0a06694750ba595bdeec51c11fa0502472"
+  "x-breero-endpoint-registry-digest": "sha256:af18acfbfb4724ae9c7d37212bf5bfab0a4020e559f8f0cbdf9eb2cdf36e7881"
 }
