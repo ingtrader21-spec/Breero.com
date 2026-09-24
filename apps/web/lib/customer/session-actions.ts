@@ -7,6 +7,9 @@ const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api/v1").replace(/\/$
 
 export const CUSTOMER_SESSION_EVENT = "breero:customer-session-changed";
 
+const e2eMockSession =
+  process.env.NEXT_PUBLIC_API_MODE === "mock" && process.env.NEXT_PUBLIC_E2E_ALLOW_MOCK === "1";
+
 async function csrfToken(): Promise<string | null> {
   const response = await fetch(`${apiBase}/auth/csrf`, {
     credentials: "include",
@@ -20,6 +23,7 @@ async function csrfToken(): Promise<string | null> {
 }
 
 export async function hasCustomerSession(): Promise<boolean> {
+  if (e2eMockSession) return true;
   try {
     return (await csrfToken()) !== null;
   } catch {
