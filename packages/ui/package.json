@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./styles.css": "./src/styles.css"
+    "./styles.css": "./src/styles.css",
+    "./marketplace.css": "./src/marketplace.css"
   },
   "scripts": {
     "lint": "eslint src --max-warnings=0",

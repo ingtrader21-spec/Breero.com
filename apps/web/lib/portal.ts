@@ -40,12 +40,27 @@ export async function loadPortalContext(signal?: AbortSignal): Promise<PortalCon
   return context;
 }
 
-export async function routeToPortal(): Promise<void> {
+export async function routeToPortal(returnTo?: string): Promise<void> {
   const context = await loadPortalContext();
-  const destination = resolveUnauthorizedPortalDestination(
+  let destination = resolveUnauthorizedPortalDestination(
     context.dashboard_path,
     window.location.pathname,
   );
+  if (returnTo && context.dashboard_path !== ACCESS_DENIED_DASHBOARD) {
+    try {
+      const requested = new URL(returnTo, window.location.origin);
+      // A return path may resume work only inside the backend-assigned workspace.
+      if (
+        requested.origin === window.location.origin &&
+        (requested.pathname === context.dashboard_path ||
+          requested.pathname.startsWith(`${context.dashboard_path}/`))
+      ) {
+        destination = `${requested.pathname}${requested.search}${requested.hash}`;
+      }
+    } catch {
+      // An invalid return path falls back to the authorized dashboard.
+    }
+  }
   if (destination !== window.location.pathname) {
     window.location.replace(destination);
   }

@@ -20,6 +20,17 @@ def test_oidc_transaction_is_signed_pkce_state_and_rejects_tampering(monkeypatch
         keycloak.read_transaction(raw, "wrong-state")
 
 
+def test_transaction_preserves_safe_customer_account_subpaths(monkeypatch) -> None:
+    monkeypatch.setattr(keycloak, "settings", SimpleNamespace(jwt_secret="test-secret-at-least-32-characters", breero_web_url="https://breero.test", breero_provider_web_url="https://provider.breero.test", breero_admin_web_url="https://admin.breero.test"))
+    *_, raw = keycloak.create_transaction("/account/bookings/booking-123")
+    transaction = jwt.decode(raw, "test-secret-at-least-32-characters", algorithms=["HS256"])
+    assert transaction["return_to"] == "https://breero.test/account/bookings/booking-123"
+
+    *_, fallback_raw = keycloak.create_transaction("//evil.example/account")
+    fallback = jwt.decode(fallback_raw, "test-secret-at-least-32-characters", algorithms=["HS256"])
+    assert fallback["return_to"] == "https://breero.test/account"
+
+
 def test_namespaced_roles_map_to_local_operational_roles(monkeypatch) -> None:
     monkeypatch.setattr(keycloak, "settings", SimpleNamespace(keycloak_audience="breero-api", keycloak_client_id="breero-client-web"))
     assert keycloak.roles_from_claims({"realm_access": {"roles": ["breero_client"]}}) == {"breero_client"}

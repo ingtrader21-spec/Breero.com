@@ -46,12 +46,15 @@ def create_transaction(return_to: str) -> tuple[str, str, str, str]:
     state = secrets.token_urlsafe(32)
     nonce = secrets.token_urlsafe(32)
     verifier = secrets.token_urlsafe(64)
+    customer_base = settings.breero_web_url.rstrip("/")
     destinations = {
-        "/account": f"{settings.breero_web_url.rstrip('/')}/account",
         "/provider": settings.breero_provider_web_url.rstrip("/"),
         "/admin": settings.breero_admin_web_url.rstrip("/"),
     }
-    safe_return = destinations.get(return_to, destinations["/account"])
+    if return_to == "/account" or return_to.startswith("/account/"):
+        safe_return = f"{customer_base}{return_to}"
+    else:
+        safe_return = destinations.get(return_to, f"{customer_base}/account")
     payload = {"state": state, "nonce": nonce, "verifier": verifier, "return_to": safe_return, "exp": int(time.time()) + 600}
     transaction = jwt.encode(payload, settings.jwt_secret, algorithm="HS256")
     return state, nonce, verifier, transaction

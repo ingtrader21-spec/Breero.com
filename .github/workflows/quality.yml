@@ -134,6 +134,19 @@ jobs:
       - name: Test PR consolidation ledger validation
         run: python -m unittest discover -s scripts/pr_consolidation -p 'test_*.py'
 
+  design-system-quality:
+    needs: classify
+    if: always() && needs.classify.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact repository history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Enforce BREERO design system
+        run: node scripts/check-design-system.mjs "${{ github.event.pull_request.base.sha }}"
+
   quality:
     name: quality
     needs:
@@ -142,6 +155,7 @@ jobs:
       - frontend-quality
       - bootstrap-tool-quality
       - scope-docs-quality
+      - design-system-quality
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -155,11 +169,13 @@ jobs:
           BOOTSTRAP_APPLICABLE: ${{ needs.classify.outputs.bootstrap }}
           BOOTSTRAP_RESULT: ${{ needs.bootstrap-tool-quality.result }}
           SCOPE_DOCS_RESULT: ${{ needs.scope-docs-quality.result }}
+          DESIGN_SYSTEM_RESULT: ${{ needs.design-system-quality.result }}
         shell: bash
         run: |
           set -euo pipefail
           [[ "$CLASSIFY_RESULT" == success ]]
           [[ "$SCOPE_DOCS_RESULT" == success ]]
+          [[ "$DESIGN_SYSTEM_RESULT" == success ]]
           check_applicable() {
             local applicable="$1" result="$2" name="$3"
             if [[ "$applicable" == true ]]; then
