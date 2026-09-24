@@ -1,10 +1,12 @@
 import type { BreeroApi } from "./client";
-import type { AccessCatalog, AddressValidation, AuthSession, AvailabilitySlot, Booking, BookingCreateResponse, CustomerProfile, LoginMode, Payment, PortalContext, PublicCapabilities, Quote, ServiceDetail, ServiceSummary, User } from "@breero/types";
+import type { AccessCatalog, AddressValidation, AuthSession, AvailabilitySlot, Booking, BookingCreateResponse, CustomerProfile, LoginMode, MarketplaceMetrics, Payment, PortalContext, PublicCapabilities, Quote, ServiceDetail, ServiceSummary, User } from "@breero/types";
 
 export interface MockScenario {
   services?: ServiceDetail[]; address?: AddressValidation; slots?: AvailabilitySlot[];
   session?: AuthSession; bookings?: Booking[]; bookingCreateResponse?: BookingCreateResponse; payments?: Payment[]; quotes?: Quote[]; profile?: CustomerProfile;
   capabilities?: PublicCapabilities; portalContext?: PortalContext; loginMode?: LoginMode; accessCatalog?: AccessCatalog;
+  /** Analytics are never synthesized: without an explicit fixture the mock fails. */
+  marketplaceMetrics?: MarketplaceMetrics; providerMetrics?: MarketplaceMetrics;
   latencyMs?: number; fail?: Partial<Record<keyof BreeroApi, Error>>;
 }
 const wait = (ms: number, signal?: AbortSignal) => new Promise<void>((resolve, reject) => {
@@ -134,6 +136,10 @@ export function createMockBreeroApi(scenario: MockScenario = {}): BreeroApi {
       list: (_params, s) => run("quotes", () => ({ items: scenario.quotes ?? [], total: scenario.quotes?.length ?? 0, page: 1, page_size: 20 }), s),
       get: (id, s) => run("quotes", () => scenario.quotes?.find((item) => item.id === id) ?? missing(`quote ${id}`), s),
       decide: (id, approve, s) => run("quotes", () => ({ ...(scenario.quotes?.find((item) => item.id === id) ?? missing(`quote ${id}`)), status: approve ? "APPROVED" : "DECLINED" }), s),
+    },
+    analytics: {
+      marketplace: (_window, s) => run("analytics", () => scenario.marketplaceMetrics ?? missing("marketplaceMetrics"), s),
+      provider: (_window, s) => run("analytics", () => scenario.providerMetrics ?? missing("providerMetrics"), s),
     },
   };
 }

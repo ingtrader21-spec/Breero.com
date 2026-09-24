@@ -8,6 +8,7 @@ const modules = [
   { title: "Providers", description: "Provider operational records.", permission: "ops.providers.read" },
   { title: "Customers", description: "Customer records needed for service operations.", permission: "ops.customers.read" },
   { title: "Audit", description: "Operational audit visibility for authorized managers.", permission: "ops.audit.read" },
+  { title: "Marketplace analytics", description: "Scoped marketplace metrics with projection freshness.", permission: "analytics.marketplace.read", href: "/ops/analytics" },
 ];
 
 export default function OperationsDashboard() {

@@ -1,9 +1,9 @@
 import type {
-  AccessCatalog, AccessProfileUpdate, AddressValidation, AddressValidationRequest, AuthSession,
+  AccessCatalog, AccessProfileUpdate, AnalyticsWindowQuery, AddressValidation, AddressValidationRequest, AuthSession,
   AvailabilitySearchRequest, AvailabilitySlot, Booking, BookingConfirmation, BookingCreateRequest,
   BookingCreateResponse, ChangePasswordRequest, CustomerAddress, CustomerAddressInput,
   CustomerBookingList, CustomerPayment, CustomerProfile, CustomerProfilePatch, ForgotPasswordRequest,
-  LoginMode, LoginRequest, MessageResponse, Page, Payment, PaymentIntentRequest, PortalContext,
+  LoginMode, LoginRequest, MarketplaceMetrics, MessageResponse, Page, Payment, PaymentIntentRequest, PortalContext,
   PublicCapabilities, Quote, RefreshRequest, RegisterRequest, ResetPasswordRequest, ServiceDetail,
   ServiceQuestion, ServiceSummary, TokenRequest, User, UUID,
 } from "@breero/types";
@@ -44,9 +44,20 @@ export interface BreeroApi {
     payment(id: UUID, signal?: AbortSignal): Promise<CustomerPayment>;
   };
   quotes: { list(params?: PageParams, signal?: AbortSignal): Promise<Page<Quote>>; get(id: UUID, signal?: AbortSignal): Promise<Quote>; decide(id: UUID, approve: boolean, signal?: AbortSignal): Promise<Quote> };
+  analytics: {
+    marketplace(window?: AnalyticsWindowQuery, signal?: AbortSignal): Promise<MarketplaceMetrics>;
+    provider(window?: AnalyticsWindowQuery, signal?: AbortSignal): Promise<MarketplaceMetrics>;
+  };
 }
 
 const encoded = (value: string) => encodeURIComponent(value);
+const windowQuery = ({ start, end }: AnalyticsWindowQuery = {}) => {
+  const params = new URLSearchParams();
+  if (start) params.set("start", start);
+  if (end) params.set("end", end);
+  const query = params.toString();
+  return query ? `?${query}` : "";
+};
 const pageQuery = ({ page = 1, pageSize = 20 }: PageParams = {}) => `?page=${page}&page_size=${pageSize}`;
 export function createBreeroApi(options: TransportOptions): BreeroApi { return createApiClient(new ApiTransport(options)); }
 
@@ -103,6 +114,10 @@ export function createApiClient(http: Transport): BreeroApi {
       list: (params, signal) => http.request(`/customer/quotes${pageQuery(params)}`, { signal }),
       get: (id, signal) => http.request(`/customer/quotes/${encoded(id)}`, { signal }),
       decide: (id, approve, signal) => http.request(`/customer/quotes/${encoded(id)}/decision`, { method: "POST", body: { approve }, signal, retry: false }),
+    },
+    analytics: {
+      marketplace: (window, signal) => http.request(`/analytics/marketplace/metrics${windowQuery(window)}`, { signal }),
+      provider: (window, signal) => http.request(`/analytics/provider/metrics${windowQuery(window)}`, { signal }),
     },
   };
 }

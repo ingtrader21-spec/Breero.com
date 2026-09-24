@@ -9,6 +9,7 @@ const modules = [
   { title: "Availability", description: "Service availability.", permission: "provider.availability.manage" },
   { title: "Jobs", description: "Assigned service work.", permission: "provider.jobs.read" },
   { title: "Quotes", description: "Service quotes.", permission: "provider.quotes.manage" },
+  { title: "Analytics", description: "Performance metrics for your organization only.", permission: "analytics.provider.read", href: "/provider/analytics" },
 ];
 
 export default function ProviderDashboard() {

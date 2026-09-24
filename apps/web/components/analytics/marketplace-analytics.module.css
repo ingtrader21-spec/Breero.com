@@ -1,0 +1,123 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.toolbar > :first-child {
+  min-width: min(100%, 220px);
+}
+
+.freshness {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 1.5rem;
+}
+
+.freshness p {
+  margin: 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.inlineError {
+  color: var(--br-danger, #b42318);
+}
+
+.quiet {
+  margin-bottom: 1.5rem;
+}
+
+.groupGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 1rem;
+}
+
+.groupCard {
+  display: flex;
+}
+
+.groupBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.groupHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.groupHeader h3 {
+  margin: 0;
+}
+
+.values {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.valueRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+}
+
+.valueRow dt {
+  color: var(--br-muted);
+}
+
+.valueRow dd {
+  display: grid;
+  justify-items: end;
+  margin: 0;
+  text-align: right;
+}
+
+.value {
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.valueDetail,
+.meta,
+.note {
+  color: var(--br-muted);
+  font-size: 0.8rem;
+}
+
+.withheld p,
+.note,
+.meta {
+  margin: 0;
+}
+
+.meta {
+  margin-top: auto;
+  overflow-wrap: anywhere;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

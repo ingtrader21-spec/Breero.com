@@ -102,3 +102,4 @@ export interface CustomerPayment {
 }
 
 export * from "./portal";
+export * from "./analytics";

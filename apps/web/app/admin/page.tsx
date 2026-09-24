@@ -13,6 +13,7 @@ const modules = [
   { title: "Audit", description: "Administrative audit records.", permission: "admin.audit.read" },
   { title: "Capabilities", description: "Runtime capability state and release controls.", permission: "admin.capabilities.read" },
   { title: "Integrations", description: "Integration health and configuration visibility.", permission: "admin.integrations.read" },
+  { title: "Marketplace analytics", description: "Scoped marketplace metrics with projection freshness.", permission: "analytics.marketplace.read", href: "/ops/analytics" },
 ];
 
 export default function AdminDashboard() {

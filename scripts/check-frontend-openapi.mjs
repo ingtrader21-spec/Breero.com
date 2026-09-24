@@ -46,6 +46,8 @@ const required = {
   "/api/v1/admin/provider-applications": ["get"],
   "/api/v1/admin/feature-flags": ["get"],
   "/api/v1/admin/audit-events": ["get"],
+  "/api/v1/analytics/marketplace/metrics": ["get"],
+  "/api/v1/analytics/provider/metrics": ["get"],
 };
 
 const forbidden = {
