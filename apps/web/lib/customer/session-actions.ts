@@ -8,33 +8,37 @@ const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api/v1").replace(/\/$
 export const CUSTOMER_SESSION_EVENT = "breero:customer-session-changed";
 
 async function csrfToken(): Promise<string | null> {
-  try {
-    const response = await fetch(`${apiBase}/auth/csrf`, {
-      credentials: "include",
-      cache: "no-store",
-    });
-    if (response.status === 401) return null;
-    if (!response.ok) return null;
-    const body = (await response.json()) as { csrf_token?: string };
-    return body.csrf_token ?? null;
-  } catch {
-    return null;
-  }
+  const response = await fetch(`${apiBase}/auth/csrf`, {
+    credentials: "include",
+    cache: "no-store",
+  });
+  if (response.status === 401) return null;
+  if (!response.ok) throw new Error("Unable to verify browser session");
+  const body = (await response.json()) as { csrf_token?: string };
+  if (!body.csrf_token) throw new Error("Unable to verify browser session");
+  return body.csrf_token;
 }
 
 export async function hasCustomerSession(): Promise<boolean> {
-  return (await csrfToken()) !== null;
+  try {
+    return (await csrfToken()) !== null;
+  } catch {
+    return false;
+  }
 }
 
 export function notifyCustomerSessionChanged(): void {
   window.dispatchEvent(new Event(CUSTOMER_SESSION_EVENT));
 }
 
-export async function logoutCustomerSession(returnTo = "/"): Promise<void> {
+function clearLocalSession(): void {
   customerSession.clear();
   notifyCustomerSessionChanged();
+}
 
+export async function logoutCustomerSession(returnTo = "/"): Promise<void> {
   if (keycloak.enabled) {
+    clearLocalSession();
     await keycloak.logout();
     return;
   }
@@ -51,5 +55,6 @@ export async function logoutCustomerSession(returnTo = "/"): Promise<void> {
     }
   }
 
+  clearLocalSession();
   window.location.assign(returnTo);
 }
