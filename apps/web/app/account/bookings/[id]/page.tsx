@@ -6,52 +6,46 @@ import {
   CalendarIcon,
   Card,
   ClockIcon,
-  ErrorState,
   LoadingState,
   Price,
   ShieldIcon,
-  StatusBadge,
 } from "@breero/ui";
+import styles from "@/components/account/bookings/bookings.module.css";
 import { customerApi } from "@/lib/customer/api";
-import { useApiResource } from "@/lib/customer/use-api-resource";
+import { useBookingResource } from "@/components/account/bookings/use-booking-resource";
+import { BookingFailure, BookingStatus, canRequestCancellation } from "@/components/account/bookings/booking-feedback";
 
 export default function BookingDetail() {
   const id = String(useParams<{ id: string }>().id);
+  return <BookingRecord key={id} id={id} />;
+}
+
+function BookingRecord({ id }: { id: string }) {
   const [cancelState, setCancelState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const load = useCallback(
     (signal: AbortSignal) => customerApi.bookings.getMine(id, signal),
     [id],
   );
-  const { value: booking, error, retry } = useApiResource(load);
-  if (error)
-    return (
-      <ErrorState
-        title="Booking not available"
-        description={error.message}
-        onRetry={retry}
-      />
-    );
-  if (!booking) return <LoadingState label="Loading booking details" />;
-  const status = booking.status.toLowerCase().replaceAll("_", "-") as
-    "pending" | "confirmed" | "in-progress" | "completed" | "cancelled";
+  const { value: booking, error, retry, replace } = useBookingResource(load);
+  const back = <a className={`account-back ${styles.backLink}`} href="/account/bookings">← Back to bookings</a>;
+  if (error) return <>{back}<BookingFailure error={error} retry={retry} detail /></>;
+  if (!booking) return <>{back}<LoadingState label="Loading booking details" /></>;
   async function cancelBooking() {
     setCancelState("busy");
     try {
-      await customerApi.bookings.cancelMine(id);
+      const cancelled = await customerApi.bookings.cancelMine(id);
+      replace(cancelled);
       setCancelState("done");
-      retry();
     } catch {
       setCancelState("error");
     }
   }
   return (
     <>
-      <a className="account-back" href="/account/bookings">
-        ← Back to bookings
-      </a>
+      {back}
       <div className="detail-hero">
         <div>
-          <StatusBadge status={status} />
+          <BookingStatus status={booking.status} />
           <h1>BREERO home service</h1>
           <p>Booking {booking.reference}</p>
         </div>
@@ -83,7 +77,7 @@ export default function BookingDetail() {
             <div className="detail-row">
               <ClockIcon />
               <div>
-                <small>Arrival window</small>
+                <small>Arrival window (your device’s timezone)</small>
                 <strong>
                   {new Date(booking.window_start).toLocaleTimeString("en-GB", {
                     hour: "2-digit",
@@ -103,7 +97,7 @@ export default function BookingDetail() {
           <h2>Next steps</h2>
           <p>
             {booking.payment_required
-              ? "Complete the secure payment step to reserve this appointment. Confirmation is based on the authoritative payment status."
+              ? "Online payment is not available in this workspace. Contact support about the payment required for this booking."
               : "Your booking is in our system. We’ll show further assignment and arrival details when they become available."}
           </p>
           <div className="support-path">
@@ -111,15 +105,14 @@ export default function BookingDetail() {
             <span>Our support team can help with changes or concerns.</span>
             <a href="/help">Contact BREERO support →</a>
           </div>
-          {!terminalBooking(booking.status) && (
-            <div className="detail-actions">
-              <button className="br-button br-button--outline br-button--md" type="button" disabled={cancelState === "busy"} onClick={cancelBooking}>
+          <div className="detail-actions" data-ui-state={canRequestCancellation(booking.status) ? "READY" : "DISABLED"}>
+              {!canRequestCancellation(booking.status) && <p>Online cancellation is unavailable for this booking status. Contact support if you need help.</p>}
+              <button className="br-button br-button--outline br-button--md" type="button" disabled={cancelState === "busy" || cancelState === "done" || !canRequestCancellation(booking.status)} onClick={cancelBooking}>
                 {cancelState === "busy" ? "Cancelling…" : "Cancel booking"}
               </button>
               {cancelState === "done" && <p role="status">Cancellation recorded. Any refund status shown by BREERO comes from the backend and may take time.</p>}
               {cancelState === "error" && <p className="auth-message auth-error" role="alert">Cancellation could not be completed. No refund has been assumed.</p>}
             </div>
-          )}
         </Card>
         <Card className="account-col-12 detail-section">
           <h2>Payment summary</h2>
@@ -136,8 +129,4 @@ export default function BookingDetail() {
       </div>
     </>
   );
-}
-
-function terminalBooking(status: string) {
-  return ["COMPLETED", "CANCELLED", "EXPIRED"].includes(status);
 }

@@ -1,0 +1,11 @@
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-block: 1rem; }
+.controls a { padding: .75rem; color: var(--br-brand-dark); border-radius: var(--br-radius); }
+.controls a[aria-current="page"] { background: var(--br-brand-light); font-weight: 700; }
+.cardHeading { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.cardHeading > div { min-width: 0; }
+.cardHeading h2 { font-size: 1.25rem; }
+.bookingLink { overflow-wrap: anywhere; }
+.bookingLink:focus-visible, .controls a:focus-visible { outline: 3px solid var(--br-brand); outline-offset: 3px; }
+.metadata { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }
+
+.backLink { color: var(--br-brand-dark); }
