@@ -25,6 +25,7 @@ const REQUIRED_FILES = [
 const ALLOWED_STYLE_AUTHORITIES = new Set([
   "packages/ui/src/styles.css",
   "packages/ui/src/marketplace.css",
+  "packages/portal/src/styles.css",
   "apps/web/app/globals.css",
   "apps/web/app/marketplace.css",
   "apps/web/app/brand.css",
