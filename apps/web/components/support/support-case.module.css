@@ -1,0 +1,59 @@
+.timeline {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.internal {
+  border-left: 4px solid currentColor;
+}
+
+.entryHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.entryBody {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.accessList {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
+  gap: 0.5rem 1rem;
+  margin: 0;
+}
+
+.accessList dt {
+  font-weight: 600;
+}
+
+.accessList dd {
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .accessList {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
