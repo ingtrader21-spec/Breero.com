@@ -28,5 +28,15 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" className={manrope.variable}><body><AppShell>{children}</AppShell></body></html>;
+  return (
+    <html
+      lang="en"
+      className={manrope.variable}
+      data-horizon-root
+      data-horizon-theme="breero"
+      data-horizon-appearance="dark"
+    >
+      <body><AppShell>{children}</AppShell></body>
+    </html>
+  );
 }
