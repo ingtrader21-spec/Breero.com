@@ -13,6 +13,8 @@ const REQUIRED_FILES = [
   "docs/design-system.md",
   "docs/design-system-migration.md",
   "docs/marketplace-experience-system.md",
+  "HORIZON-ADOPTION.md",
+  "horizon/suite.json",
   ".github/CODEOWNERS",
   ".github/pull_request_template.md",
   ".github/workflows/design-system.yml",
@@ -168,6 +170,16 @@ if (!hasSideEffectImport(layout, "@breero/ui/marketplace.css")) {
 }
 if (!hasSideEffectImport(layout, "./enterprise-design-system.css")) {
   fail("RootLayout must actively import enterprise-design-system.css");
+}
+if (/^\\s*import\\s+["\']\\.\\/horizon(?:-compatibility)?\\.css["\']\\s*;?\\s*$/m.test(layout)) {
+  fail("RootLayout must not import a parallel Horizon stylesheet; Horizon rules belong in enterprise-design-system.css");
+}
+if (!/data-horizon-root/.test(layout) || !/data-horizon-theme\\s*=\\s*["\']breero["\']/.test(layout)) {
+  fail("RootLayout must register the converged Breero Horizon shell markers");
+}
+const enterpriseStyles = existsSync("apps/web/app/enterprise-design-system.css") ? read("apps/web/app/enterprise-design-system.css") : "";
+if (!enterpriseStyles.includes("PAS-111 HORIZON SHELL CONVERGENCE") || !/\\.hz-site-header\\b/.test(enterpriseStyles)) {
+  fail("enterprise-design-system.css must contain the folded Horizon shell authority");
 }
 if (!/^\s*import\s*\{[^}]*\bManrope\b[^}]*\}\s*from\s*["']next\/font\/google["']\s*;?/m.test(layout)) {
   fail("RootLayout must keep an active Manrope import from next/font/google");
