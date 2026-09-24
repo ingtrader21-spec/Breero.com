@@ -9,6 +9,7 @@ const REQUIRED_FILES = [
   "apps/web/app/enterprise-design-system.css",
   "packages/ui/src/marketplace.tsx",
   "packages/ui/src/marketplace.css",
+  "packages/portal/src/styles.css",
   "packages/ui/src/marketplace.test.tsx",
   "docs/design-system.md",
   "docs/design-system-migration.md",
