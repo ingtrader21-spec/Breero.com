@@ -34,7 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       className={manrope.variable}
       data-horizon-root
       data-horizon-theme="breero"
-      data-horizon-appearance="dark"
+      data-horizon-appearance="light"
     >
       <body><AppShell>{children}</AppShell></body>
     </html>
