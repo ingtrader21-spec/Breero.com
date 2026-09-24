@@ -11,6 +11,7 @@ from app.config import settings
 from app.db.session import get_db
 from app.domains.auth.access_service import AccessService
 from app.domains.auth.browser_session import ACCESS_COOKIE
+from app.domains.auth.keycloak import KEYCLOAK_ROLE_BY_USER_ROLE, roles_from_claims
 from app.domains.auth.models import AccessRole, IdentityLink, User, UserRole
 from app.domains.auth.repository import UserRepository
 from app.domains.auth.security import decode_access_token
@@ -70,16 +71,7 @@ async def _keycloak_user(
     if not resolved_user:
         raise HTTPException(status_code=401, detail="Invalid or inactive account")
 
-    required_role = {
-        UserRole.customer: "breero_customer",
-        UserRole.vendor_admin: "breero_provider",
-        UserRole.technician: "breero_worker",
-        UserRole.operations: "breero_dispatcher",
-        UserRole.finance: "breero_support",
-        UserRole.admin: "breero_admin",
-    }
-    token_roles = set((claims.get("realm_access") or {}).get("roles") or [])
-    if required_role[resolved_user.role] not in token_roles:
+    if KEYCLOAK_ROLE_BY_USER_ROLE[resolved_user.role] not in roles_from_claims(claims):
         raise HTTPException(status_code=403, detail="Account role is not authorized")
     return resolved_user
 

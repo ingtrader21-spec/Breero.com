@@ -55,13 +55,18 @@ class FakeIdentityRepository:
         return identity
 
 
-def keycloak_claims(*, email: str = "person@example.com", subject: str = "kc-subject") -> dict:
+def keycloak_claims(
+    *,
+    email: str = "person@example.com",
+    subject: str = "kc-subject",
+    roles: tuple[str, ...] = ("breero_client",),
+) -> dict:
     return {
         "sub": subject,
         "iss": "https://auth.codestra.co/realms/codestra",
         "email": email,
         "email_verified": True,
-        "realm_access": {"roles": ["breero_customer"]},
+        "realm_access": {"roles": list(roles)},
     }
 
 

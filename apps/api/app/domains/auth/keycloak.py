@@ -25,6 +25,10 @@ ROLE_MAP = {
     "breero_provider": UserRole.technician,
     "breero_client": UserRole.customer,
 }
+# One canonical realm role per application role; bearer and BFF paths share it.
+KEYCLOAK_ROLE_BY_USER_ROLE = {role: name for name, role in ROLE_MAP.items()}
+# Only customers may be provisioned just-in-time; privileged accounts must already exist.
+SELF_PROVISIONED_ROLES = frozenset({UserRole.customer})
 
 
 def _issuer() -> str:
@@ -153,10 +157,15 @@ async def link_identity(session: AsyncSession, claims: dict[str, Any]) -> User:
     mapped = next((ROLE_MAP[name] for name in ROLE_MAP if name in roles_from_claims(claims)), None)
     if mapped is None:
         raise HTTPException(403, "A Breero role is required")
+    if user and not user.is_active:
+        # Deactivation in Breero is authoritative; identity-provider login never reactivates.
+        raise HTTPException(403, "Account is inactive")
     if not user:
         if not email or not email_verified:
             raise HTTPException(403, "A verified email is required")
-        user = await repository.add(User(email=email, phone=None, full_name=str(claims.get("name") or claims.get("preferred_username") or email), password_hash=hash_password(secrets.token_urlsafe(48)), role=mapped, email_verified=bool(claims.get("email_verified"))))
+        if mapped not in SELF_PROVISIONED_ROLES:
+            raise HTTPException(403, "Account is not provisioned")
+        user = await repository.add(User(email=email, phone=None, full_name=str(claims.get("name") or claims.get("preferred_username") or email), password_hash=await hash_password(secrets.token_urlsafe(48)), role=mapped, email_verified=bool(claims.get("email_verified"))))
     elif user.keycloak_subject and user.keycloak_subject != subject:
         raise HTTPException(409, "Identity is already linked")
     user.keycloak_subject = subject
@@ -164,7 +173,6 @@ async def link_identity(session: AsyncSession, claims: dict[str, Any]) -> User:
     user.keycloak_username = str(claims.get("preferred_username") or "") or None
     user.keycloak_linked_at = user.keycloak_linked_at or datetime.now(UTC)
     user.role = mapped
-    user.is_active = True
     if email:
         user.email = email
     if email_verified:
