@@ -476,6 +476,11 @@ async def test_projection_reads_from_a_read_only_repeatable_read_snapshot(monkey
     )
     assert observed == {"read_only": "on", "isolation": "repeatable read"}
 
+    # Snapshot characteristics must not leak onto pooled connections used for writes.
+    async with SessionLocal() as session:
+        assert await session.scalar(text("SHOW transaction_read_only")) == "off"
+        assert await session.scalar(text("SHOW transaction_isolation")) == "read committed"
+
 
 @pytest.mark.asyncio
 async def test_http_role_and_tenant_visibility(monkeypatch) -> None:
