@@ -74,9 +74,10 @@ async def review_work_request(
     request_id: uuid.UUID,
     payload: WorkRequestDecision,
     session: AsyncSession = Depends(get_db),
-    _: User = Depends(require_roles(UserRole.operations, UserRole.admin)),
+    user: User = Depends(require_roles(UserRole.operations, UserRole.admin)),
 ):
     return await JobService(session).review_work_request(
         request_id,
         payload.approve,
+        user.id,
     )

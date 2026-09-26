@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.workforce.models import Vendor, VendorStatus, Worker, WorkerStatus
 
-from .models import DispatchOffer, OfferStatus
+from .models import Assignment, AssignmentStatus, DispatchOffer, OfferStatus
 
 
 class DispatchRepository:
@@ -44,6 +44,31 @@ class DispatchRepository:
                     .order_by(DispatchOffer.score.desc())
                 )
             ).all()
+        )
+
+    async def active_assignment(
+        self, job_id: uuid.UUID, lock: bool = False
+    ) -> Assignment | None:
+        query = select(Assignment).where(
+            Assignment.job_id == job_id, Assignment.status == AssignmentStatus.ACTIVE
+        )
+        if lock:
+            query = query.with_for_update()
+        return await self.session.scalar(query)
+
+    async def dispatchable_worker(
+        self, worker_id: uuid.UUID, vendor_id: uuid.UUID
+    ) -> Worker | None:
+        return await self.session.scalar(
+            select(Worker)
+            .join(Vendor, Vendor.id == Worker.vendor_id)
+            .where(
+                Worker.id == worker_id,
+                Worker.vendor_id == vendor_id,
+                Worker.status == WorkerStatus.ACTIVE,
+                Worker.available.is_(True),
+                Vendor.status == VendorStatus.ACTIVE,
+            )
         )
 
     async def expire_due(self, now: datetime) -> int:

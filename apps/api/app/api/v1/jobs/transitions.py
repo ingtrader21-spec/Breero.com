@@ -7,6 +7,7 @@ from app.api.v1.jobs.dependencies import worker_for_user
 from app.db.session import get_db
 from app.domains.auth.dependencies import require_roles
 from app.domains.auth.models import User, UserRole
+from app.domains.jobs.lifecycle import DISPATCH_OWNED_TARGETS, TECHNICIAN_COMMANDS
 from app.domains.jobs.models import JobStatus
 from app.domains.jobs.repository import JobRepository
 from app.domains.jobs.schemas import JobRead, TechnicianNoteRequest, TransitionRequest
@@ -22,6 +23,11 @@ async def transition_job(
     session: AsyncSession = Depends(get_db),
     user: User = Depends(require_roles(UserRole.operations, UserRole.admin)),
 ):
+    if payload.status in DISPATCH_OWNED_TARGETS:
+        raise HTTPException(
+            409,
+            f"Use the dispatch match/assign commands to move a job to {payload.status.value}",
+        )
     return await JobService(session).transition(
         job_id,
         payload.status,
@@ -43,17 +49,11 @@ async def technician_command(
     if not job or job.worker_id != worker.id:
         raise HTTPException(403, "Technician is not assigned to this job")
 
-    targets = {
-        "en-route": JobStatus.EN_ROUTE,
-        "arrive": JobStatus.ON_SITE,
-        "diagnose": JobStatus.DIAGNOSING,
-        "start": JobStatus.IN_PROGRESS,
-    }
-    if command not in targets:
+    if command not in TECHNICIAN_COMMANDS:
         raise HTTPException(422, "Unknown technician command")
     return await JobService(session).transition(
         job_id,
-        targets[command],
+        TECHNICIAN_COMMANDS[command],
         user.id,
         "worker",
     )
