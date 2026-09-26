@@ -277,6 +277,20 @@ class JobService:
             request,
             WorkRequestStatus.PENDING_CUSTOMER if approve else WorkRequestStatus.DECLINED,
         )
+        self.session.add(
+            AuditLog(
+                actor_id=actor_id,
+                action="work_request.review",
+                resource_type="work_request",
+                resource_id=request.id,
+                metadata_json={
+                    "job_id": str(request.job_id),
+                    "previous_status": WorkRequestStatus.SUBMITTED.value,
+                    "new_status": request.status.value,
+                },
+                created_at=datetime.now(UTC),
+            )
+        )
         if not approve:
             job = await self.repo.get(request.job_id, lock=True)
             if job and job.status == JobStatus.AWAITING_APPROVAL:
