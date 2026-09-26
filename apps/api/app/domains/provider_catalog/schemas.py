@@ -15,6 +15,11 @@ class CatalogSkillRead(BaseModel):
     provider_approval_required: bool
 
 
+class CatalogSkillList(BaseModel):
+    items: list[CatalogSkillRead]
+    total: int
+
+
 class RequiredSkillRead(CatalogSkillRead):
     required: bool
 

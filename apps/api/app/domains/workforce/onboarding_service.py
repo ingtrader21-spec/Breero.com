@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.core.errors import DomainError
 from app.domains.auth.models import (
     AccessAssignment,
     AccessProfile,
@@ -21,10 +22,17 @@ from app.domains.auth.repository import UserRepository
 from app.domains.auth.security import hash_password, hash_token, new_opaque_token
 from app.domains.auth.service import AuthService
 from app.domains.common.outbox import AuditLog, EventStatus, IntegrationEvent
+from app.domains.provider_availability.models import ProviderAvailabilityRule
 from app.domains.provider_catalog.models import (
     ApprovalStatus,
     ProviderService,
     ProviderSkill,
+)
+from app.domains.provider_qualifications.models import (
+    ProviderQualification,
+    QualificationReviewStatus,
+    QualificationStatus,
+    QualificationType,
 )
 from app.domains.workforce.models import (
     ProviderApplication,
@@ -38,11 +46,23 @@ from app.domains.workforce.schemas import (
     ProviderApplicationDecision,
     ProviderApplicationList,
     ProviderApplicationRead,
+    ProviderOnboardingChecklist,
     ProviderOnboardingUpdate,
     ProviderProfileUpdate,
     ProviderRegisterRequest,
     ProviderRegistrationResponse,
     VendorRead,
+)
+
+EDITABLE_APPLICATION_STATUSES = frozenset(
+    {
+        ProviderApplicationStatus.DRAFT,
+        ProviderApplicationStatus.INFORMATION_REQUESTED,
+    }
+)
+EVIDENCED_REVIEW_STATUSES = (
+    QualificationReviewStatus.PENDING_REVIEW,
+    QualificationReviewStatus.APPROVED,
 )
 
 REQUIRED_APPLICATION_FIELDS = (
@@ -261,17 +281,42 @@ class ProviderOnboardingService:
         vendor = await self._owned_vendor(user)
         return await self._application_for_vendor(vendor.id)
 
+    async def checklist(self, user: User) -> ProviderOnboardingChecklist:
+        """Read-only submission readiness, including provider-owned domain records."""
+
+        vendor = await self._owned_vendor(user)
+        application = await self._application_for_vendor(vendor.id)
+        derived = await self._derived_selections(vendor.id)
+        missing = [
+            field
+            for field in REQUIRED_APPLICATION_FIELDS
+            if not (derived[field] if field in derived else getattr(application, field))
+        ]
+        editable = application.status in EDITABLE_APPLICATION_STATUSES
+        return ProviderOnboardingChecklist(
+            application_id=application.id,
+            status=application.status,
+            version=application.version,
+            editable=editable,
+            submittable=editable and not missing,
+            missing=missing,
+            requested_information=application.requested_information,
+            decision_reason=application.decision_reason,
+            submitted_at=application.submitted_at,
+            decided_at=application.decided_at,
+        )
+
     async def update_onboarding(
         self,
         user: User,
         data: ProviderOnboardingUpdate,
+        *,
+        expected_version: int | None = None,
     ) -> ProviderApplication:
         vendor = await self._owned_vendor(user, lock=True)
         application = await self._application_for_vendor(vendor.id, lock=True)
-        if application.status not in {
-            ProviderApplicationStatus.DRAFT,
-            ProviderApplicationStatus.INFORMATION_REQUESTED,
-        }:
+        self._require_version(application, expected_version)
+        if application.status not in EDITABLE_APPLICATION_STATUSES:
             raise HTTPException(409, "Submitted applications cannot be edited")
         values = data.model_dump(exclude_unset=True, mode="json")
         if {"services", "skills"}.intersection(values):
@@ -304,18 +349,22 @@ class ProviderOnboardingService:
             if not getattr(application, field)
         ]
 
-    async def submit(self, user: User) -> ProviderApplication:
+    async def submit(
+        self,
+        user: User,
+        *,
+        expected_version: int | None = None,
+    ) -> ProviderApplication:
         vendor = await self._owned_vendor(user, lock=True)
         application = await self._application_for_vendor(vendor.id, lock=True)
-        if application.status not in {
-            ProviderApplicationStatus.DRAFT,
-            ProviderApplicationStatus.INFORMATION_REQUESTED,
-        }:
+        self._require_version(application, expected_version)
+        if application.status not in EDITABLE_APPLICATION_STATUSES:
             raise HTTPException(
                 409,
                 "Application cannot be submitted in its current state",
             )
-        await self._sync_catalog_selections(application)
+        for field, value in (await self._derived_selections(vendor.id)).items():
+            setattr(application, field, value)
         missing = self.missing_submission_fields(application)
         if missing:
             raise HTTPException(
@@ -539,15 +588,32 @@ class ProviderOnboardingService:
         await self.session.refresh(application)
         return application
 
-    async def _sync_catalog_selections(
-        self,
+    @staticmethod
+    def _require_version(
         application: ProviderApplication,
+        expected_version: int | None,
     ) -> None:
+        if expected_version is not None and application.version != expected_version:
+            raise DomainError(
+                "VERSION_CONFLICT",
+                "Provider application changed since it was loaded.",
+                409,
+                fields={"current_version": application.version},
+            )
+
+    async def _derived_selections(self, vendor_id: uuid.UUID) -> dict[str, object]:
+        """Application fields owned by dedicated provider domains.
+
+        Services and skills always come from the catalog selection tables. Availability
+        and license/insurance/document evidence are overlaid only when the provider has
+        recorded them through the dedicated APIs, so older JSON drafts keep working.
+        """
+
         services = list(
             (
                 await self.session.scalars(
                     select(ProviderService).where(
-                        ProviderService.vendor_id == application.vendor_id,
+                        ProviderService.vendor_id == vendor_id,
                         ProviderService.active.is_(True),
                     )
                 )
@@ -557,14 +623,83 @@ class ProviderOnboardingService:
             (
                 await self.session.scalars(
                     select(ProviderSkill).where(
-                        ProviderSkill.vendor_id == application.vendor_id,
+                        ProviderSkill.vendor_id == vendor_id,
                         ProviderSkill.active.is_(True),
                     )
                 )
             ).all()
         )
-        application.services = [str(item.service_id) for item in services]
-        application.skills = [str(item.skill_id) for item in skills]
+        derived: dict[str, object] = {
+            "services": [str(item.service_id) for item in services],
+            "skills": [str(item.skill_id) for item in skills],
+        }
+        rules = list(
+            (
+                await self.session.scalars(
+                    select(ProviderAvailabilityRule)
+                    .where(
+                        ProviderAvailabilityRule.vendor_id == vendor_id,
+                        ProviderAvailabilityRule.active.is_(True),
+                    )
+                    .order_by(
+                        ProviderAvailabilityRule.weekday,
+                        ProviderAvailabilityRule.start_time,
+                    )
+                )
+            ).all()
+        )
+        if rules:
+            derived["availability"] = {
+                "source": "provider_availability_rules",
+                "rules": [
+                    {
+                        "rule_id": str(rule.id),
+                        "worker_id": str(rule.worker_id) if rule.worker_id else None,
+                        "weekday": rule.weekday,
+                        "start_time": rule.start_time.strftime("%H:%M"),
+                        "end_time": rule.end_time.strftime("%H:%M"),
+                        "timezone": rule.timezone,
+                        "valid_from": rule.valid_from.isoformat() if rule.valid_from else None,
+                        "valid_until": (
+                            rule.valid_until.isoformat() if rule.valid_until else None
+                        ),
+                    }
+                    for rule in rules
+                ],
+            }
+        qualifications = list(
+            (
+                await self.session.scalars(
+                    select(ProviderQualification)
+                    .where(
+                        ProviderQualification.vendor_id == vendor_id,
+                        ProviderQualification.status == QualificationStatus.SUBMITTED,
+                        ProviderQualification.review_status.in_(EVIDENCED_REVIEW_STATUSES),
+                    )
+                    .order_by(ProviderQualification.created_at, ProviderQualification.id)
+                )
+            ).all()
+        )
+        if qualifications:
+            derived["compliance_documents"] = [str(item.id) for item in qualifications]
+        for field, qualification_type in (
+            ("licenses", QualificationType.LICENSE),
+            ("insurance", QualificationType.INSURANCE),
+        ):
+            matching = [
+                {
+                    "qualification_id": str(item.id),
+                    "title": item.title,
+                    "jurisdiction": item.jurisdiction,
+                    "expires_on": item.expires_on.isoformat() if item.expires_on else None,
+                    "review_status": item.review_status.value,
+                }
+                for item in qualifications
+                if item.qualification_type == qualification_type
+            ]
+            if matching:
+                derived[field] = matching
+        return derived
 
     def _audit(
         self,

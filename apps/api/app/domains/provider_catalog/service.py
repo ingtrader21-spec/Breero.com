@@ -18,6 +18,7 @@ from app.domains.workforce.models import (
 from .models import ApprovalStatus, ProviderService, ProviderSkill, SkillDefinition
 from .repository import ProviderCatalogRepository
 from .schemas import (
+    CatalogSkillList,
     CatalogSkillRead,
     ProviderServiceCreate,
     ProviderServiceList,
@@ -225,6 +226,13 @@ class ProviderCatalogService:
                 },
             )
             await self.session.commit()
+
+    async def skill_catalog(self) -> CatalogSkillList:
+        rows = await self.repository.active_skills()
+        return CatalogSkillList(
+            items=[self._catalog_skill(skill) for skill in rows],
+            total=len(rows),
+        )
 
     async def list_skills(
         self,
@@ -480,19 +488,23 @@ class ProviderCatalogService:
             id=record.id,
             vendor_id=record.vendor_id,
             worker_id=record.worker_id,
-            skill=CatalogSkillRead(
-                id=skill.id,
-                key=skill.key,
-                name=skill.name,
-                category=skill.category,
-                description=skill.description,
-                provider_approval_required=skill.provider_approval_required,
-            ),
+            skill=self._catalog_skill(skill),
             status=record.status,
             active=record.active,
             version=record.version,
             created_at=record.created_at,
             updated_at=record.updated_at,
+        )
+
+    @staticmethod
+    def _catalog_skill(skill: SkillDefinition) -> CatalogSkillRead:
+        return CatalogSkillRead(
+            id=skill.id,
+            key=skill.key,
+            name=skill.name,
+            category=skill.category,
+            description=skill.description,
+            provider_approval_required=skill.provider_approval_required,
         )
 
     @staticmethod

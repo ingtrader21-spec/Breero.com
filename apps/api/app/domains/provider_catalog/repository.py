@@ -102,6 +102,17 @@ class ProviderCatalogRepository:
             )
         )
 
+    async def active_skills(self) -> list[SkillDefinition]:
+        return list(
+            (
+                await self.session.scalars(
+                    select(SkillDefinition)
+                    .where(SkillDefinition.active.is_(True))
+                    .order_by(SkillDefinition.category, SkillDefinition.name)
+                )
+            ).all()
+        )
+
     async def provider_service(
         self,
         vendor_id: uuid.UUID,

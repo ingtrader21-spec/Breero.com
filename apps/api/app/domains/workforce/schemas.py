@@ -1,5 +1,5 @@
 import uuid
-from datetime import date, time
+from datetime import date, datetime, time
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
@@ -67,6 +67,43 @@ class WorkerRead(BaseModel):
     status: WorkerStatus
     skills: list
     available: bool
+
+
+class ProviderWorkerCreate(BaseModel):
+    """Provider self-service team member; account linking and activation stay with BREERO."""
+
+    model_config = ConfigDict(extra="forbid")
+    first_name: str = Field(min_length=1, max_length=80)
+    last_name: str = Field(min_length=1, max_length=80)
+    email: EmailStr
+    phone: str = Field(min_length=5, max_length=32)
+
+    @model_validator(mode="after")
+    def normalize(self):
+        self.first_name = self.first_name.strip()
+        self.last_name = self.last_name.strip()
+        self.phone = self.phone.strip()
+        if not self.first_name or not self.last_name:
+            raise ValueError("first_name and last_name are required")
+        return self
+
+
+class ProviderWorkerRead(BaseModel):
+    id: uuid.UUID
+    first_name: str
+    last_name: str
+    email: str
+    phone: str
+    status: WorkerStatus
+    available: bool
+    skills: list
+    has_account: bool
+    is_account_owner: bool
+
+
+class ProviderWorkerList(BaseModel):
+    items: list[ProviderWorkerRead]
+    total: int
 
 
 class LocationUpdate(BaseModel):
@@ -183,6 +220,19 @@ class ProviderApplicationRead(BaseModel):
     reviewed_by: uuid.UUID | None
     decision_reason: str | None
     requested_information: str | None
+
+
+class ProviderOnboardingChecklist(BaseModel):
+    application_id: uuid.UUID
+    status: ProviderApplicationStatus
+    version: int
+    editable: bool
+    submittable: bool
+    missing: list[str]
+    requested_information: str | None
+    decision_reason: str | None
+    submitted_at: datetime | None
+    decided_at: datetime | None
 
 
 class ProviderRegistrationResponse(BaseModel):
