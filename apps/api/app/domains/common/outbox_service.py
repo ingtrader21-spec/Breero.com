@@ -178,6 +178,7 @@ class OutboxService:
             EventStatus.PENDING_CONFIGURATION,
         ):
             raise ValueError("Only failed or configuration-pending integration events can be retried")
+        previous_status = event.status.value
         event.status = EventStatus.PENDING
         event.attempt_count = 0
         event.next_attempt_at = datetime.now(UTC)
@@ -187,6 +188,12 @@ class OutboxService:
         event.claim_token = None
         self.session.add(AuditLog(actor_id=actor_id, action="integration.retry",
             resource_type="integration_event", resource_id=event.id,
-            metadata_json={"previous_error": event.last_error}, created_at=datetime.now(UTC)))
+            metadata_json={
+                "previous_error": event.last_error,
+                "previous_error_code": event.last_error_code,
+                "previous_status": previous_status,
+                "event_type": event.event_type,
+                "aggregate_type": event.aggregate_type,
+            }, created_at=datetime.now(UTC)))
         await self.session.commit()
         return event

@@ -524,7 +524,12 @@ class ProviderOnboardingService:
             action,
             "provider_application",
             application.id,
-            {"status": target.value, "reason": reason},
+            {
+                "previous_status": ProviderApplicationStatus.PENDING.value,
+                "status": target.value,
+                "reason": reason,
+                "vendor_id": str(vendor.id),
+            },
         )
         self._event(
             application,

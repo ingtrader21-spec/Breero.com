@@ -20,6 +20,7 @@ from app.core.errors import (
 from app.core.lifespan import lifespan
 from app.core.redis_client import redis_client_from_request
 from app.db.session import engine
+from app.domains.audit import context as audit_request
 from app.observability import (
     configure_logging,
     configure_tracing,
@@ -30,7 +31,7 @@ from app.observability import (
     route_template,
 )
 
-EXPECTED_SCHEMA_REVISION = "022_provider_services_skills"
+EXPECTED_SCHEMA_REVISION = "023_audit_read_model"
 READINESS_TIMEOUT_SECONDS = 3.0
 TRACE_ID_PATTERN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}")
 app = FastAPI(title=settings.app_name, version="2.0.0", lifespan=lifespan)
@@ -62,6 +63,11 @@ async def request_context(request: Request, call_next):
     correlation_id = _trace_id(request.headers.get("X-Correlation-ID")) or request_id
     request.state.request_id = request_id
     request.state.correlation_id = correlation_id
+    audit_context = audit_request.bind_request_context(
+        request_id=request_id,
+        correlation_id=correlation_id,
+        client_ip=request.client.host if request.client else None,
+    )
     started = time.perf_counter()
     status_code = 500
     try:
@@ -80,6 +86,7 @@ async def request_context(request: Request, call_next):
         response = v2_unexpected_error_response(request)
         status_code = response.status_code
     finally:
+        audit_request.reset_request_context(audit_context)
         duration_seconds = time.perf_counter() - started
         record_http_request(request, status_code, duration_seconds)
     duration_ms = round(duration_seconds * 1000, 2)

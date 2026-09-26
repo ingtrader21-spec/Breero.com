@@ -1,10 +1,12 @@
 import uuid
+from datetime import UTC, datetime
 
 from fastapi import HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.domains.audit.catalog import ACCESS_ASSIGNMENTS_REPLACED_ACTION
 from app.domains.auth.models import (
     AccessAssignment,
     AccessProfile,
@@ -22,6 +24,7 @@ from app.domains.auth.schemas import (
     PortalContext,
     UserRead,
 )
+from app.domains.common.outbox import AuditLog
 
 BRAND_KEY = "breero"
 NO_ACCESS_DASHBOARD = "/access-denied"
@@ -199,10 +202,25 @@ class AccessService:
         user_id: uuid.UUID,
         brand_key: str,
         assignments: list[AccessAssignmentInput],
+        actor_id: uuid.UUID | None = None,
     ) -> PortalContext:
         user = await self.session.scalar(select(User).where(User.id == user_id).with_for_update())
         if not user:
             raise HTTPException(404, "User not found")
+        previous_roles = sorted(
+            {
+                row.role_key
+                for row in (
+                    await self.session.scalars(
+                        select(AccessAssignment).where(
+                            AccessAssignment.user_id == user_id,
+                            AccessAssignment.brand_key == brand_key,
+                            AccessAssignment.active.is_(True),
+                        )
+                    )
+                ).all()
+            }
+        )
 
         profile = await self.session.scalar(
             select(AccessProfile)
@@ -235,6 +253,22 @@ class AccessService:
                     is_primary=item.is_primary,
                 )
             )
+        self.session.add(
+            AuditLog(
+                actor_id=actor_id,
+                actor_type="admin" if actor_id else "system",
+                action=ACCESS_ASSIGNMENTS_REPLACED_ACTION,
+                resource_type="user",
+                resource_id=user_id,
+                metadata_json={
+                    "brand_key": brand_key,
+                    "target_user_id": str(user_id),
+                    "previous_roles": previous_roles,
+                    "new_roles": sorted({item.role.value for item in assignments}),
+                },
+                created_at=datetime.now(UTC),
+            )
+        )
         await self.session.commit()
         return await self.context(user, brand_key)
 

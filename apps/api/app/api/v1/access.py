@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
+from app.domains.audit.recorder import record_access_denied
 from app.domains.auth.access_service import AccessService
 from app.domains.auth.dependencies import require_permissions
 from app.domains.auth.models import AccessRole, Department, TenantScope, User
@@ -51,9 +52,17 @@ async def replace_user_access(
     if any(item.role == AccessRole.superadmin for item in data.assignments):
         actor_context = await AccessService(session).context(actor, data.brand_key)
         if "*" not in actor_context.permissions:
+            await record_access_denied(
+                session,
+                actor_id=actor.id,
+                required=["role:superadmin"],
+                reason_code="superadmin_grant_requires_superadmin",
+                brand_key=data.brand_key,
+            )
             raise HTTPException(403, "Only superadmin can grant the superadmin role")
     return await AccessService(session).replace_assignments(
         user_id=user_id,
         brand_key=data.brand_key,
         assignments=data.assignments,
+        actor_id=actor.id,
     )
