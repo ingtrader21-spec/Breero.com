@@ -6,7 +6,8 @@ tokens, complete provider payloads, or secrets.
 
 | Action | Actor | Target | Required metadata |
 |---|---|---|---|
-| `role.change` | admin/super-admin | user | old/new roles, reason |
+| `access.assignments.replace` | admin/super-admin | user | brand, previous/new roles |
+| `authz.denied` (`result=denied`) | any authenticated principal | the principal | required roles/permissions, reason code |
 | `assignment.create` / `assignment.release` | dispatcher/operations | job/assignment | vendor, worker, old/new state |
 | `job.manual_transition` | operations/admin | job | from/to, reason |
 | `quote.approve` / `quote.reject` | owning customer | quote | prior/new state, payment required |
@@ -21,4 +22,7 @@ tokens, complete provider payloads, or secrets.
 
 Command handlers write the audit record in the same database transaction as the domain change.
 Provider calls record only sanitized provider IDs and status.
+
+Administrators read these records only through the admin-safe read model described in
+[`audit-read-model.md`](audit-read-model.md); raw `metadata_json` is never served.
 

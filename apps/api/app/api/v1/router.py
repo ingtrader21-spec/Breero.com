@@ -5,6 +5,7 @@ from app.api.v1 import (
     addresses,
     admin_geography,
     admin_users,
+    audit,
     auth,
     availability,
     booking_geography,
@@ -37,6 +38,7 @@ api_router.include_router(
 )
 api_router.include_router(access.router, prefix="/auth/access", tags=["auth-access"])
 api_router.include_router(admin_users.router, prefix="/admin/users", tags=["admin-users"])
+api_router.include_router(audit.router, prefix="/admin/audit", tags=["admin-audit"])
 api_router.include_router(
     admin_geography.service_zones_router,
     prefix="/admin/service-zones",

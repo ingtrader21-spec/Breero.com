@@ -209,7 +209,13 @@ class FinanceService:
         batch.status = PayoutStatus.APPROVED
         batch.approved_by = approver_id
         batch.approved_at = datetime.now(UTC)
-        self.audit(approver_id, "payout.approve", "payout_batch", batch.id)
+        self.audit(approver_id, "payout.approve", "payout_batch", batch.id, {
+            "previous_status": PayoutStatus.PENDING_APPROVAL.value,
+            "status": PayoutStatus.APPROVED.value,
+            "total_minor": batch.total_minor,
+            "currency": batch.currency,
+            "earning_count": batch.earning_count,
+        })
         await self.session.commit()
         await self.session.refresh(batch)
         return batch
