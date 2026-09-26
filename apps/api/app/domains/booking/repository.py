@@ -2,7 +2,7 @@ import uuid
 from datetime import UTC, datetime
 
 from geoalchemy2.functions import ST_Covers
-from sqlalchemy import Select, and_, func, or_, select, text
+from sqlalchemy import and_, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.booking.models import (
@@ -194,7 +194,7 @@ class BookingRepository:
         await self.session.flush()
 
     async def customer_bookings(self, customer_id: uuid.UUID) -> list[Booking]:
-        stmt: Select[tuple[Booking]] = (
+        stmt = (
             select(Booking)
             .where(Booking.customer_id == customer_id)
             .order_by(Booking.created_at.desc())
