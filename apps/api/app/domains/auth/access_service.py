@@ -69,6 +69,7 @@ DEFAULT_PERMISSIONS: dict[AccessRole, set[str]] = {
         "provider.availability.manage",
         "provider.jobs.read",
         "provider.quotes.manage",
+        "provider.finance.read",
     },
     AccessRole.technician: {
         "worker.profile.read",

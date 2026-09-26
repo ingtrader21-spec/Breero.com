@@ -95,6 +95,14 @@ if settings.payments_enabled and settings.stripe_enabled:
 api_router.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
 api_router.include_router(vendors.router, prefix="/vendors", tags=["vendors"])
 api_router.include_router(operations.router, prefix="/operations", tags=["operations"])
+# Read-only finance projections never move money, so they stay mounted while the
+# payout command surface below remains behind PAYOUT_ENABLED.
+api_router.include_router(finance.read_router, prefix="/finance", tags=["finance-reads"])
+api_router.include_router(
+    finance.provider_router,
+    prefix="/provider/finance",
+    tags=["provider-finance"],
+)
 if settings.payout_enabled:
     api_router.include_router(finance.router, prefix="/finance", tags=["finance"])
 api_router.include_router(integrations.router, prefix="/integrations", tags=["integrations"])
