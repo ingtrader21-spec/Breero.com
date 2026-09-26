@@ -1,15 +1,15 @@
-import re
 import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, Query, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.errors import DomainError
+from app.api.v1.provider_http import correlation_id, require_if_match, set_etag
 from app.db.session import get_db
 from app.domains.auth.dependencies import require_permissions
 from app.domains.auth.models import User
 from app.domains.provider_catalog.schemas import (
+    CatalogSkillList,
     ProviderServiceCreate,
     ProviderServiceList,
     ProviderServiceRead,
@@ -25,35 +25,18 @@ service_read = require_permissions("provider.services.read")
 service_manage = require_permissions("provider.services.manage")
 skill_read = require_permissions("provider.skills.read")
 skill_manage = require_permissions("provider.skills.manage")
-ETAG_RE = re.compile(r"^[1-9][0-9]*$")
+
+_version = require_if_match
+_etag = set_etag
+_correlation_id = correlation_id
 
 
-def _version(value: str | None) -> int:
-    if value is None:
-        raise DomainError(
-            "PRECONDITION_REQUIRED",
-            "If-Match is required for provider catalog changes.",
-            428,
-        )
-    token = value.strip()
-    if token.startswith("W/"):
-        token = token[2:].strip()
-    token = token.strip('"')
-    if not ETAG_RE.fullmatch(token):
-        raise DomainError(
-            "INVALID_IF_MATCH",
-            "If-Match must contain the current resource version.",
-            400,
-        )
-    return int(token)
-
-
-def _etag(response: Response, version: int) -> None:
-    response.headers["ETag"] = f'"{version}"'
-
-
-def _correlation_id(request: Request) -> str | None:
-    return getattr(request.state, "correlation_id", None)
+@router.get("/skill-catalog", response_model=CatalogSkillList)
+async def list_provider_skill_catalog(
+    _: Annotated[User, Depends(skill_read)],
+    session: Annotated[AsyncSession, Depends(get_db)],
+) -> CatalogSkillList:
+    return await ProviderCatalogService(session).skill_catalog()
 
 
 @router.get("/services", response_model=ProviderServiceList)

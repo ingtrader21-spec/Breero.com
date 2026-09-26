@@ -18,9 +18,13 @@ from app.api.v1 import (
     jobs,
     operations,
     payments,
+    provider_availability,
     provider_catalog,
     provider_leads,
     provider_onboarding,
+    provider_qualifications,
+    provider_work,
+    provider_workforce,
     public_forms,
     services,
     vendors,
@@ -58,9 +62,34 @@ api_router.include_router(
     tags=["provider-catalog"],
 )
 api_router.include_router(
+    provider_workforce.router,
+    prefix="/provider/workers",
+    tags=["provider-workforce"],
+)
+api_router.include_router(
+    provider_availability.router,
+    prefix="/provider/availability",
+    tags=["provider-availability"],
+)
+api_router.include_router(
+    provider_qualifications.router,
+    prefix="/provider/qualifications",
+    tags=["provider-qualifications"],
+)
+api_router.include_router(
+    provider_work.router,
+    prefix="/provider",
+    tags=["provider-work"],
+)
+api_router.include_router(
     provider_onboarding.admin_router,
     prefix="/admin/provider-applications",
     tags=["admin-provider-applications"],
+)
+api_router.include_router(
+    provider_qualifications.admin_router,
+    prefix="/admin/provider-qualifications",
+    tags=["admin-provider-qualifications"],
 )
 api_router.include_router(services.router, prefix="/services", tags=["services"])
 api_router.include_router(customers.router, prefix="/customer", tags=["customer"])

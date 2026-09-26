@@ -1,9 +1,10 @@
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.v1.provider_http import optional_if_match, set_etag
 from app.config import settings
 from app.core.rate_limit import rate_limit
 from app.db.session import get_db
@@ -18,6 +19,7 @@ from app.domains.workforce.schemas import (
     ProviderApplicationDecision,
     ProviderApplicationList,
     ProviderApplicationRead,
+    ProviderOnboardingChecklist,
     ProviderOnboardingUpdate,
     ProviderProfileUpdate,
     ProviderRegisterRequest,
@@ -84,29 +86,55 @@ async def update_provider_profile(
 
 @provider_router.get("/onboarding", response_model=ProviderApplicationRead)
 async def provider_onboarding(
+    response: Response,
     user: Annotated[User, Depends(provider_read)],
     session: Annotated[AsyncSession, Depends(get_db)],
 ) -> ProviderApplicationRead:
     application = await ProviderOnboardingService(session).onboarding(user)
+    set_etag(response, application.version)
     return ProviderApplicationRead.model_validate(application)
+
+
+@provider_router.get(
+    "/onboarding/checklist",
+    response_model=ProviderOnboardingChecklist,
+)
+async def provider_onboarding_checklist(
+    user: Annotated[User, Depends(provider_read)],
+    session: Annotated[AsyncSession, Depends(get_db)],
+) -> ProviderOnboardingChecklist:
+    return await ProviderOnboardingService(session).checklist(user)
 
 
 @provider_router.patch("/onboarding", response_model=ProviderApplicationRead)
 async def update_provider_onboarding(
     data: ProviderOnboardingUpdate,
+    response: Response,
     user: Annotated[User, Depends(provider_write)],
     session: Annotated[AsyncSession, Depends(get_db)],
+    if_match: Annotated[str | None, Header(alias="If-Match")] = None,
 ) -> ProviderApplicationRead:
-    application = await ProviderOnboardingService(session).update_onboarding(user, data)
+    application = await ProviderOnboardingService(session).update_onboarding(
+        user,
+        data,
+        expected_version=optional_if_match(if_match),
+    )
+    set_etag(response, application.version)
     return ProviderApplicationRead.model_validate(application)
 
 
 @provider_router.post("/onboarding/submit", response_model=ProviderApplicationRead)
 async def submit_provider_onboarding(
+    response: Response,
     user: Annotated[User, Depends(provider_write)],
     session: Annotated[AsyncSession, Depends(get_db)],
+    if_match: Annotated[str | None, Header(alias="If-Match")] = None,
 ) -> ProviderApplicationRead:
-    application = await ProviderOnboardingService(session).submit(user)
+    application = await ProviderOnboardingService(session).submit(
+        user,
+        expected_version=optional_if_match(if_match),
+    )
+    set_etag(response, application.version)
     return ProviderApplicationRead.model_validate(application)
 
 
